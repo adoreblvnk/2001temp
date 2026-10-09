@@ -1,0 +1,75 @@
+@startuml activity_allocation
+skinparam defaultFontName "Helvetica", "Arial", sans-serif
+skinparam defaultFontSize 11
+skinparam ranksep 40
+skinparam nodesep 30
+skinparam activity {
+    BackgroundColor #FFFFFF
+    BorderColor #1E3A8A
+    ArrowColor #1E3A8A
+    DiamondBorderColor #1E3A8A
+    DiamondBackgroundColor #FFFFFF
+}
+
+|Manager|
+start
+:Navigate to Weekly Allocation Interface;
+:Select target week and student lesson slot
+(Unassigned or Confirmed);
+
+|System|
+:Retrieve lesson parameters
+(Instrument, Student, Duration);
+:Query candidate teacher qualifications,
+availability, running workloads,
+preferences, and studio reservations;
+:Render allocation matrix
+(displaying up to 3 candidate teachers side-by-side);
+
+|Manager|
+repeat
+    :Select candidate teacher, studio,
+    and 30-min time slot;
+    |System|
+    :Validate allocation constraints
+    (instrument qualification, Studio 5 drum rule,
+    room availability, and 4h continuous limit);
+backward:Display specific validation error
+(qualification clash, room collision, or fatigue breach);
+|Manager|
+:Review feedback and adjust selection;
+repeat while (All allocation constraints satisfied?) is ([no - Constraint Violation]) not ([yes - All Checks Pass])
+
+|System|
+:Calculate projected weekly workload
+(including +0.5h for current lesson);
+
+if (Projected weekly workload > 40.0h?) then ([yes - Workload Exceeds 40h])
+    |Manager|
+    if (Projected weekly workload > 44.0h?) then ([yes - Statutory Cap (>44h)])
+        :Review statutory compliance alert:
+        "Statutory 44h cap reached";
+        :Acknowledge alert and record
+        emergency overtime authorization;
+    else ([no - Advisory Tier (40h-44h)])
+        :Review advisory notification:
+        "Workload exceeds 40h guideline";
+        :Confirm managerial soft-warning override;
+    endif
+else ([no - Nominal Workload <= 40.0h])
+endif
+
+|System|
+:Assign lesson to teacher and studio
+(set lesson status to "Confirmed");
+:Increment teacher weekly and
+monthly workload by 0.5h;
+:Persist assignment in database;
+:Append immutable transaction
+record to Audit Log;
+
+|Manager|
+:Display updated weekly schedule
+grid with confirmed allocation;
+stop
+@enduml

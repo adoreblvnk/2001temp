@@ -1,0 +1,90 @@
+@startuml ssd_08
+!theme plain
+skinparam shadowing false
+skinparam defaultFontName "Helvetica", "Arial", sans-serif
+skinparam defaultFontSize 11
+skinparam sequence {
+    ParticipantBorderColor #1E3A8A
+    ParticipantBackgroundColor #EFF6FF
+    LifeLineBorderColor #1E3A8A
+    LifeLineBackgroundColor #FFFFFF
+    ArrowColor #1E3A8A
+    ActorBorderColor #1E3A8A
+    ActorBackgroundColor #EFF6FF
+}
+
+title SSD-08 : Submit Monthly Availability Window
+
+actor Teacher
+participant ":TeacherUI" as TeacherUI
+participant ":AvailabilityController" as AvailabilityController
+participant ":Availability" as Availability
+participant ":AuditLog" as AuditLog
+
+Teacher -> TeacherUI : accessAvailabilityGrid(month)
+activate Teacher
+activate TeacherUI
+
+TeacherUI -> TeacherUI : renderAvailabilityGrid()
+TeacherUI --> Teacher : AvailabilityGridView
+deactivate TeacherUI
+deactivate Teacher
+
+Teacher -> TeacherUI : toggleTimeSlots(selectedSlots)
+activate Teacher
+activate TeacherUI
+TeacherUI --> Teacher : SlotsConfiguredView
+deactivate TeacherUI
+deactivate Teacher
+
+Teacher -> TeacherUI : submitAvailability(month, selectedSlots)
+activate Teacher
+activate TeacherUI
+TeacherUI -> AvailabilityController : submitAvailability(teacherId, month, selectedSlots)
+activate AvailabilityController
+
+AvailabilityController -> AvailabilityController : validateCutoff(submissionTimestamp)
+
+alt submissionTimestamp <= 19th 23:59 SGT (On-time Window)
+    AvailabilityController -> Availability : isSubmittedBeforeCutoff()
+    activate Availability
+    Availability --> AvailabilityController : true
+    deactivate Availability
+
+    AvailabilityController -> Availability : getApprovalStatus()
+    activate Availability
+    Availability --> AvailabilityController : AUTO_APPROVED
+    deactivate Availability
+
+    AvailabilityController -> AuditLog : logAction(teacherId, "SUBMIT_AVAILABILITY", "On-time availability submitted for: " + month)
+    activate AuditLog
+    deactivate AuditLog
+
+    AvailabilityController --> TeacherUI : SubmissionSuccess(AUTO_APPROVED)
+    TeacherUI --> Teacher : ConfirmationNotice("Availability confirmed (editable until 19th 23:59)")
+else submissionTimestamp > 19th 23:59 SGT (Late Submission)
+    AvailabilityController -> Availability : isSubmittedBeforeCutoff()
+    activate Availability
+    Availability --> AvailabilityController : false
+    deactivate Availability
+
+    AvailabilityController -> Availability : getApprovalStatus()
+    activate Availability
+    Availability --> AvailabilityController : LATE_PENDING
+    deactivate Availability
+
+    AvailabilityController -> AvailabilityController : routeToManagerExceptionQueue(requestId)
+
+    AvailabilityController -> AuditLog : logAction(teacherId, "LATE_AVAILABILITY_FLAGGED", "Pending manager review for: " + month)
+    activate AuditLog
+    deactivate AuditLog
+
+    AvailabilityController --> TeacherUI : LateSubmissionNotice(LATE_PENDING)
+    TeacherUI --> Teacher : AlertModal("Cutoff exceeded: changes routed to Manager Exception Queue")
+end
+
+deactivate AvailabilityController
+deactivate TeacherUI
+deactivate Teacher
+
+@enduml

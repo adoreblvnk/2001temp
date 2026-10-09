@@ -1,0 +1,56 @@
+@startuml ssd_01
+!theme plain
+skinparam shadowing false
+skinparam defaultFontName "Helvetica", "Arial", sans-serif
+skinparam defaultFontSize 11
+skinparam sequence {
+    ParticipantBorderColor #1E3A8A
+    ParticipantBackgroundColor #EFF6FF
+    LifeLineBorderColor #1E3A8A
+    LifeLineBackgroundColor #FFFFFF
+    ArrowColor #1E3A8A
+    ActorBorderColor #1E3A8A
+    ActorBackgroundColor #EFF6FF
+}
+
+title SSD-01 : View Workload Dashboard & Outliers
+
+actor "Manager" as M
+participant ":ManagerDashboardUI" as UI
+participant ":WorkloadController" as WC
+participant ":Schedule" as S
+participant ":Teacher" as T
+
+M -> UI : accessLandingDashboard()
+activate UI
+UI -> WC : loadWorkloadIntelligence(weekId, month)
+activate WC
+WC -> S : getActiveTeachers(weekId)
+activate S
+S --> WC : activeTeacherList : List<Teacher>
+deactivate S
+
+loop for each teacher in activeTeacherList
+    WC -> S : getLessonsForTeacher(teacherId)
+    activate S
+    S --> WC : weeklyLessons : List<Lesson>
+    deactivate S
+    WC -> T : calculateWeeklyWorkload()
+    activate T
+    T --> WC : weeklyHours : float
+    deactivate T
+    WC -> T : calculateMonthlyWorkload()
+    activate T
+    T --> WC : monthlyHours : float
+    deactivate T
+end
+
+WC -> WC : flagWorkloadOutliers()
+WC -> WC : getLowestWorkloadStaff()
+WC --> UI : WorkloadSummary(lowestStaff, warningStaff)
+deactivate WC
+
+UI -> UI : renderWorkloadDashboard(progressBars, badges)
+UI --> M : dashboard view rendered
+deactivate UI
+@enduml

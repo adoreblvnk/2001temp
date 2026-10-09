@@ -1,0 +1,131 @@
+@startuml use_case_summary
+!theme plain
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam actorStyle awesome
+skinparam defaultFontName "Helvetica", "Arial", sans-serif
+skinparam defaultFontSize 11
+
+skinparam usecase {
+    BackgroundColor #FFFFFF
+    BorderColor #1E3A8A
+    BorderThickness 1.5
+    FontSize 11
+    StereotypeFontColor #1E3A8A
+    StereotypeFontStyle normal
+}
+
+skinparam usecase<<Included>> {
+    FontColor #1E3A8A
+    FontSize 9
+    BorderThickness 2
+}
+
+skinparam usecase<<Extension>> {
+    FontColor #1E3A8A
+    FontSize 9
+    BorderThickness 2
+}
+
+skinparam actor {
+    BackgroundColor #EFF6FF
+    BorderColor #1E3A8A
+}
+
+skinparam arrow {
+    Color #1E3A8A
+    FontColor #1E3A8A
+    FontSize 9
+}
+
+left to right direction
+
+actor "Manager" as Manager
+actor "Teacher" as Teacher
+actor "IT Administrator" as ITAdmin
+
+rectangle "Music School Workload Allocation & Resource Scheduling System" as SystemBoundary {
+
+    package "Executive Reporting & Statutory Compliance" {
+        usecase "UC-18: Review Labor\nCompliance & Workload" as UC18
+        usecase "UC-17: Generate Studio\nUtilization Report" as UC17
+    }
+
+    package "Workload & Schedule Management" {
+        usecase "UC-07: Handle Emergency\nAbsence Substitute" as UC07
+        usecase "UC-05: Publish Confirmed\nWeekly Roster" as UC05
+        usecase "UC-04: Process Late\nAvailability Exception" as UC04
+        usecase "UC-02: Allocate\nWeekly Teaching Job" as UC02
+        usecase "UC-03: Review &\nRe-allocate Rejected Lesson" as UC03
+        usecase "UC-01: View Workload\nDashboard & Outliers" as UC01
+    }
+
+    package "Teacher Availability & Schedule" {
+        usecase "UC-12: Request Peer\nLesson Swap" as UC12
+        usecase "UC-11: Submit Job\nRejection Request" as UC11
+        usecase "UC-10: View Confirmed\nSchedule & Workload" as UC10
+        usecase "UC-09: Submit Weekly\nJob Preferences" as UC09
+        usecase "UC-08: Submit Monthly\nAvailability Window" as UC08
+    }
+
+    package "System Administration & Facilities" {
+        usecase "UC-16: Flag Facility\nMaintenance Window" as UC16
+        usecase "UC-15: Configure Studio\n& Instrument Setup" as UC15
+        usecase "UC-14: Manage User Account\nStatus & Access" as UC14
+        usecase "UC-13: Onboard New Staff\n& Manager Accounts" as UC13
+    }
+
+    usecase "Validate Allocation\nConstraints" as ValidateAlloc <<Included>>
+    usecase "Authorize Overtime" as AuthOT <<Extension>>
+}
+
+' Manager associations
+Manager -- UC18
+Manager -- UC17
+Manager -- UC07
+Manager -- UC05
+Manager -- UC04
+Manager -- UC02
+Manager -- UC03
+Manager -- UC01
+Manager -- UC12
+
+' Teacher associations
+Teacher -- UC12
+Teacher -- UC11
+Teacher -- UC10
+Teacher -- UC09
+Teacher -- UC08
+
+' IT Administrator associations
+ITAdmin -- UC16
+ITAdmin -- UC15
+ITAdmin -- UC14
+ITAdmin -- UC13
+
+' Include and Extend relationships
+UC07 ..> ValidateAlloc : <U+003C><U+003C>include<U+003E><U+003E>
+UC03 ..> ValidateAlloc : <U+003C><U+003C>include<U+003E><U+003E>
+UC02 ..> ValidateAlloc : <U+003C><U+003C>include<U+003E><U+003E>
+UC12 ..> ValidateAlloc : <U+003C><U+003C>include<U+003E><U+003E>
+
+UC07 <.. AuthOT : <U+003C><U+003C>extend<U+003E><U+003E>
+UC02 <.. AuthOT : <U+003C><U+003C>extend<U+003E><U+003E>
+
+' Vertical ordering hints (in left-to-right mode, "right" stacks top-to-bottom)
+UC18 -[hidden]right-> UC17
+UC07 -[hidden]right-> UC05
+UC05 -[hidden]right-> UC04
+UC04 -[hidden]right-> UC03
+UC03 -[hidden]right-> UC02
+UC02 -[hidden]right-> UC01
+UC12 -[hidden]right-> UC11
+UC11 -[hidden]right-> UC10
+UC10 -[hidden]right-> UC09
+UC09 -[hidden]right-> UC08
+UC16 -[hidden]right-> UC15
+UC15 -[hidden]right-> UC14
+UC14 -[hidden]right-> UC13
+ValidateAlloc -[hidden]right-> AuthOT
+
+@enduml

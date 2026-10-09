@@ -1,0 +1,79 @@
+@startuml ssd_15
+!theme plain
+skinparam shadowing false
+skinparam defaultFontName "Helvetica", "Arial", sans-serif
+skinparam defaultFontSize 11
+skinparam sequence {
+    ParticipantBorderColor #1E3A8A
+    ParticipantBackgroundColor #EFF6FF
+    LifeLineBorderColor #1E3A8A
+    LifeLineBackgroundColor #FFFFFF
+    ArrowColor #1E3A8A
+    ActorBorderColor #1E3A8A
+    ActorBackgroundColor #EFF6FF
+}
+
+title SSD-15 : Configure Studio & Instrument Setup
+
+actor "IT Administrator" as ITAdmin
+participant ":AdminUI" as AdminUI
+participant ":StudioController" as StudioController
+participant ":Studio" as Studio
+participant ":ConflictValidator" as ConflictValidator
+participant ":AuditLog" as AuditLog
+
+ITAdmin -> AdminUI : accessStudioConfig()
+activate ITAdmin
+activate AdminUI
+AdminUI -> StudioController : getStudioInventory()
+activate StudioController
+StudioController -> Studio : hasDrumKitInstalled()
+activate Studio
+Studio --> StudioController : Boolean
+deactivate Studio
+StudioController --> AdminUI : StudioList
+deactivate StudioController
+AdminUI --> ITAdmin : StudioRegistryView
+deactivate AdminUI
+
+== Configure Operating Hours ==
+
+ITAdmin -> AdminUI : configureOperatingHours(hours)
+activate AdminUI
+AdminUI -> StudioController : configureStudio(studioId, name, hasPiano, hasDrum)
+activate StudioController
+StudioController -> Studio : isOccupied(timeSlot)
+activate Studio
+Studio --> StudioController : Boolean
+deactivate Studio
+StudioController -> ConflictValidator : checkRoomAvailability(studio, timeSlot)
+activate ConflictValidator
+ConflictValidator --> StudioController : Boolean
+deactivate ConflictValidator
+StudioController -> AuditLog : logAction(adminId, "CONFIGURE_STUDIO", studioId)
+activate AuditLog
+deactivate AuditLog
+StudioController --> AdminUI : ConfigResult
+deactivate StudioController
+AdminUI --> ITAdmin : ConfirmationView
+deactivate AdminUI
+
+== Instrument Constraint Check ==
+
+opt drum kit assigned to Studio 1-4
+    ITAdmin -> AdminUI : assignDrumKit(studioId)
+    activate AdminUI
+    AdminUI -> StudioController : configureStudio(studioId, name, true, true)
+    activate StudioController
+    StudioController -> ConflictValidator : checkDrumExclusivity(DRUMS, studio)
+    activate ConflictValidator
+    ConflictValidator --> StudioController : false (Exclusivity Violation)
+    deactivate ConflictValidator
+    StudioController --> AdminUI : InstrumentRestrictionError
+    deactivate StudioController
+    AdminUI --> ITAdmin : WarningModal
+    deactivate AdminUI
+end
+
+deactivate ITAdmin
+@enduml

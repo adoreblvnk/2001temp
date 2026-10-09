@@ -1,0 +1,123 @@
+@startuml ssd_12
+!theme plain
+skinparam shadowing false
+skinparam defaultFontName "Helvetica", "Arial", sans-serif
+skinparam defaultFontSize 11
+skinparam sequence {
+    ParticipantBorderColor #1E3A8A
+    ParticipantBackgroundColor #EFF6FF
+    LifeLineBorderColor #1E3A8A
+    LifeLineBackgroundColor #FFFFFF
+    ArrowColor #1E3A8A
+    ActorBorderColor #1E3A8A
+    ActorBackgroundColor #EFF6FF
+}
+
+title SSD-12 : Request Peer Lesson Swap
+
+actor "Initiating Teacher" as Teacher
+participant ":TeacherUI" as TeacherUI
+participant ":SwapController" as SwapController
+participant ":ConflictValidator" as ConflictValidator
+participant ":Lesson" as Lesson
+actor "Peer Teacher" as Colleague
+participant ":TeacherUI" as ColleagueUI
+actor Manager
+participant ":ManagerDashboardUI" as ManagerUI
+participant ":AuditLog" as AuditLog
+
+Teacher -> TeacherUI : selectLesson(lessonId)
+activate Teacher
+activate TeacherUI
+TeacherUI --> Teacher : LessonView
+deactivate TeacherUI
+
+Teacher -> TeacherUI : proposeSwap(lessonId, colleagueId, exchangeSlot)
+activate TeacherUI
+TeacherUI -> SwapController : proposeSwap(lessonId, colleagueId, exchangeSlot)
+activate SwapController
+
+SwapController -> ConflictValidator : validateAllocationRules(teacher, studio, exchangeSlot)
+activate ConflictValidator
+ConflictValidator --> SwapController : ValidationResult
+deactivate ConflictValidator
+
+alt validation passes without collision
+    SwapController -> ColleagueUI : notifySwapProposal(proposalId, swapDetails)
+    activate ColleagueUI
+    deactivate ColleagueUI
+
+    SwapController --> TeacherUI : ProposalPending
+    TeacherUI --> Teacher : ProposalPendingNotice
+else collision detected
+    SwapController --> TeacherUI : ConflictError
+    TeacherUI --> Teacher : ConflictErrorMessage
+end
+
+deactivate SwapController
+deactivate TeacherUI
+
+== Peer Teacher Response & Manager Sign-off ==
+
+alt peer teacher confirms swap
+    Colleague -> ColleagueUI : confirmSwapProposal(proposalId)
+    activate Colleague
+    activate ColleagueUI
+    ColleagueUI -> SwapController : confirmSwap(proposalId)
+    activate SwapController
+
+    SwapController -> ManagerUI : notifyManagerSignOffRequired(proposalId)
+    activate ManagerUI
+    deactivate ManagerUI
+
+    SwapController --> ColleagueUI : AwaitingManagerSignOff
+    ColleagueUI --> Colleague : StatusView
+    deactivate ColleagueUI
+    deactivate Colleague
+
+    Manager -> ManagerUI : approveSwap(proposalId)
+    activate Manager
+    activate ManagerUI
+    ManagerUI -> SwapController : confirmSwap(proposalId)
+
+    SwapController -> Lesson : assignTeacher(colleague)
+    activate Lesson
+    Lesson --> SwapController : Boolean
+    deactivate Lesson
+
+    SwapController -> AuditLog : logAction(managerId, "PEER_SWAP_APPROVED", proposalId)
+    activate AuditLog
+    deactivate AuditLog
+
+    SwapController --> ManagerUI : SwapComplete
+    ManagerUI --> Manager : ConfirmationMessage
+    deactivate ManagerUI
+    deactivate Manager
+
+    SwapController -> TeacherUI : notifySwapExecuted(proposalId)
+    activate TeacherUI
+    TeacherUI --> Teacher : ScheduleUpdatedView
+    deactivate TeacherUI
+    deactivate SwapController
+else peer teacher declines swap
+    Colleague -> ColleagueUI : declineSwapProposal(proposalId)
+    activate Colleague
+    activate ColleagueUI
+    ColleagueUI -> SwapController : confirmSwap(proposalId)
+    activate SwapController
+
+    SwapController -> AuditLog : logAction(colleagueId, "PEER_SWAP_DECLINED", proposalId)
+    activate AuditLog
+    deactivate AuditLog
+
+    SwapController -> TeacherUI : notifySwapDeclined(proposalId)
+    activate TeacherUI
+    TeacherUI --> Teacher : ProposalDeclinedNotice
+    deactivate TeacherUI
+    deactivate SwapController
+    deactivate ColleagueUI
+    deactivate Colleague
+end
+
+deactivate Teacher
+@enduml

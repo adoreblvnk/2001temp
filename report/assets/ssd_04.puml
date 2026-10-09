@@ -1,0 +1,101 @@
+@startuml ssd_04
+!theme plain
+skinparam shadowing false
+skinparam defaultFontName "Helvetica", "Arial", sans-serif
+skinparam defaultFontSize 11
+skinparam sequence {
+    ParticipantBorderColor #1E3A8A
+    ParticipantBackgroundColor #EFF6FF
+    LifeLineBorderColor #1E3A8A
+    LifeLineBackgroundColor #FFFFFF
+    ArrowColor #1E3A8A
+    ActorBorderColor #1E3A8A
+    ActorBackgroundColor #EFF6FF
+}
+
+title SSD-04 : Process Late Availability Exception
+
+actor Manager
+participant ":ManagerDashboardUI" as UI
+participant ":AvailabilityController" as AC
+participant ":Availability" as A
+participant ":Schedule" as S
+participant ":AuditLog" as AL
+
+Manager -> UI : openLateAvailabilityReview()
+activate Manager
+activate UI
+UI -> AC : getLateAvailabilityRequests()
+activate AC
+AC -> A : loadPendingLateRequests()
+activate A
+A --> AC : List<Availability>
+deactivate A
+AC --> UI : List<Availability>
+deactivate AC
+UI -> UI : renderAvailabilityDiff()
+UI --> Manager : AvailabilityDiffDTO
+deactivate UI
+
+Manager -> UI : selectRequest(requestId)
+activate UI
+UI -> AC : getRequestDetails(requestId)
+activate AC
+AC -> A : getDetails(requestId)
+activate A
+A --> AC : AvailabilityDetails
+deactivate A
+AC -> S : compareAgainstCurrentDraft(weekId)
+activate S
+S --> AC : DisruptionReport
+deactivate S
+AC --> UI : DisruptionReport
+deactivate AC
+UI -> UI : renderDisruptionAnalysis()
+UI --> Manager : DisruptionAnalysisView
+deactivate UI
+
+alt disruption manageable
+    Manager -> UI : approveRequest(requestId, remarks)
+    activate UI
+    UI -> AC : processLateAvailability(requestId, true)
+    activate AC
+    AC -> A : transitionStatus(ApprovedLate)
+    activate A
+    A --> AC : Boolean
+    deactivate A
+    AC -> S : updateAvailabilityGrid(requestId)
+    activate S
+    S --> AC : Boolean
+    deactivate S
+    AC -> AL : logAction(managerId, "APPROVE_LATE_AVAILABILITY", requestId)
+    activate AL
+    deactivate AL
+    AC -> AC : dispatchTeacherNotification(teacherId, "Late availability approved")
+    AC --> UI : UpdateSuccess
+    deactivate AC
+    UI -> UI : renderUpdatedRoster()
+    UI --> Manager : Schedule
+    deactivate UI
+else disruption unmanageable
+    Manager -> UI : rejectRequest(requestId, notes)
+    activate UI
+    UI -> AC : processLateAvailability(requestId, false)
+    activate AC
+    AC -> A : transitionStatus(Rejected)
+    activate A
+    A --> AC : Boolean
+    deactivate A
+    AC -> AL : logAction(managerId, "REJECT_LATE_AVAILABILITY", requestId)
+    activate AL
+    deactivate AL
+    AC -> AC : dispatchTeacherNotification(teacherId, "Late availability rejected")
+    AC --> UI : RejectionSuccess
+    deactivate AC
+    UI -> UI : renderRejectionConfirmation()
+    UI --> Manager : ConfirmationView
+    deactivate UI
+end
+
+deactivate Manager
+@enduml

@@ -1,0 +1,99 @@
+@startuml ssd_14
+!theme plain
+skinparam shadowing false
+skinparam defaultFontName "Helvetica", "Arial", sans-serif
+skinparam defaultFontSize 11
+skinparam sequence {
+    ParticipantBorderColor #1E3A8A
+    ParticipantBackgroundColor #EFF6FF
+    LifeLineBorderColor #1E3A8A
+    LifeLineBackgroundColor #FFFFFF
+    ArrowColor #1E3A8A
+    ActorBorderColor #1E3A8A
+    ActorBackgroundColor #EFF6FF
+}
+
+title SSD-14 : Manage User Account Status & Access
+
+actor "IT Administrator" as ITAdmin
+participant ":AdminUI" as AdminUI
+participant ":AccountController" as AccountController
+participant ":User" as User
+participant ":Lesson" as Lesson
+participant ":AuditLog" as AuditLog
+
+ITAdmin -> AdminUI : searchAccount(keyword)
+activate ITAdmin
+activate AdminUI
+AdminUI -> AccountController : searchUsers(keyword)
+activate AccountController
+AccountController -> User : getFullName()
+activate User
+User --> AccountController : userMatches
+deactivate User
+AccountController --> AdminUI : UserList
+deactivate AccountController
+AdminUI --> ITAdmin : UserListView
+deactivate AdminUI
+
+ITAdmin -> AdminUI : selectAccount(userId)
+activate AdminUI
+AdminUI -> AccountController : getUserProfile(userId)
+activate AccountController
+AccountController -> User : isActiveAccount()
+activate User
+User --> AccountController : Boolean
+deactivate User
+AccountController -> Lesson : getLessonsForTeacher(userId)
+activate Lesson
+Lesson --> AccountController : List<Lesson>
+deactivate Lesson
+AccountController --> AdminUI : ProfileView(profile, allocations)
+deactivate AccountController
+AdminUI --> ITAdmin : ProfileDisplay
+deactivate AdminUI
+
+== Select Account Action ==
+
+alt Deactivate Account selected
+    ITAdmin -> AdminUI : selectDeactivateAccount(userId)
+    activate AdminUI
+    AdminUI --> ITAdmin : DeactivateWarning
+    deactivate AdminUI
+
+    ITAdmin -> AdminUI : confirmDeactivate()
+    activate AdminUI
+    AdminUI -> AccountController : deactivateUser(userId)
+    activate AccountController
+
+    AccountController -> User : isActiveAccount()
+    activate User
+    User --> AccountController : false
+    deactivate User
+
+    AccountController -> Lesson : transitionStatus(PendingReallocation)
+    activate Lesson
+    Lesson --> AccountController : Boolean
+    deactivate Lesson
+
+    AccountController -> AuditLog : logAction(adminId, "DEACTIVATE_USER", userId)
+    activate AuditLog
+    deactivate AuditLog
+
+    AccountController --> AdminUI : DeactivateResult
+    deactivate AccountController
+    AdminUI --> ITAdmin : ConfirmationView
+    deactivate AdminUI
+else Physical deletion attempted
+    ITAdmin -> AdminUI : requestPhysicalDelete(userId)
+    activate AdminUI
+    AdminUI -> AccountController : deactivateUser(userId)
+    activate AccountController
+    AccountController --> AdminUI : OperationProhibitedError
+    deactivate AccountController
+    AdminUI --> ITAdmin : ErrorView
+    deactivate AdminUI
+end
+
+deactivate ITAdmin
+@enduml

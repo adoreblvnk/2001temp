@@ -1,0 +1,185 @@
+@startuml class_diagram_entities
+!theme plain
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam defaultFontName "Helvetica", "Arial", sans-serif
+skinparam defaultFontSize 11
+skinparam class {
+    BackgroundColor #FFFFFF
+    BorderColor #1E3A8A
+    BorderThickness 1.5
+}
+skinparam arrow {
+    Color #1E3A8A
+    FontSize 10
+}
+skinparam enum {
+    BackgroundColor #F8FAFC
+    BorderColor #475569
+}
+
+' ========== ENUMERATIONS ==========
+enum Role <<enumeration>> {
+    TEACHER
+    MANAGER
+    IT_ADMINISTRATOR
+}
+
+enum LessonStatus <<enumeration>> {
+    UNASSIGNED
+    CONFIRMED
+    PENDING_REALLOCATION
+    CANCELLED
+}
+
+enum ScheduleStatus <<enumeration>> {
+    DRAFT
+    PUBLISHED
+}
+
+enum ApprovalStatus <<enumeration>> {
+    AUTO_APPROVED
+    LATE_PENDING
+    APPROVED_LATE
+    REJECTED
+}
+
+enum InstrumentType <<enumeration>> {
+    PIANO
+    DRUMS
+    VIOLIN
+    TRUMPET
+}
+
+' ========== ENTITY CLASSES ==========
+abstract class User <<Entity>> {
+    - staffId : String
+    - fullName : String
+    - email : String
+    - role : Role
+    - isActive : Boolean
+    + getStaffId() : String
+    + getFullName() : String
+    + getRole() : Role
+    + isActiveAccount() : Boolean
+}
+
+class Teacher <<Entity>> {
+    - instrumentQualifications : List<InstrumentType>
+    - weeklyHoursTarget : float
+    + hasInstrumentQualification(type : InstrumentType) : Boolean
+    + calculateWeeklyWorkload() : float
+    + calculateMonthlyWorkload() : float
+    + isAvailable() : Boolean
+}
+
+class Manager <<Entity>> {
+    - managedShiftHours : float
+    + getManagedShiftHours() : float
+    + isAssignedToShift(date : Date) : Boolean
+}
+
+class ITAdministrator <<Entity>> {
+    - privilegeLevel : String
+    + canManageUsers() : Boolean
+    + canConfigureFacilities() : Boolean
+}
+
+class Lesson <<Entity>> {
+    - lessonId : String
+    - studentId : String
+    - studentName : String
+    - instrumentType : InstrumentType
+    - startDateTime : DateTime
+    - endDateTime : DateTime
+    - status : LessonStatus
+    + getInstrumentType() : InstrumentType
+    + getStatus() : LessonStatus
+    + assignTeacher(teacher : Teacher) : Boolean
+    + assignStudio(studio : Studio) : Boolean
+    + transitionStatus(newStatus : LessonStatus) : Boolean
+}
+
+class Studio <<Entity>> {
+    - studioId : String
+    - studioName : String
+    - operatingHours : String
+    - hasPiano : Boolean
+    - hasDrumKit : Boolean
+    - isUnderMaintenance : Boolean
+    + hasDrumKitInstalled() : Boolean
+    + isOccupied(timeSlot : TimeSlot) : Boolean
+    + isUnderMaintenanceWindow(timeSlot : TimeSlot) : Boolean
+}
+
+class MaintenanceWindow <<Entity>> {
+    - windowId : String
+    - startDateTime : DateTime
+    - endDateTime : DateTime
+    - servicingReason : String
+    + overlapsWith(start : DateTime, end : DateTime) : Boolean
+}
+
+class Schedule <<Entity>> {
+    - scheduleId : String
+    - weekStartDate : Date
+    - status : ScheduleStatus
+    + addLesson(lesson : Lesson) : Boolean
+    + getLessonsForTeacher(teacherId : String) : List<Lesson>
+    + getLessonsForStudio(studioId : String) : List<Lesson>
+    + transitionStatus(newStatus : ScheduleStatus) : Boolean
+}
+
+class Availability <<Entity>> {
+    - availabilityId : String
+    - submissionTimestamp : DateTime
+    - approvalStatus : ApprovalStatus
+    + isSubmittedBeforeCutoff() : Boolean
+    + getApprovalStatus() : ApprovalStatus
+}
+
+class Preference <<Entity>> {
+    - preferenceId : String
+    - preferredDays : List<String>
+    - clusterBackToBack : Boolean
+    - preferredStudioId : String
+    + matchesPreference(lesson : Lesson) : Boolean
+}
+
+class RejectionRequest <<Entity>> {
+    - requestId : String
+    - reasonCode : String
+    - explanatoryRemarks : String
+    - resolutionStatus : String
+    + getReasonCode() : String
+}
+
+class AuditLog <<Entity>> {
+    - logId : String
+    - actorId : String
+    - actionType : String
+    - timestamp : DateTime
+    - details : String
+    + logAction(actorId : String, action : String, details : String) : void
+}
+
+' ========== INHERITANCE ==========
+User <|-- Teacher
+User <|-- Manager
+User <|-- ITAdministrator
+
+' ========== COMPOSITION ==========
+Schedule "1" *-- "0..*" Lesson : contains >
+Teacher "1" *-- "0..*" Availability : owns >
+Teacher "1" *-- "0..1" Preference : specifies >
+Studio "1" *-- "0..*" MaintenanceWindow : scheduledWith >
+Lesson "1" *-- "0..1" RejectionRequest : flaggedBy >
+
+' ========== ASSOCIATION ==========
+Lesson "0..*" --> "0..1" Teacher : assignedTo >
+Lesson "0..*" --> "0..1" Studio : conductedIn >
+User "1" --> "0..*" AuditLog : initiates >
+AuditLog "0..*" --> "0..1" Schedule : targets >
+AuditLog "0..*" --> "0..1" Lesson : records >
+
+@enduml

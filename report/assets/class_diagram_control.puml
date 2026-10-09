@@ -1,0 +1,128 @@
+@startuml class_diagram_control
+!theme plain
+left to right direction
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam defaultFontName "Helvetica", "Arial", sans-serif
+skinparam defaultFontSize 11
+skinparam class {
+    BackgroundColor #FFFFFF
+    BorderColor #1E3A8A
+    BorderThickness 1.5
+}
+skinparam arrow {
+    Color #1E3A8A
+    FontSize 10
+}
+skinparam package {
+    BorderColor #999999
+    FontStyle bold
+    FontSize 12
+}
+
+' ========== BOUNDARY CLASSES ==========
+package "Boundary Layer" {
+    class ManagerDashboardUI <<Boundary>> {
+        +displayWorkloadMetrics() : void
+        +highlightOutliers() : void
+        +renderUtilizationPanel() : void
+        +renderCompliancePanel() : void
+    }
+    class AllocationUI <<Boundary>> {
+        +renderCandidateComparison() : void
+        +showValidationError(error : String) : void
+        +displayAllocationGrid() : void
+    }
+    class TeacherUI <<Boundary>> {
+        +renderSchedule() : void
+        +renderAvailabilityGrid() : void
+        +displayRejectionModal() : void
+        +renderPreferencesView() : void
+        +renderSwapInterface() : void
+    }
+    class AdminUI <<Boundary>> {
+        +renderUserManagementConsole() : void
+        +renderStudioConfigPanel() : void
+        +renderMaintenanceWindowModal() : void
+    }
+}
+
+' ========== CONTROL CLASSES ==========
+package "Control Layer" {
+    class WorkloadController <<Control>> {
+        +loadWorkloadIntelligence(weekId : String) : WorkloadSummary
+        +getLowestWorkloadStaff() : List<Teacher>
+        +flagWorkloadOutliers() : List<Teacher>
+    }
+    class AllocationController <<Control>> {
+        +allocateWeeklyJob(lessonId : String, teacherId : String, studioId : String, slot : TimeSlot) : Boolean
+        +reallocateLesson(lessonId : String, substituteTeacherId : String) : Boolean
+        +handleEmergencySubstitute(teacherId : String, date : Date) : Boolean
+        +cancelAllocation(lessonId : String) : Boolean
+        +publishWeeklyRoster(weekId : String) : Boolean
+    }
+    class ConflictValidator <<Control>> {
+        +validateAllocationRules(teacher : Teacher, studio : Studio, slot : TimeSlot) : ValidationResult
+        +checkContinuousTeachingLimit(teacher : Teacher, slot : TimeSlot) : Boolean
+        +checkDrumExclusivity(instrument : InstrumentType, studio : Studio) : Boolean
+        +checkRoomAvailability(studio : Studio, slot : TimeSlot) : Boolean
+        +checkTeacherAvailability(teacher : Teacher, slot : TimeSlot) : Boolean
+    }
+    class AvailabilityController <<Control>> {
+        +submitAvailability(teacherId : String, month : Date, slots : List<TimeSlot>) : Boolean
+        +processLateAvailability(requestId : String, approve : Boolean) : Boolean
+        +validateCutoff(timestamp : DateTime) : Boolean
+    }
+    class RejectionController <<Control>> {
+        +submitRejectionRequest(lessonId : String, reasonCode : String, remarks : String) : Boolean
+        +reviewRejectionTicket(requestId : String) : RejectionTicket
+        +resolveRejection(requestId : String, outcome : String) : Boolean
+    }
+    class SwapController <<Control>> {
+        +proposeSwap(lessonId : String, colleagueId : String, slot : TimeSlot) : Boolean
+        +validateSwap(proposalId : String) : Boolean
+        +confirmSwap(proposalId : String) : Boolean
+    }
+    class AccountController <<Control>> {
+        +provisionUser(fullName : String, email : String, role : Role) : Boolean
+        +deactivateUser(staffId : String) : Boolean
+    }
+    class StudioController <<Control>> {
+        +configureStudio(studioId : String, name : String, hasPiano : Boolean, hasDrum : Boolean) : Boolean
+        +flagMaintenanceWindow(studioId : String, start : DateTime, end : DateTime, reason : String) : Boolean
+    }
+    class ReportController <<Control>> {
+        +generateStudioUtilizationReport(month : Date) : UtilizationReport
+    }
+    class ComplianceController <<Control>> {
+        +checkWeeklyHours(weekId : String) : ComplianceResult
+        +auditStatutoryLaborCompliance() : ComplianceReport
+    }
+    class ScheduleController <<Control>> {
+        +getSchedule(weekId : String) : Schedule
+        +getTeacherSchedule(teacherId : String) : Schedule
+    }
+    class PreferenceController <<Control>> {
+        +submitPreferences(teacherId : String, weekId : String, prefs : Preference) : Boolean
+        +validateAgainstAvailability(teacherId : String, prefs : Preference) : Boolean
+    }
+}
+
+' ========== DEPENDENCY (Boundary -> Control) ==========
+ManagerDashboardUI ..> WorkloadController : invokes
+ManagerDashboardUI ..> ReportController : invokes
+ManagerDashboardUI ..> ComplianceController : invokes
+AllocationUI ..> AllocationController : invokes
+TeacherUI ..> AvailabilityController : invokes
+TeacherUI ..> RejectionController : invokes
+TeacherUI ..> ScheduleController : invokes
+TeacherUI ..> PreferenceController : invokes
+TeacherUI ..> SwapController : invokes
+AdminUI ..> AccountController : invokes
+AdminUI ..> StudioController : invokes
+
+' ========== DEPENDENCY (Control -> Control) ==========
+AllocationController ..> ConflictValidator : validates via
+SwapController ..> ConflictValidator : delegates
+
+@enduml

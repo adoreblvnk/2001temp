@@ -1,0 +1,121 @@
+@startuml ssd_03
+!theme plain
+skinparam shadowing false
+skinparam defaultFontName "Helvetica", "Arial", sans-serif
+skinparam defaultFontSize 11
+skinparam sequence {
+    ParticipantBorderColor #1E3A8A
+    ParticipantBackgroundColor #EFF6FF
+    LifeLineBorderColor #1E3A8A
+    LifeLineBackgroundColor #FFFFFF
+    ArrowColor #1E3A8A
+    ActorBorderColor #1E3A8A
+    ActorBackgroundColor #EFF6FF
+}
+
+title SSD-03 : Review & Re-allocate Rejected Lesson
+
+actor Manager
+participant ":ManagerDashboardUI" as UI
+participant ":AllocationController" as AC
+participant ":ConflictValidator" as CV
+participant ":Lesson" as L
+participant ":Teacher" as T_Orig
+participant ":Teacher" as T_Sub
+participant ":AuditLog" as AL
+
+Manager -> UI : openExceptionQueue()
+activate Manager
+activate UI
+UI -> AC : getPendingRejections()
+activate AC
+AC -> L : queryByStatus(PendingReallocation)
+activate L
+L --> AC : List<Lesson>
+deactivate L
+AC --> UI : List<Lesson>
+deactivate AC
+UI -> UI : renderExceptionQueue()
+UI --> Manager : ExceptionQueueView
+deactivate UI
+
+Manager -> UI : selectRejectionTicket(lessonId)
+activate UI
+UI -> AC : getRejectionDetails(lessonId)
+activate AC
+AC -> L : getLessonDetails(lessonId)
+activate L
+L --> AC : LessonDetails
+deactivate L
+AC --> UI : RejectionTicketDetails
+deactivate AC
+UI -> UI : renderRejectionDetails()
+UI --> Manager : RejectionTicketView
+deactivate UI
+
+Manager -> UI : requestSubstituteCandidates(lessonId)
+activate UI
+UI -> AC : findSubstituteCandidates(lessonId)
+activate AC
+AC -> CV : findQualifiedFreeTeachers(lessonId)
+activate CV
+CV --> AC : List<Teacher>
+deactivate CV
+AC --> UI : List<Teacher>
+deactivate AC
+UI --> Manager : List<Teacher>
+deactivate UI
+
+alt at least one qualified substitute available
+    Manager -> UI : selectSubstitute(substituteTeacherId)
+    activate UI
+    UI -> AC : reallocateLesson(lessonId, substituteTeacherId)
+    activate AC
+    AC -> L : assignTeacher(substituteTeacher)
+    activate L
+    L --> AC : Boolean
+    deactivate L
+    AC -> L : transitionStatus(Confirmed)
+    activate L
+    L --> AC : Boolean
+    deactivate L
+    AC -> T_Orig : calculateWeeklyWorkload()
+    activate T_Orig
+    T_Orig --> AC : float
+    deactivate T_Orig
+    AC -> T_Sub : calculateWeeklyWorkload()
+    activate T_Sub
+    T_Sub --> AC : float
+    deactivate T_Sub
+    AC -> AL : logAction(managerId, "REALLOCATE_SUBSTITUTE", lessonId)
+    activate AL
+    deactivate AL
+    AC -> AC : dispatchNotifications(studentId, substituteTeacherId)
+    AC --> UI : Lesson
+    deactivate AC
+    UI -> UI : renderUpdatedSchedule()
+    UI --> Manager : Schedule
+    deactivate UI
+else zero qualified substitutes available
+    Manager -> UI : releaseStudio(lessonId)
+    activate UI
+    UI -> AC : cancelAllocation(lessonId)
+    activate AC
+    AC -> L : transitionStatus(Unassigned)
+    activate L
+    L --> AC : Boolean
+    deactivate L
+    AC -> AC : queueStudentForPriorityRescheduling(studentId)
+    AC -> AL : logAction(managerId, "RELEASE_STUDIO", lessonId)
+    activate AL
+    deactivate AL
+    AC -> AC : dispatchCancellationNotification(studentId)
+    AC --> UI : void
+    deactivate AC
+    UI -> UI : renderUpdatedSchedule()
+    UI --> Manager : Schedule
+    deactivate UI
+end
+
+deactivate Manager
+@enduml

@@ -1,0 +1,75 @@
+@startuml ssd_11
+!theme plain
+skinparam shadowing false
+skinparam defaultFontName "Helvetica", "Arial", sans-serif
+skinparam defaultFontSize 11
+skinparam sequence {
+    ParticipantBorderColor #1E3A8A
+    ParticipantBackgroundColor #EFF6FF
+    LifeLineBorderColor #1E3A8A
+    LifeLineBackgroundColor #FFFFFF
+    ArrowColor #1E3A8A
+    ActorBorderColor #1E3A8A
+    ActorBackgroundColor #EFF6FF
+}
+
+title SSD-11 : Submit Job Rejection Request
+
+actor Teacher
+participant ":TeacherUI" as TeacherUI
+participant ":RejectionController" as RejectionController
+participant ":Lesson" as Lesson
+participant ":AuditLog" as AuditLog
+
+Teacher -> TeacherUI : selectConfirmedLesson(lessonId)
+activate Teacher
+activate TeacherUI
+
+TeacherUI --> Teacher : LessonDetailsView
+deactivate TeacherUI
+deactivate Teacher
+
+Teacher -> TeacherUI : requestJobRejection(lessonId)
+activate Teacher
+activate TeacherUI
+
+TeacherUI --> Teacher : ModalPrompt
+
+alt Teacher clicks Proceed
+    Teacher -> TeacherUI : proceedWithRejection()
+    TeacherUI --> Teacher : RejectionForm
+
+    note right of TeacherUI
+      Reason codes: Scheduling Conflict,
+      Pedagogical Mismatch, Personal / Medical
+    end note
+
+    Teacher -> TeacherUI : submitRejection(reasonCode, remarks)
+    TeacherUI -> RejectionController : submitRejectionRequest(lessonId, reasonCode, remarks)
+    activate RejectionController
+
+    RejectionController -> Lesson : transitionStatus(PendingReallocation)
+    activate Lesson
+    Lesson --> RejectionController : Boolean
+    deactivate Lesson
+
+    RejectionController -> RejectionController : routeToManagerExceptionQueue(lessonId)
+
+    RejectionController -> AuditLog : logAction(teacherId, "REJECTION_REQUEST", lessonId)
+    activate AuditLog
+    deactivate AuditLog
+
+    RejectionController --> TeacherUI : RejectionResult
+    deactivate RejectionController
+
+    TeacherUI --> Teacher : ConfirmationMessage
+else Teacher declines modal
+    Teacher -> TeacherUI : cancelRejection()
+    TeacherUI -> TeacherUI : closeModal()
+    TeacherUI --> Teacher : LessonDetailsView
+end
+
+deactivate TeacherUI
+deactivate Teacher
+
+@enduml

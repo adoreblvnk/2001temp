@@ -1,0 +1,83 @@
+@startuml activity_rejection
+skinparam defaultFontName "Helvetica", "Arial", sans-serif
+skinparam defaultFontSize 11
+skinparam activity {
+    BackgroundColor #FFFFFF
+    BorderColor #1E3A8A
+    ArrowColor #1E3A8A
+    DiamondBorderColor #1E3A8A
+    DiamondBackgroundColor #FFFFFF
+}
+
+|Teacher|
+start
+:Navigate to Personal Weekly Schedule;
+:Select confirmed lesson slot;
+:Click "Request Job Rejection";
+
+|System|
+:Display mandatory warning modal:
+"You must discuss this rejection
+with your manager before proceeding";
+
+|Teacher|
+if (Acknowledge consultation warning?) then ([no - Cancel])
+    :Cancel rejection request;
+    stop
+else ([yes - Proceed])
+    :Select reason code
+    (Scheduling Conflict, Pedagogical
+    Mismatch, Personal / Medical)
+    and enter remarks;
+    :Submit rejection ticket;
+endif
+
+|System|
+:Transition lesson status from
+Confirmed to "Pending Re-allocation";
+:Dispatch urgent alert to
+Manager Exception Queue;
+
+|Manager|
+:Review pending rejection ticket
+and stated rationale;
+:Contact teacher to discuss options;
+
+if (Consultation outcome?) then ([Retain assignment])
+    :Reinstate teacher assignment;
+    |System|
+    :Restore lesson status to "Confirmed";
+    :Dispatch confirmation to teacher;
+else ([Proceed with re-allocation])
+    |Manager|
+    :Query qualified candidate substitutes;
+    if (Qualified substitute available?) then ([yes])
+        :Select substitute teacher;
+        |System|
+        :Reassign lesson to substitute
+        (preserving student, studio, and slot);
+        :Set status to "Confirmed";
+        :Decrement original teacher hours (-0.5h)
+        and increment substitute hours (+0.5h);
+        :Dispatch confirmation to student
+        and substitute teacher;
+    else ([no])
+        |Manager|
+        :Release studio to vacant pool;
+        :Place student in priority
+        rescheduling queue;
+        |System|
+        :Set lesson status to "Unassigned";
+        :Dispatch notification to student;
+    endif
+endif
+
+|System|
+:Record rejection transaction, rationale,
+and resolution in Compliance Audit Trail;
+
+|Teacher|
+:Receive resolution notification
+and updated timetable;
+stop
+@enduml

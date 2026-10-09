@@ -1,0 +1,114 @@
+@startuml ssd_07
+!theme plain
+skinparam shadowing false
+skinparam defaultFontName "Helvetica", "Arial", sans-serif
+skinparam defaultFontSize 11
+skinparam sequence {
+    ParticipantBorderColor #1E3A8A
+    ParticipantBackgroundColor #EFF6FF
+    LifeLineBorderColor #1E3A8A
+    LifeLineBackgroundColor #FFFFFF
+    ArrowColor #1E3A8A
+    ActorBorderColor #1E3A8A
+    ActorBackgroundColor #EFF6FF
+}
+
+title SSD-07 : Handle Emergency Absence Substitute
+
+actor Manager
+participant ":AllocationUI" as AllocationUI
+participant ":AllocationController" as AllocationController
+participant ":ConflictValidator" as ConflictValidator
+participant ":Lesson" as Lesson
+participant ":Teacher" as AbsentTeacher
+participant ":Teacher" as SubstituteTeacher
+participant ":AuditLog" as AuditLog
+
+Manager -> AllocationUI : reportAbsence(teacherId, absenceDate, reason)
+activate AllocationUI
+AllocationUI -> AllocationController : handleEmergencySubstitute(teacherId, absenceDate)
+activate AllocationController
+
+AllocationController -> Lesson : getLessonsForTeacher(teacherId, absenceDate)
+activate Lesson
+Lesson --> AllocationController : List<Lesson>
+deactivate Lesson
+AllocationController --> AllocationUI : List<Lesson>
+deactivate AllocationController
+AllocationUI --> Manager : LessonAbsenceList
+deactivate AllocationUI
+
+loop for each confirmed lesson
+    Manager -> AllocationUI : requestSubstitute(lessonId)
+    activate AllocationUI
+    AllocationUI -> AllocationController : findSubstitute(lessonId)
+    activate AllocationController
+    AllocationController -> ConflictValidator : findQualifiedFreeTeachers(lessonId)
+    activate ConflictValidator
+    ConflictValidator --> AllocationController : List<Teacher>
+    deactivate ConflictValidator
+
+    alt substitute available
+        AllocationController --> AllocationUI : List<Teacher>
+        AllocationUI -> AllocationUI : displayCandidateList(candidates)
+        AllocationUI --> Manager : CandidateListView
+
+        Manager -> AllocationUI : assignSubstitute(lessonId, substituteId)
+        AllocationUI -> AllocationController : reallocateLesson(lessonId, substituteId)
+        AllocationController -> Lesson : assignTeacher(substituteTeacher)
+        activate Lesson
+        Lesson --> AllocationController : Boolean
+        deactivate Lesson
+        AllocationController -> AbsentTeacher : calculateWeeklyWorkload()
+        activate AbsentTeacher
+        AbsentTeacher --> AllocationController : float
+        deactivate AbsentTeacher
+        AllocationController -> SubstituteTeacher : calculateWeeklyWorkload()
+        activate SubstituteTeacher
+        SubstituteTeacher --> AllocationController : float
+        deactivate SubstituteTeacher
+        AllocationController -> Lesson : transitionStatus(Confirmed)
+        activate Lesson
+        Lesson --> AllocationController : Boolean
+        deactivate Lesson
+        AllocationController -> AuditLog : logAction(managerId, "EMERGENCY_SUBSTITUTE", "Substitute assigned: " + lessonId)
+        activate AuditLog
+        deactivate AuditLog
+        AllocationController --> AllocationUI : AssignmentResult
+        AllocationUI --> Manager : ConfirmationView
+    else no substitute available
+        AllocationController --> AllocationUI : EmptyList
+        AllocationUI -> AllocationUI : displayNoSubstitutePrompt(lesson)
+        AllocationUI --> Manager : NoSubstituteView
+
+        Manager -> AllocationUI : cancelWithCredit(lessonId)
+        AllocationUI -> AllocationController : cancelAllocation(lessonId)
+        AllocationController -> Lesson : transitionStatus(Cancelled)
+        activate Lesson
+        Lesson --> AllocationController : Boolean
+        deactivate Lesson
+        AllocationController -> AbsentTeacher : calculateWeeklyWorkload()
+        activate AbsentTeacher
+        AbsentTeacher --> AllocationController : float
+        deactivate AbsentTeacher
+        AllocationController -> AuditLog : logAction(managerId, "EMERGENCY_CANCEL", "Lesson cancelled: " + lessonId)
+        activate AuditLog
+        deactivate AuditLog
+        AllocationController --> AllocationUI : CancellationResult
+        AllocationUI --> Manager : ConfirmationView
+    end
+
+    deactivate AllocationController
+    deactivate AllocationUI
+end
+
+Manager -> AllocationUI : finalizeAbsenceResolution()
+activate AllocationUI
+AllocationUI -> AllocationController : confirmBatchResolution(teacherId, absenceDate)
+activate AllocationController
+AllocationController --> AllocationUI : BatchComplete
+deactivate AllocationController
+AllocationUI --> Manager : EmergencyAbsenceResolved
+deactivate AllocationUI
+
+@enduml

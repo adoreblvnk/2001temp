@@ -1,0 +1,75 @@
+@startuml ssd_17
+!theme plain
+skinparam shadowing false
+skinparam defaultFontName "Helvetica", "Arial", sans-serif
+skinparam defaultFontSize 11
+skinparam sequence {
+    ParticipantBorderColor #1E3A8A
+    ParticipantBackgroundColor #EFF6FF
+    LifeLineBorderColor #1E3A8A
+    LifeLineBackgroundColor #FFFFFF
+    ArrowColor #1E3A8A
+    ActorBorderColor #1E3A8A
+    ActorBackgroundColor #EFF6FF
+}
+
+title SSD-17 : Generate Studio Utilization Report
+
+actor "Manager" as Manager
+participant ":ManagerDashboardUI" as UI
+participant ":ReportController" as ReportController
+participant ":Schedule" as Schedule
+participant ":Studio" as Studio
+
+Manager -> UI : openUtilizationAnalytics()
+activate Manager
+activate UI
+
+Manager -> UI : selectReportingPeriod(month)
+UI -> ReportController : generateStudioUtilizationReport(month)
+activate ReportController
+
+ReportController -> Schedule : queryScheduledLessons(month)
+activate Schedule
+Schedule --> ReportController : List<Lesson>
+deactivate Schedule
+
+ReportController -> Studio : queryAllStudios()
+activate Studio
+Studio --> ReportController : List<Studio>
+deactivate Studio
+
+loop for each Studio 1..5
+    ReportController -> Schedule : aggregateLessonHours(studioId, month)
+    activate Schedule
+    Schedule --> ReportController : studioHours : float
+    deactivate Schedule
+end
+
+ReportController -> ReportController : calculateUtilization(totalBookedHours, monthlyCapacityHours)
+activate ReportController
+ReportController -> ReportController : computePeakWindows(studioHours)
+ReportController -> ReportController : computeMaintenanceDowntime(studioHours)
+deactivate ReportController
+
+opt target date range contains active draft rosters
+    ReportController --> UI : AdvisoryNotice("Drafts excluded from confirmed totals")
+    UI -> UI : renderAdvisoryBanner()
+end
+
+ReportController --> UI : UtilizationReport
+deactivate ReportController
+
+UI -> UI : renderUtilizationCharts(reportData)
+UI --> Manager : UtilizationReportView
+
+Manager -> UI : exportReport(format)
+UI -> ReportController : serializeReport(reportData, format)
+activate ReportController
+ReportController --> UI : ReportFile
+deactivate ReportController
+UI --> Manager : ReportFile
+deactivate UI
+deactivate Manager
+
+@enduml

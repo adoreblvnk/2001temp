@@ -1,0 +1,113 @@
+@startuml ssd_05
+!theme plain
+skinparam shadowing false
+skinparam defaultFontName "Helvetica", "Arial", sans-serif
+skinparam defaultFontSize 11
+skinparam sequence {
+    ParticipantBorderColor #1E3A8A
+    ParticipantBackgroundColor #EFF6FF
+    LifeLineBorderColor #1E3A8A
+    LifeLineBackgroundColor #FFFFFF
+    ArrowColor #1E3A8A
+    ActorBorderColor #1E3A8A
+    ActorBackgroundColor #EFF6FF
+}
+
+title SSD-05 : Publish Confirmed Weekly Roster
+
+actor Manager
+participant ":AllocationUI" as UI
+participant ":AllocationController" as AC
+participant ":ConflictValidator" as CV
+participant ":Schedule" as S
+participant ":AuditLog" as AL
+
+Manager -> UI : openWeeklyScheduleGrid()
+activate Manager
+activate UI
+UI -> AC : getWeeklySchedule(weekId)
+activate AC
+AC -> S : load(weekId)
+activate S
+S --> AC : Schedule
+deactivate S
+AC --> UI : Schedule
+deactivate AC
+UI -> UI : renderScheduleGrid()
+UI --> Manager : Schedule
+deactivate UI
+
+Manager -> UI : reviewSchedule(weekId)
+activate UI
+UI -> AC : runComprehensiveVerification(weekId)
+activate AC
+AC -> CV : verifyNoDoubleBookings(weekId)
+activate CV
+CV --> AC : ValidationResult
+deactivate CV
+AC -> CV : verifyContinuousTeachingBlocks(weekId)
+activate CV
+CV --> AC : ValidationResult
+deactivate CV
+AC -> CV : verifyTeacherHours(weekId)
+activate CV
+CV --> AC : ValidationResult
+deactivate CV
+AC --> UI : VerificationReport
+deactivate AC
+UI -> UI : renderVerificationReport()
+UI --> Manager : VerificationReport
+
+alt no unassigned lessons remain
+    Manager -> UI : publishRoster(weekId)
+    UI -> AC : publishWeeklyRoster(weekId)
+    activate AC
+    AC -> S : transitionStatus(Published)
+    activate S
+    S --> AC : Boolean
+    deactivate S
+    AC -> AL : logAction(managerId, "PUBLISH_ROSTER", "Weekly roster published: " + weekId)
+    activate AL
+    deactivate AL
+    AC -> AC : notifyAssignedInstructors(weekId)
+    AC --> UI : Schedule
+    deactivate AC
+    UI -> UI : renderPublishConfirmation()
+    UI --> Manager : Schedule
+else unassigned lessons remain
+    UI -> UI : renderUnassignedWarning()
+    UI --> Manager : WarningMessage
+    opt manager confirms publish
+        Manager -> UI : confirmPublish(weekId)
+        UI -> AC : publishWeeklyRoster(weekId)
+        activate AC
+        AC -> S : transitionStatus(Published)
+        activate S
+        S --> AC : Boolean
+        deactivate S
+        AC -> AL : logAction(managerId, "PUBLISH_ROSTER_WITH_UNASSIGNED", weekId)
+        activate AL
+        deactivate AL
+        AC -> AC : notifyAssignedInstructors(weekId)
+        AC --> UI : Schedule
+        deactivate AC
+        UI -> UI : renderPublishConfirmation()
+        UI --> Manager : Schedule
+    else manager aborts publish
+        Manager -> UI : abortPublish(weekId)
+        UI -> AC : cancelAllocation(weekId)
+        activate AC
+        AC -> S : transitionStatus(Draft)
+        activate S
+        S --> AC : Boolean
+        deactivate S
+        AC --> UI : void
+        deactivate AC
+        UI -> UI : renderAbortConfirmation()
+        UI --> Manager : void
+    end
+end
+
+deactivate UI
+deactivate Manager
+@enduml

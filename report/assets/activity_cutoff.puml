@@ -1,0 +1,64 @@
+@startuml activity_cutoff
+skinparam defaultFontName "Helvetica", "Arial", sans-serif
+skinparam defaultFontSize 11
+skinparam activity {
+    BackgroundColor #FFFFFF
+    BorderColor #1E3A8A
+    ArrowColor #1E3A8A
+    DiamondBorderColor #1E3A8A
+    DiamondBackgroundColor #FFFFFF
+}
+
+|Teacher|
+start
+:Navigate to Monthly Availability Grid;
+:Select target upcoming month
+(up to 1 month ahead);
+:Configure available / unavailable
+30-minute time slots;
+:Click "Submit Availability";
+
+|System|
+:Capture submission timestamp;
+
+if (Timestamp <= 19th 23:59 SGT?) then ([yes - On-time / Open Window])
+    :Set availability status
+    to "Auto-Approved";
+    :Persist availability records;
+    |Teacher|
+    :Display confirmation:
+    "Availability confirmed
+    (editable until 19th 23:59)";
+else ([no - Late Submission])
+    |System|
+    :Lock direct grid editing;
+    :Flag submission as
+    "Late - Pending Manager Review";
+    :Route change request to
+    Manager Exception Queue;
+    |Manager|
+    :Inspect late availability diff
+    against preliminary roster;
+    if (Roster disruption manageable?) then ([yes - Approve])
+        :Approve late changes
+        with logged justification;
+    else ([no - Reject])
+        :Reject late changes
+        with explanatory notes;
+    endif
+    |System|
+    :Apply adjudication outcome
+    (update master grid or maintain locked status);
+    :Dispatch adjudication notification
+    to teacher;
+endif
+
+|System|
+:Log transaction and adjudication
+outcome in Compliance Audit Trail;
+
+|Teacher|
+:View confirmed availability status
+in monthly timetable;
+stop
+@enduml

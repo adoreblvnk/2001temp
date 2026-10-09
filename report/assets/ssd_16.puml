@@ -1,0 +1,84 @@
+@startuml ssd_16
+!theme plain
+skinparam shadowing false
+skinparam defaultFontName "Helvetica", "Arial", sans-serif
+skinparam defaultFontSize 11
+skinparam sequence {
+    ParticipantBorderColor #1E3A8A
+    ParticipantBackgroundColor #EFF6FF
+    LifeLineBorderColor #1E3A8A
+    LifeLineBackgroundColor #FFFFFF
+    ArrowColor #1E3A8A
+    ActorBorderColor #1E3A8A
+    ActorBackgroundColor #EFF6FF
+}
+
+title SSD-16 : Flag Facility Maintenance Window
+
+actor "IT Administrator" as ITAdmin
+participant ":AdminUI" as AdminUI
+participant ":StudioController" as StudioController
+participant ":Studio" as Studio
+participant ":Lesson" as Lesson
+participant ":AuditLog" as AuditLog
+
+ITAdmin -> AdminUI : selectMaintenanceBlackout(studioId, startTime, endTime, reason)
+activate ITAdmin
+activate AdminUI
+AdminUI -> StudioController : flagMaintenanceWindow(studioId, startTime, endTime, reason)
+activate StudioController
+
+StudioController -> Studio : isUnderMaintenanceWindow(timeSlot)
+activate Studio
+Studio --> StudioController : Boolean
+deactivate Studio
+
+StudioController -> Lesson : queryLessonsInWindow(studioId, startTime, endTime)
+activate Lesson
+Lesson --> StudioController : List<Lesson>
+deactivate Lesson
+
+opt confirmed lessons exist in blackout window
+    StudioController --> AdminUI : RelocationNoticeDTO(affectedLessons)
+    AdminUI --> ITAdmin : RelocationNoticeView
+end
+
+ITAdmin -> AdminUI : confirmBlackoutEntry()
+AdminUI -> StudioController : persistBlackout(studioId, startTime, endTime, reason)
+
+loop for each affected lesson
+    StudioController -> Lesson : transitionStatus(PendingReallocation)
+    activate Lesson
+    Lesson --> StudioController : Boolean
+    deactivate Lesson
+end
+
+StudioController -> AuditLog : logAction(adminId, "FLAG_MAINTENANCE", "Blackout flagged for: " + studioId)
+activate AuditLog
+deactivate AuditLog
+
+StudioController --> AdminUI : MaintenanceScheduleDTO
+deactivate StudioController
+AdminUI --> ITAdmin : ConfirmationDTO
+deactivate AdminUI
+
+opt emergency immediate repair required
+    ITAdmin -> AdminUI : triggerEmergencyLockdown(studioId)
+    activate AdminUI
+    AdminUI -> StudioController : flagMaintenanceWindow(studioId, now, emergencyEnd, "EMERGENCY_LOCKDOWN")
+    activate StudioController
+    StudioController -> Lesson : transitionStatus(PendingReallocation)
+    activate Lesson
+    Lesson --> StudioController : Boolean
+    deactivate Lesson
+    StudioController -> AuditLog : logAction(adminId, "EMERGENCY_LOCKDOWN", studioId)
+    activate AuditLog
+    deactivate AuditLog
+    StudioController --> AdminUI : EmergencyAlertDTO
+    deactivate StudioController
+    AdminUI --> ITAdmin : EmergencyConfirmationView
+    deactivate AdminUI
+end
+
+deactivate ITAdmin
+@enduml

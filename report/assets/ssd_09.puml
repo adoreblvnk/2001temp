@@ -1,0 +1,86 @@
+@startuml ssd_09
+!theme plain
+skinparam shadowing false
+skinparam defaultFontName "Helvetica", "Arial", sans-serif
+skinparam defaultFontSize 11
+skinparam sequence {
+    ParticipantBorderColor #1E3A8A
+    ParticipantBackgroundColor #EFF6FF
+    LifeLineBorderColor #1E3A8A
+    LifeLineBackgroundColor #FFFFFF
+    ArrowColor #1E3A8A
+    ActorBorderColor #1E3A8A
+    ActorBackgroundColor #EFF6FF
+}
+
+title SSD-09 : Submit Weekly Job Preferences
+
+actor Teacher
+participant ":TeacherUI" as TeacherUI
+participant ":PreferenceController" as PreferenceController
+participant ":Teacher" as TeacherEntity
+participant ":Preference" as PreferenceEntity
+participant ":AuditLog" as AuditLog
+
+Teacher -> TeacherUI : openWeeklyPreferences()
+activate Teacher
+activate TeacherUI
+TeacherUI --> Teacher : PreferencesView
+deactivate TeacherUI
+
+Teacher -> TeacherUI : selectPreferredDays(days)
+activate TeacherUI
+TeacherUI --> Teacher : DaysSelected
+deactivate TeacherUI
+
+Teacher -> TeacherUI : toggleBackToBackClustering()
+activate TeacherUI
+TeacherUI --> Teacher : BackToBackToggled
+deactivate TeacherUI
+
+Teacher -> TeacherUI : selectPreferredStudio(studioId)
+activate TeacherUI
+TeacherUI --> Teacher : StudioSelected
+deactivate TeacherUI
+
+Teacher -> TeacherUI : submitPreferences(weekId, prefs)
+activate TeacherUI
+TeacherUI -> PreferenceController : submitPreferences(teacherId, weekId, prefs)
+activate PreferenceController
+PreferenceController -> TeacherEntity : isAvailable()
+activate TeacherEntity
+TeacherEntity --> PreferenceController : Boolean
+deactivate TeacherEntity
+PreferenceController -> PreferenceController : validateAgainstAvailability(teacherId, prefs)
+
+alt preferences compatible with availability
+    PreferenceController -> PreferenceEntity : matchesPreference(lesson)
+    activate PreferenceEntity
+    PreferenceEntity --> PreferenceController : Boolean
+    deactivate PreferenceEntity
+    PreferenceController -> AuditLog : logAction(teacherId, "SUBMIT_PREFERENCES", "Preferences submitted for week: " + weekId)
+    activate AuditLog
+    deactivate AuditLog
+    PreferenceController --> TeacherUI : SubmitResult
+    TeacherUI --> Teacher : ConfirmationView
+else preferences conflict with availability
+    PreferenceController --> TeacherUI : ConflictResult
+    TeacherUI --> Teacher : ConflictWarningView
+
+    Teacher -> TeacherUI : adjustPreferences(weekId, revisedPrefs)
+    TeacherUI -> PreferenceController : submitPreferences(teacherId, weekId, revisedPrefs)
+    PreferenceController -> PreferenceEntity : matchesPreference(lesson)
+    activate PreferenceEntity
+    PreferenceEntity --> PreferenceController : Boolean
+    deactivate PreferenceEntity
+    PreferenceController -> AuditLog : logAction(teacherId, "ADJUST_PREFERENCES", "Preferences adjusted for week: " + weekId)
+    activate AuditLog
+    deactivate AuditLog
+    PreferenceController --> TeacherUI : SubmitResult
+    TeacherUI --> Teacher : ConfirmationView
+end
+
+deactivate PreferenceController
+deactivate TeacherUI
+deactivate Teacher
+@enduml

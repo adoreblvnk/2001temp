@@ -1,0 +1,61 @@
+@startuml ssd_10
+!theme plain
+skinparam shadowing false
+skinparam defaultFontName "Helvetica", "Arial", sans-serif
+skinparam defaultFontSize 11
+skinparam sequence {
+    ParticipantBorderColor #1E3A8A
+    ParticipantBackgroundColor #EFF6FF
+    LifeLineBorderColor #1E3A8A
+    LifeLineBackgroundColor #FFFFFF
+    ArrowColor #1E3A8A
+    ActorBorderColor #1E3A8A
+    ActorBackgroundColor #EFF6FF
+}
+
+title SSD-10 : View Confirmed Schedule & Workload
+
+actor Teacher
+participant ":TeacherUI" as TeacherUI
+participant ":ScheduleController" as ScheduleController
+participant ":Schedule" as Schedule
+participant ":Teacher" as TeacherEntity
+
+Teacher -> TeacherUI : viewSchedule(teacherId)
+activate Teacher
+activate TeacherUI
+
+TeacherUI -> ScheduleController : getTeacherSchedule(teacherId)
+activate ScheduleController
+
+ScheduleController -> Schedule : getLessonsForTeacher(teacherId)
+activate Schedule
+Schedule --> ScheduleController : List<Lesson>
+deactivate Schedule
+
+ScheduleController -> TeacherEntity : calculateWeeklyWorkload()
+activate TeacherEntity
+TeacherEntity --> ScheduleController : weeklyHours : float
+deactivate TeacherEntity
+
+ScheduleController -> TeacherEntity : calculateMonthlyWorkload()
+activate TeacherEntity
+TeacherEntity --> ScheduleController : monthlyHours : float
+deactivate TeacherEntity
+
+alt status == Published
+    ScheduleController --> TeacherUI : ScheduleData(lessons, weeklyHours, monthlyHours, isPublished=true)
+    note right of TeacherUI
+      PII masked: student first name,
+      instrument, studio number only
+    end note
+else status == Draft
+    ScheduleController --> TeacherUI : ScheduleData(lessons, weeklyHours, monthlyHours, isPublished=false)
+end
+
+deactivate ScheduleController
+TeacherUI --> Teacher : ScheduleView
+deactivate TeacherUI
+deactivate Teacher
+
+@enduml

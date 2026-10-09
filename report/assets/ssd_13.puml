@@ -1,0 +1,72 @@
+@startuml ssd_13
+!theme plain
+skinparam shadowing false
+skinparam defaultFontName "Helvetica", "Arial", sans-serif
+skinparam defaultFontSize 11
+skinparam sequence {
+    ParticipantBorderColor #1E3A8A
+    ParticipantBackgroundColor #EFF6FF
+    LifeLineBorderColor #1E3A8A
+    LifeLineBackgroundColor #FFFFFF
+    ArrowColor #1E3A8A
+    ActorBorderColor #1E3A8A
+    ActorBackgroundColor #EFF6FF
+}
+
+title SSD-13 : Onboard New Staff & Manager Accounts
+
+actor "IT Administrator" as ITAdmin
+participant ":AdminUI" as AdminUI
+participant ":AccountController" as AccountController
+participant ":User" as User
+participant ":Teacher" as Teacher
+participant ":AuditLog" as AuditLog
+
+ITAdmin -> AdminUI : openUserManagement()
+activate ITAdmin
+activate AdminUI
+AdminUI -> AccountController : loadRoles()
+activate AccountController
+AccountController --> AdminUI : AvailableRoles(Teacher, Manager, IT_Administrator)
+deactivate AccountController
+AdminUI --> ITAdmin : OnboardingFormView
+deactivate AdminUI
+
+ITAdmin -> AdminUI : submitStaffParticulars(name, staffId, email, role)
+activate AdminUI
+AdminUI -> AccountController : provisionUser(name, email, role)
+activate AccountController
+
+AccountController -> User : isActiveAccount()
+activate User
+User --> AccountController : Boolean
+deactivate User
+
+alt email or staffId already exists
+    AccountController --> AdminUI : DuplicateError
+    AdminUI --> ITAdmin : ErrorView
+else particulars unique
+    AccountController -> User : getStaffId()
+    activate User
+    User --> AccountController : staffId
+    deactivate User
+
+    opt role == Teacher
+        AccountController -> Teacher : hasInstrumentQualification(instrument)
+        activate Teacher
+        Teacher --> AccountController : Boolean
+        deactivate Teacher
+    end
+
+    AccountController -> AuditLog : logAction(adminId, "PROVISION_USER", "Created " + role + ": " + email)
+    activate AuditLog
+    deactivate AuditLog
+
+    AccountController --> AdminUI : CreateSuccess(staffId)
+    AdminUI --> ITAdmin : ConfirmationView
+end
+
+deactivate AccountController
+deactivate AdminUI
+deactivate ITAdmin
+@enduml
