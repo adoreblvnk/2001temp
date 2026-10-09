@@ -25,7 +25,6 @@ Teacher -> TeacherUI : accessAvailabilityGrid(month)
 activate Teacher
 activate TeacherUI
 
-TeacherUI -> TeacherUI : renderAvailabilityGrid()
 TeacherUI --> Teacher : AvailabilityGridView
 deactivate TeacherUI
 deactivate Teacher

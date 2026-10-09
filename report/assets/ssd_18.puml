@@ -43,7 +43,6 @@ end
 
 ComplianceController --> UI : ComplianceReport(compliantStaff, warningStaff)
 deactivate ComplianceController
-UI -> UI : renderComplianceDashboard()
 UI --> Manager : ComplianceDashboardView
 
 Manager -> UI : inspectDailyDistribution(teacherId)
@@ -62,12 +61,10 @@ opt no staff exceeds 12 daily hours
     deactivate AuditLog
     ComplianceController --> UI : VerificationSnapshot
     deactivate ComplianceController
-    UI -> UI : renderSignOffConfirmation()
     UI --> Manager : ConfirmationView
 end
 
 opt instructor exceeds 44h threshold
-    UI -> UI : renderHighPriorityWarningModal(teacherId)
     UI --> Manager : ComplianceWarningModal
     opt manager elects corrective re-allocation
         Manager -> UI : submitCorrectiveReallocation(teacherId, lessonIds)

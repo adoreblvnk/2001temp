@@ -35,7 +35,6 @@ L --> AC : List<Lesson>
 deactivate L
 AC --> UI : List<Lesson>
 deactivate AC
-UI -> UI : renderExceptionQueue()
 UI --> Manager : ExceptionQueueView
 deactivate UI
 
@@ -49,7 +48,6 @@ L --> AC : LessonDetails
 deactivate L
 AC --> UI : RejectionTicketDetails
 deactivate AC
-UI -> UI : renderRejectionDetails()
 UI --> Manager : RejectionTicketView
 deactivate UI
 
@@ -93,7 +91,6 @@ alt at least one qualified substitute available
     AC -> AC : dispatchNotifications(studentId, substituteTeacherId)
     AC --> UI : Lesson
     deactivate AC
-    UI -> UI : renderUpdatedSchedule()
     UI --> Manager : Schedule
     deactivate UI
 else zero qualified substitutes available
@@ -112,7 +109,6 @@ else zero qualified substitutes available
     AC -> AC : dispatchCancellationNotification(studentId)
     AC --> UI : void
     deactivate AC
-    UI -> UI : renderUpdatedSchedule()
     UI --> Manager : Schedule
     deactivate UI
 end

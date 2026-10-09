@@ -33,7 +33,6 @@ S --> AC : Schedule
 deactivate S
 AC --> UI : Schedule
 deactivate AC
-UI -> UI : renderScheduleGrid()
 UI --> Manager : Schedule
 deactivate UI
 
@@ -55,7 +54,6 @@ CV --> AC : ValidationResult
 deactivate CV
 AC --> UI : VerificationReport
 deactivate AC
-UI -> UI : renderVerificationReport()
 UI --> Manager : VerificationReport
 
 alt no unassigned lessons remain
@@ -72,10 +70,8 @@ alt no unassigned lessons remain
     AC -> AC : notifyAssignedInstructors(weekId)
     AC --> UI : Schedule
     deactivate AC
-    UI -> UI : renderPublishConfirmation()
     UI --> Manager : Schedule
 else unassigned lessons remain
-    UI -> UI : renderUnassignedWarning()
     UI --> Manager : WarningMessage
     opt manager confirms publish
         Manager -> UI : confirmPublish(weekId)
@@ -91,7 +87,6 @@ else unassigned lessons remain
         AC -> AC : notifyAssignedInstructors(weekId)
         AC --> UI : Schedule
         deactivate AC
-        UI -> UI : renderPublishConfirmation()
         UI --> Manager : Schedule
     else manager aborts publish
         Manager -> UI : abortPublish(weekId)
@@ -103,7 +98,6 @@ else unassigned lessons remain
         deactivate S
         AC --> UI : void
         deactivate AC
-        UI -> UI : renderAbortConfirmation()
         UI --> Manager : void
     end
 end

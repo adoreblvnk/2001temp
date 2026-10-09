@@ -33,7 +33,6 @@ A --> AC : List<Availability>
 deactivate A
 AC --> UI : List<Availability>
 deactivate AC
-UI -> UI : renderAvailabilityDiff()
 UI --> Manager : AvailabilityDiffDTO
 deactivate UI
 
@@ -51,7 +50,6 @@ S --> AC : DisruptionReport
 deactivate S
 AC --> UI : DisruptionReport
 deactivate AC
-UI -> UI : renderDisruptionAnalysis()
 UI --> Manager : DisruptionAnalysisView
 deactivate UI
 
@@ -74,7 +72,6 @@ alt disruption manageable
     AC -> AC : dispatchTeacherNotification(teacherId, "Late availability approved")
     AC --> UI : UpdateSuccess
     deactivate AC
-    UI -> UI : renderUpdatedRoster()
     UI --> Manager : Schedule
     deactivate UI
 else disruption unmanageable
@@ -92,7 +89,6 @@ else disruption unmanageable
     AC -> AC : dispatchTeacherNotification(teacherId, "Late availability rejected")
     AC --> UI : RejectionSuccess
     deactivate AC
-    UI -> UI : renderRejectionConfirmation()
     UI --> Manager : ConfirmationView
     deactivate UI
 end

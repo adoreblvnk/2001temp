@@ -54,13 +54,11 @@ deactivate ReportController
 
 opt target date range contains active draft rosters
     ReportController --> UI : AdvisoryNotice("Drafts excluded from confirmed totals")
-    UI -> UI : renderAdvisoryBanner()
 end
 
 ReportController --> UI : UtilizationReport
 deactivate ReportController
 
-UI -> UI : renderUtilizationCharts(reportData)
 UI --> Manager : UtilizationReportView
 
 Manager -> UI : exportReport(format)

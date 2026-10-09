@@ -50,7 +50,6 @@ loop for each confirmed lesson
 
     alt substitute available
         AllocationController --> AllocationUI : List<Teacher>
-        AllocationUI -> AllocationUI : displayCandidateList(candidates)
         AllocationUI --> Manager : CandidateListView
 
         Manager -> AllocationUI : assignSubstitute(lessonId, substituteId)
@@ -78,7 +77,6 @@ loop for each confirmed lesson
         AllocationUI --> Manager : ConfirmationView
     else no substitute available
         AllocationController --> AllocationUI : EmptyList
-        AllocationUI -> AllocationUI : displayNoSubstitutePrompt(lesson)
         AllocationUI --> Manager : NoSubstituteView
 
         Manager -> AllocationUI : cancelWithCredit(lessonId)

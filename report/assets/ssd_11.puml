@@ -65,7 +65,6 @@ alt Teacher clicks Proceed
     TeacherUI --> Teacher : ConfirmationMessage
 else Teacher declines modal
     Teacher -> TeacherUI : cancelRejection()
-    TeacherUI -> TeacherUI : closeModal()
     TeacherUI --> Teacher : LessonDetailsView
 end
 

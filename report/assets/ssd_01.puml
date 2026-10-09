@@ -50,7 +50,6 @@ WC -> WC : getLowestWorkloadStaff()
 WC --> UI : WorkloadSummary(lowestStaff, warningStaff)
 deactivate WC
 
-UI -> UI : renderWorkloadDashboard(progressBars, badges)
 UI --> M : dashboard view rendered
 deactivate UI
 @enduml
