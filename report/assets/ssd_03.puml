@@ -33,9 +33,19 @@ AC -> L : queryByStatus(PendingReallocation)
 activate L
 L --> AC : List<Lesson>
 deactivate L
-AC --> UI : List<Lesson>
+
+== Auto-compute eligible substitutes for each rejection ==
+
+loop for each rejected lesson
+    AC -> CV : findEligibleCandidates(instrument, weekId)
+    activate CV
+    CV --> AC : List<Teacher> (certified, available, <= 44.0h)
+    deactivate CV
+end
+
+AC --> UI : List<RejectionTicket>(with pre-computed candidates)
 deactivate AC
-UI --> Manager : ExceptionQueueView
+UI --> Manager : ExceptionQueueView (with candidate lists)
 deactivate UI
 
 Manager -> UI : selectRejectionTicket(lessonId)
@@ -46,22 +56,9 @@ AC -> L : getLessonDetails(lessonId)
 activate L
 L --> AC : LessonDetails
 deactivate L
-AC --> UI : RejectionTicketDetails
+AC --> UI : RejectionTicketDetails(candidates)
 deactivate AC
-UI --> Manager : RejectionTicketView
-deactivate UI
-
-Manager -> UI : requestSubstituteCandidates(lessonId)
-activate UI
-UI -> AC : findSubstituteCandidates(lessonId)
-activate AC
-AC -> CV : findQualifiedFreeTeachers(lessonId)
-activate CV
-CV --> AC : List<Teacher>
-deactivate CV
-AC --> UI : List<Teacher>
-deactivate AC
-UI --> Manager : List<Teacher>
+UI --> Manager : RejectionTicketView (with candidate list)
 deactivate UI
 
 alt at least one qualified substitute available

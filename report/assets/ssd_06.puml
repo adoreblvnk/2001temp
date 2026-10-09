@@ -33,27 +33,29 @@ AllocationController -> Lesson : getLessonsForTeacher(teacherId, absenceDate)
 activate Lesson
 Lesson --> AllocationController : List<Lesson>
 deactivate Lesson
-AllocationController --> AllocationUI : List<Lesson>
-deactivate AllocationController
-AllocationUI --> Manager : LessonAbsenceList
-deactivate AllocationUI
+
+== Auto-compute eligible substitutes for each lesson ==
 
 loop for each confirmed lesson
-    Manager -> AllocationUI : requestSubstitute(lessonId)
-    activate AllocationUI
-    AllocationUI -> AllocationController : findSubstitute(lessonId)
-    activate AllocationController
-    AllocationController -> ConflictValidator : findQualifiedFreeTeachers(lessonId)
+    AllocationController -> ConflictValidator : findEligibleCandidates(instrument, weekId)
     activate ConflictValidator
-    ConflictValidator --> AllocationController : List<Teacher>
+    ConflictValidator --> AllocationController : List<Teacher> (certified, available, <= 44.0h)
     deactivate ConflictValidator
+end
 
+AllocationController --> AllocationUI : LessonList (with pre-computed candidates)
+deactivate AllocationController
+AllocationUI --> Manager : AbsenceView (lessons + candidate lists)
+deactivate AllocationUI
+
+== Manager selects substitutes ==
+
+loop for each confirmed lesson
     alt substitute available
-        AllocationController --> AllocationUI : List<Teacher>
-        AllocationUI --> Manager : CandidateListView
-
-        Manager -> AllocationUI : assignSubstitute(lessonId, substituteId)
+        Manager -> AllocationUI : selectSubstitute(lessonId, substituteId)
+        activate AllocationUI
         AllocationUI -> AllocationController : reallocateLesson(lessonId, substituteId)
+        activate AllocationController
         AllocationController -> Lesson : assignTeacher(substituteTeacher)
         activate Lesson
         Lesson --> AllocationController : Boolean
@@ -76,8 +78,7 @@ loop for each confirmed lesson
         AllocationController --> AllocationUI : AssignmentResult
         AllocationUI --> Manager : ConfirmationView
     else no substitute available
-        AllocationController --> AllocationUI : EmptyList
-        AllocationUI --> Manager : NoSubstituteView
+        AllocationUI --> Manager : NoEligibleSubstitutesView
 
         Manager -> AllocationUI : cancelWithCredit(lessonId)
         AllocationUI -> AllocationController : cancelAllocation(lessonId)
