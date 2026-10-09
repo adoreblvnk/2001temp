@@ -19,37 +19,34 @@ start
 
 |System|
 :Retrieve lesson parameters
-(Instrument, Student, Duration);
+(Instrument, Student, Timeslot, Duration);
 
-:Filter candidate teachers to those certified
-for the lesson instrument with projected
-weekly workload <= 44.0h
-(uncertified or over-capacity staff excluded);
-:Query candidate availability, running workloads,
-preferences, and studio reservations;
-:Render allocation matrix
-(displaying up to 3 certified candidate teachers side-by-side);
-
-|Manager|
-:Select candidate teacher;
-
-|System|
-:Restrict studio picker to instrument-compatible studios
-(Drums: Studio 5 only; incompatible studios disabled);
-
-|Manager|
-:Select eligible studio and 30-min time slot;
-
-|System|
 repeat
-    :Validate Dynamic Constraints
-    (studio unoccupied, teacher available,
-    continuous teaching block <= 4.0h);
-    backward:Display dynamic validation error
-    ("Room collision", "Teacher unavailable", or "Fatigue limit");
+    |System|
+    :Filter candidate teachers to those certified
+    for the lesson instrument, available for the timeslot,
+    within the 4.0h continuous teaching limit,
+    and with projected weekly workload <= 44.0h;
+    :Render allocation matrix
+    (up to 3 eligible candidate teachers side-by-side);
+
     |Manager|
-    :Adjust time slot or candidate selection;
-repeat while (Dynamic constraints satisfied?) is ([no - Dynamic Constraint Violation]) not ([yes - All Checks Pass])
+    :Select candidate teacher;
+
+    |System|
+    :Restrict studio picker to studios that are
+    instrument-compatible (Drums: Studio 5 only),
+    unoccupied, and not under maintenance
+    for the timeslot (others disabled);
+
+    |Manager|
+    :Select eligible studio;
+
+    |System|
+    :Re-validate selection against current schedule;
+    backward:Display "Allocation Conflict:
+    Selection no longer available";
+repeat while (Selection still valid?) is ([no - Concurrent booking]) not ([yes])
 
 |System|
 :Calculate projected weekly workload

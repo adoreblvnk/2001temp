@@ -25,31 +25,46 @@ participant ":Teacher" as T
 participant ":Lesson" as L
 participant ":AuditLog" as AL
 
-== Upfront Filtering (Static Invariants) ==
+== Upfront Candidate & Studio Filtering ==
 
 M -> UI : selectLessonSlot(lessonId)
 activate UI
 UI -> AC : getAllocationOptions(lessonId)
 activate AC
-AC -> CV : findEligibleCandidates(instrument, weekId)
+AC -> CV : findEligibleCandidates(instrument, timeSlot, weekId)
 activate CV
 CV -> T : hasInstrumentQualification(instrument)
 activate T
 T --> CV : isQualified : Boolean
 deactivate T
+CV -> T : isAvailable()
+activate T
+T --> CV : isFree : Boolean
+deactivate T
+CV -> CV : checkContinuousTeachingLimit(teacher, timeSlot)
+activate CV
+deactivate CV
 CV -> T : calculateWeeklyWorkload()
 activate T
 T --> CV : currentHours : float
 deactivate T
-CV --> AC : List<Teacher> (certified & projected <= 44.0h)
+CV --> AC : List<Teacher> (certified, available, <= 4.0h block, projected <= 44.0h)
 deactivate CV
-AC -> CV : findEligibleStudios(instrument)
+AC -> CV : findEligibleStudios(instrument, timeSlot)
 activate CV
 CV -> St : hasDrumKitInstalled()
 activate St
 St --> CV : isDrumRoom : Boolean
 deactivate St
-CV --> AC : List<Studio> (Drums: Studio 5 only)
+CV -> St : isOccupied(timeSlot)
+activate St
+St --> CV : roomOccupied : Boolean
+deactivate St
+CV -> St : isUnderMaintenanceWindow(timeSlot)
+activate St
+St --> CV : underMaintenance : Boolean
+deactivate St
+CV --> AC : List<Studio> (compatible, unoccupied, no maintenance)
 deactivate CV
 AC --> UI : AllocationOptions(candidates, eligibleStudios)
 deactivate AC
@@ -58,15 +73,15 @@ deactivate UI
 
 == Allocation Request ==
 
-M -> UI : selectJobAllocation(lessonId, teacherId, studioId, timeSlot)
+M -> UI : selectJobAllocation(lessonId, teacherId, studioId)
 activate UI
-UI -> AC : allocateWeeklyJob(lessonId, teacherId, studioId, timeSlot)
+UI -> AC : allocateWeeklyJob(lessonId, teacherId, studioId)
 activate AC
+
+== Save-time Re-validation (Concurrent Changes) ==
 
 AC -> CV : validateAllocationRules(teacher, studio, timeSlot)
 activate CV
-
-== Dynamic State Validation ==
 CV -> St : isOccupied(timeSlot)
 activate St
 St --> CV : roomOccupied : Boolean
@@ -135,8 +150,8 @@ alt validationResult.isValid == true
         UI --> M : updated schedule view
     end
 else validationResult.isValid == false
-    AC --> UI : showValidationError(errorMessage)
-    UI --> M : conflict error modal
+    AC --> UI : showValidationError("Allocation Conflict: Selection no longer available")
+    UI --> M : conflict modal and refreshed options
 end
 
 deactivate AC
