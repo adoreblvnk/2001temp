@@ -13,50 +13,72 @@ skinparam sequence {
     ActorBackgroundColor #EFF6FF
 }
 
-title SSD-15 : Configure Studio & Instrument Setup
+title SSD-15 : Flag Facility Maintenance Window
 
 actor "IT Administrator" as ITAdmin
 participant ":AdminUI" as AdminUI
 participant ":StudioController" as StudioController
 participant ":Studio" as Studio
-participant ":ConflictValidator" as ConflictValidator
+participant ":Lesson" as Lesson
 participant ":AuditLog" as AuditLog
 
-ITAdmin -> AdminUI : accessStudioConfig()
+ITAdmin -> AdminUI : selectMaintenanceBlackout(studioId, startTime, endTime, reason)
 activate ITAdmin
 activate AdminUI
-AdminUI -> StudioController : getStudioInventory()
+AdminUI -> StudioController : flagMaintenanceWindow(studioId, startTime, endTime, reason)
 activate StudioController
-StudioController -> Studio : hasDrumKitInstalled()
+
+StudioController -> Studio : isUnderMaintenanceWindow(timeSlot)
 activate Studio
 Studio --> StudioController : Boolean
 deactivate Studio
-StudioController --> AdminUI : StudioList
-deactivate StudioController
-AdminUI --> ITAdmin : StudioRegistryView
-deactivate AdminUI
 
-== Configure Operating Hours ==
+StudioController -> Lesson : queryLessonsInWindow(studioId, startTime, endTime)
+activate Lesson
+Lesson --> StudioController : List<Lesson>
+deactivate Lesson
 
-ITAdmin -> AdminUI : configureOperatingHours(hours)
-activate AdminUI
-AdminUI -> StudioController : configureStudio(studioId, name, hasPiano)
-activate StudioController
-StudioController -> Studio : isOccupied(timeSlot)
-activate Studio
-Studio --> StudioController : Boolean
-deactivate Studio
-StudioController -> ConflictValidator : checkRoomAvailability(studio, timeSlot)
-activate ConflictValidator
-ConflictValidator --> StudioController : Boolean
-deactivate ConflictValidator
-StudioController -> AuditLog : logAction(adminId, "CONFIGURE_STUDIO", studioId)
+opt confirmed lessons exist in blackout window
+    StudioController --> AdminUI : RelocationNoticeDTO(affectedLessons)
+    AdminUI --> ITAdmin : RelocationNoticeView
+end
+
+ITAdmin -> AdminUI : confirmBlackoutEntry()
+AdminUI -> StudioController : persistBlackout(studioId, startTime, endTime, reason)
+
+loop for each affected lesson
+    StudioController -> Lesson : transitionStatus(PendingReallocation)
+    activate Lesson
+    Lesson --> StudioController : Boolean
+    deactivate Lesson
+end
+
+StudioController -> AuditLog : logAction(adminId, "FLAG_MAINTENANCE", "Blackout flagged for: " + studioId)
 activate AuditLog
 deactivate AuditLog
-StudioController --> AdminUI : ConfigResult
+
+StudioController --> AdminUI : MaintenanceScheduleDTO
 deactivate StudioController
-AdminUI --> ITAdmin : ConfirmationView
+AdminUI --> ITAdmin : ConfirmationDTO
 deactivate AdminUI
+
+opt emergency immediate repair required
+    ITAdmin -> AdminUI : triggerEmergencyLockdown(studioId)
+    activate AdminUI
+    AdminUI -> StudioController : flagMaintenanceWindow(studioId, now, emergencyEnd, "EMERGENCY_LOCKDOWN")
+    activate StudioController
+    StudioController -> Lesson : transitionStatus(PendingReallocation)
+    activate Lesson
+    Lesson --> StudioController : Boolean
+    deactivate Lesson
+    StudioController -> AuditLog : logAction(adminId, "EMERGENCY_LOCKDOWN", studioId)
+    activate AuditLog
+    deactivate AuditLog
+    StudioController --> AdminUI : EmergencyAlertDTO
+    deactivate StudioController
+    AdminUI --> ITAdmin : EmergencyConfirmationView
+    deactivate AdminUI
+end
 
 deactivate ITAdmin
 @enduml

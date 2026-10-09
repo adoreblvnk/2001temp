@@ -13,48 +13,61 @@ skinparam sequence {
     ActorBackgroundColor #EFF6FF
 }
 
-title SSD-10 : View Confirmed Schedule & Workload
+title SSD-10 : Submit Job Rejection Request
 
 actor Teacher
 participant ":TeacherUI" as TeacherUI
-participant ":ScheduleController" as ScheduleController
-participant ":Schedule" as Schedule
-participant ":Teacher" as TeacherEntity
+participant ":RejectionController" as RejectionController
+participant ":Lesson" as Lesson
+participant ":AuditLog" as AuditLog
 
-Teacher -> TeacherUI : viewSchedule(teacherId)
+Teacher -> TeacherUI : selectConfirmedLesson(lessonId)
 activate Teacher
 activate TeacherUI
 
-TeacherUI -> ScheduleController : getTeacherSchedule(teacherId)
-activate ScheduleController
+TeacherUI --> Teacher : LessonDetailsView
+deactivate TeacherUI
+deactivate Teacher
 
-ScheduleController -> Schedule : getLessonsForTeacher(teacherId)
-activate Schedule
-Schedule --> ScheduleController : List<Lesson>
-deactivate Schedule
+Teacher -> TeacherUI : requestJobRejection(lessonId)
+activate Teacher
+activate TeacherUI
 
-ScheduleController -> TeacherEntity : calculateWeeklyWorkload()
-activate TeacherEntity
-TeacherEntity --> ScheduleController : weeklyHours : float
-deactivate TeacherEntity
+TeacherUI --> Teacher : ModalPrompt
 
-ScheduleController -> TeacherEntity : calculateMonthlyWorkload()
-activate TeacherEntity
-TeacherEntity --> ScheduleController : monthlyHours : float
-deactivate TeacherEntity
+alt Teacher clicks Proceed
+    Teacher -> TeacherUI : proceedWithRejection()
+    TeacherUI --> Teacher : RejectionForm
 
-alt status == Published
-    ScheduleController --> TeacherUI : ScheduleData(lessons, weeklyHours, monthlyHours, isPublished=true)
     note right of TeacherUI
-      PII masked: student first name,
-      instrument, studio number only
+      Reason codes: Scheduling Conflict,
+      Pedagogical Mismatch, Personal / Medical
     end note
-else status == Draft
-    ScheduleController --> TeacherUI : ScheduleData(lessons, weeklyHours, monthlyHours, isPublished=false)
+
+    Teacher -> TeacherUI : submitRejection(reasonCode, remarks)
+    TeacherUI -> RejectionController : submitRejectionRequest(lessonId, reasonCode, remarks)
+    activate RejectionController
+
+    RejectionController -> Lesson : transitionStatus(PendingReallocation)
+    activate Lesson
+    Lesson --> RejectionController : Boolean
+    deactivate Lesson
+
+    RejectionController -> RejectionController : routeToManagerExceptionQueue(lessonId)
+
+    RejectionController -> AuditLog : logAction(teacherId, "REJECTION_REQUEST", lessonId)
+    activate AuditLog
+    deactivate AuditLog
+
+    RejectionController --> TeacherUI : RejectionResult
+    deactivate RejectionController
+
+    TeacherUI --> Teacher : ConfirmationMessage
+else Teacher declines modal
+    Teacher -> TeacherUI : cancelRejection()
+    TeacherUI --> Teacher : LessonDetailsView
 end
 
-deactivate ScheduleController
-TeacherUI --> Teacher : ScheduleView
 deactivate TeacherUI
 deactivate Teacher
 

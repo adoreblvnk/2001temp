@@ -47,12 +47,12 @@ actor "IT Administrator" as ITAdmin
 rectangle "Music School Workload Allocation & Resource Scheduling System" as SystemBoundary {
 
     package "Executive Reporting & Statutory Compliance" {
-        usecase "UC-18: Review Labor\nCompliance & Workload" as UC18
-        usecase "UC-17: Generate Studio\nUtilization Report" as UC17
+        usecase "UC-17: Review Labor\nCompliance & Workload" as UC17
+        usecase "UC-16: Generate Studio\nUtilization Report" as UC16
     }
 
     package "Workload & Schedule Management" {
-        usecase "UC-07: Handle Emergency\nAbsence Substitute" as UC07
+        usecase "UC-06: Handle Emergency\nAbsence Substitute" as UC06
         usecase "UC-05: Publish Confirmed\nWeekly Roster" as UC05
         usecase "UC-04: Process Late\nAvailability Exception" as UC04
         usecase "UC-02: Allocate\nWeekly Teaching Job" as UC02
@@ -61,18 +61,18 @@ rectangle "Music School Workload Allocation & Resource Scheduling System" as Sys
     }
 
     package "Teacher Availability & Schedule" {
-        usecase "UC-12: Request Peer\nLesson Swap" as UC12
-        usecase "UC-11: Submit Job\nRejection Request" as UC11
-        usecase "UC-10: View Confirmed\nSchedule & Workload" as UC10
-        usecase "UC-09: Submit Weekly\nJob Preferences" as UC09
-        usecase "UC-08: Submit Monthly\nAvailability Window" as UC08
+        usecase "UC-11: Request Peer\nLesson Swap" as UC11
+        usecase "UC-10: Submit Job\nRejection Request" as UC10
+        usecase "UC-09: View Confirmed\nSchedule & Workload" as UC09
+        usecase "UC-08: Submit Weekly\nJob Preferences" as UC08
+        usecase "UC-07: Submit Monthly\nAvailability Window" as UC07
     }
 
     package "System Administration & Facilities" {
-        usecase "UC-16: Flag Facility\nMaintenance Window" as UC16
-        usecase "UC-15: Configure Studio\n& Instrument Setup" as UC15
-        usecase "UC-14: Manage User Account\nStatus & Access" as UC14
-        usecase "UC-13: Onboard New Staff\n& Manager Accounts" as UC13
+        usecase "UC-15: Flag Facility\nMaintenance Window" as UC15
+        usecase "UC-14: Configure Studio\n& Instrument Setup" as UC14
+        usecase "UC-13: Manage User Account\nStatus & Access" as UC13
+        usecase "UC-12: Onboard New Staff\n& Manager Accounts" as UC12
     }
 
     usecase "Validate Allocation\nConstraints" as ValidateAlloc <<Included>>
@@ -80,52 +80,52 @@ rectangle "Music School Workload Allocation & Resource Scheduling System" as Sys
 }
 
 ' Manager associations
-Manager -- UC18
 Manager -- UC17
-Manager -- UC07
+Manager -- UC16
+Manager -- UC06
 Manager -- UC05
 Manager -- UC04
 Manager -- UC02
 Manager -- UC03
 Manager -- UC01
-Manager -- UC12
+Manager -- UC11
 
 ' Teacher associations
-Teacher -- UC12
 Teacher -- UC11
 Teacher -- UC10
 Teacher -- UC09
 Teacher -- UC08
+Teacher -- UC07
 
 ' IT Administrator associations
-ITAdmin -- UC16
 ITAdmin -- UC15
 ITAdmin -- UC14
 ITAdmin -- UC13
+ITAdmin -- UC12
 
 ' Include and Extend relationships
-UC07 ..> ValidateAlloc : <U+003C><U+003C>include<U+003E><U+003E>
+UC06 ..> ValidateAlloc : <U+003C><U+003C>include<U+003E><U+003E>
 UC03 ..> ValidateAlloc : <U+003C><U+003C>include<U+003E><U+003E>
 UC02 ..> ValidateAlloc : <U+003C><U+003C>include<U+003E><U+003E>
-UC12 ..> ValidateAlloc : <U+003C><U+003C>include<U+003E><U+003E>
+UC11 ..> ValidateAlloc : <U+003C><U+003C>include<U+003E><U+003E>
 
-UC07 <.. AuthOT : <U+003C><U+003C>extend<U+003E><U+003E>
+UC06 <.. AuthOT : <U+003C><U+003C>extend<U+003E><U+003E>
 UC02 <.. AuthOT : <U+003C><U+003C>extend<U+003E><U+003E>
 
 ' Vertical ordering hints (in left-to-right mode, "right" stacks top-to-bottom)
-UC18 -[hidden]right-> UC17
-UC07 -[hidden]right-> UC05
+UC17 -[hidden]right-> UC16
+UC06 -[hidden]right-> UC05
 UC05 -[hidden]right-> UC04
 UC04 -[hidden]right-> UC03
 UC03 -[hidden]right-> UC02
 UC02 -[hidden]right-> UC01
-UC12 -[hidden]right-> UC11
 UC11 -[hidden]right-> UC10
 UC10 -[hidden]right-> UC09
 UC09 -[hidden]right-> UC08
-UC16 -[hidden]right-> UC15
+UC08 -[hidden]right-> UC07
 UC15 -[hidden]right-> UC14
 UC14 -[hidden]right-> UC13
+UC13 -[hidden]right-> UC12
 ValidateAlloc -[hidden]right-> AuthOT
 
 @enduml

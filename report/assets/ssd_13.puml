@@ -13,60 +13,76 @@ skinparam sequence {
     ActorBackgroundColor #EFF6FF
 }
 
-title SSD-13 : Onboard New Staff & Manager Accounts
+title SSD-13 : Manage User Account Status & Access
 
 actor "IT Administrator" as ITAdmin
 participant ":AdminUI" as AdminUI
 participant ":AccountController" as AccountController
 participant ":User" as User
-participant ":Teacher" as Teacher
+participant ":Lesson" as Lesson
 participant ":AuditLog" as AuditLog
 
-ITAdmin -> AdminUI : openUserManagement()
+ITAdmin -> AdminUI : searchAccount(keyword)
 activate ITAdmin
 activate AdminUI
-AdminUI -> AccountController : loadRoles()
+AdminUI -> AccountController : searchUsers(keyword)
 activate AccountController
-AccountController --> AdminUI : AvailableRoles(Teacher, Manager, IT_Administrator)
+AccountController -> User : getFullName()
+activate User
+User --> AccountController : userMatches
+deactivate User
+AccountController --> AdminUI : UserList
 deactivate AccountController
-AdminUI --> ITAdmin : OnboardingFormView
+AdminUI --> ITAdmin : UserListView
 deactivate AdminUI
 
-ITAdmin -> AdminUI : submitStaffParticulars(name, staffId, email, role)
+ITAdmin -> AdminUI : selectAccount(userId)
 activate AdminUI
-AdminUI -> AccountController : provisionUser(name, email, role)
+AdminUI -> AccountController : getUserProfile(userId)
 activate AccountController
-
 AccountController -> User : isActiveAccount()
 activate User
 User --> AccountController : Boolean
 deactivate User
-
-alt email or staffId already exists
-    AccountController --> AdminUI : DuplicateError
-    AdminUI --> ITAdmin : ErrorView
-else particulars unique
-    AccountController -> User : getStaffId()
-    activate User
-    User --> AccountController : staffId
-    deactivate User
-
-    opt role == Teacher
-        AccountController -> Teacher : hasInstrumentQualification(instrument)
-        activate Teacher
-        Teacher --> AccountController : Boolean
-        deactivate Teacher
-    end
-
-    AccountController -> AuditLog : logAction(adminId, "PROVISION_USER", "Created " + role + ": " + email)
-    activate AuditLog
-    deactivate AuditLog
-
-    AccountController --> AdminUI : CreateSuccess(staffId)
-    AdminUI --> ITAdmin : ConfirmationView
-end
-
+AccountController -> Lesson : getLessonsForTeacher(userId)
+activate Lesson
+Lesson --> AccountController : List<Lesson>
+deactivate Lesson
+AccountController --> AdminUI : ProfileView(profile, allocations)
 deactivate AccountController
+AdminUI --> ITAdmin : ProfileDisplay
 deactivate AdminUI
+
+== Deactivate Account (only removal action offered) ==
+
+ITAdmin -> AdminUI : selectDeactivateAccount(userId)
+activate AdminUI
+AdminUI --> ITAdmin : DeactivateWarning
+deactivate AdminUI
+
+ITAdmin -> AdminUI : confirmDeactivate()
+activate AdminUI
+AdminUI -> AccountController : deactivateUser(userId)
+activate AccountController
+
+AccountController -> User : isActiveAccount()
+activate User
+User --> AccountController : false
+deactivate User
+
+AccountController -> Lesson : transitionStatus(PendingReallocation)
+activate Lesson
+Lesson --> AccountController : Boolean
+deactivate Lesson
+
+AccountController -> AuditLog : logAction(adminId, "DEACTIVATE_USER", userId)
+activate AuditLog
+deactivate AuditLog
+
+AccountController --> AdminUI : DeactivateResult
+deactivate AccountController
+AdminUI --> ITAdmin : ConfirmationView
+deactivate AdminUI
+
 deactivate ITAdmin
 @enduml

@@ -13,100 +13,77 @@ skinparam sequence {
     ActorBackgroundColor #EFF6FF
 }
 
-title SSD-07 : Handle Emergency Absence Substitute
+title SSD-07 : Submit Monthly Availability Window
 
-actor Manager
-participant ":AllocationUI" as AllocationUI
-participant ":AllocationController" as AllocationController
-participant ":ConflictValidator" as ConflictValidator
-participant ":Lesson" as Lesson
-participant ":Teacher" as AbsentTeacher
-participant ":Teacher" as SubstituteTeacher
+actor Teacher
+participant ":TeacherUI" as TeacherUI
+participant ":AvailabilityController" as AvailabilityController
+participant ":Availability" as Availability
 participant ":AuditLog" as AuditLog
 
-Manager -> AllocationUI : reportAbsence(teacherId, absenceDate, reason)
-activate AllocationUI
-AllocationUI -> AllocationController : handleEmergencySubstitute(teacherId, absenceDate)
-activate AllocationController
+Teacher -> TeacherUI : accessAvailabilityGrid(month)
+activate Teacher
+activate TeacherUI
 
-AllocationController -> Lesson : getLessonsForTeacher(teacherId, absenceDate)
-activate Lesson
-Lesson --> AllocationController : List<Lesson>
-deactivate Lesson
-AllocationController --> AllocationUI : List<Lesson>
-deactivate AllocationController
-AllocationUI --> Manager : LessonAbsenceList
-deactivate AllocationUI
+TeacherUI --> Teacher : AvailabilityGridView
+deactivate TeacherUI
+deactivate Teacher
 
-loop for each confirmed lesson
-    Manager -> AllocationUI : requestSubstitute(lessonId)
-    activate AllocationUI
-    AllocationUI -> AllocationController : findSubstitute(lessonId)
-    activate AllocationController
-    AllocationController -> ConflictValidator : findQualifiedFreeTeachers(lessonId)
-    activate ConflictValidator
-    ConflictValidator --> AllocationController : List<Teacher>
-    deactivate ConflictValidator
+Teacher -> TeacherUI : toggleTimeSlots(selectedSlots)
+activate Teacher
+activate TeacherUI
+TeacherUI --> Teacher : SlotsConfiguredView
+deactivate TeacherUI
+deactivate Teacher
 
-    alt substitute available
-        AllocationController --> AllocationUI : List<Teacher>
-        AllocationUI --> Manager : CandidateListView
+Teacher -> TeacherUI : submitAvailability(month, selectedSlots)
+activate Teacher
+activate TeacherUI
+TeacherUI -> AvailabilityController : submitAvailability(teacherId, month, selectedSlots)
+activate AvailabilityController
 
-        Manager -> AllocationUI : assignSubstitute(lessonId, substituteId)
-        AllocationUI -> AllocationController : reallocateLesson(lessonId, substituteId)
-        AllocationController -> Lesson : assignTeacher(substituteTeacher)
-        activate Lesson
-        Lesson --> AllocationController : Boolean
-        deactivate Lesson
-        AllocationController -> AbsentTeacher : calculateWeeklyWorkload()
-        activate AbsentTeacher
-        AbsentTeacher --> AllocationController : float
-        deactivate AbsentTeacher
-        AllocationController -> SubstituteTeacher : calculateWeeklyWorkload()
-        activate SubstituteTeacher
-        SubstituteTeacher --> AllocationController : float
-        deactivate SubstituteTeacher
-        AllocationController -> Lesson : transitionStatus(Confirmed)
-        activate Lesson
-        Lesson --> AllocationController : Boolean
-        deactivate Lesson
-        AllocationController -> AuditLog : logAction(managerId, "EMERGENCY_SUBSTITUTE", "Substitute assigned: " + lessonId)
-        activate AuditLog
-        deactivate AuditLog
-        AllocationController --> AllocationUI : AssignmentResult
-        AllocationUI --> Manager : ConfirmationView
-    else no substitute available
-        AllocationController --> AllocationUI : EmptyList
-        AllocationUI --> Manager : NoSubstituteView
+AvailabilityController -> AvailabilityController : validateCutoff(submissionTimestamp)
 
-        Manager -> AllocationUI : cancelWithCredit(lessonId)
-        AllocationUI -> AllocationController : cancelAllocation(lessonId)
-        AllocationController -> Lesson : transitionStatus(Cancelled)
-        activate Lesson
-        Lesson --> AllocationController : Boolean
-        deactivate Lesson
-        AllocationController -> AbsentTeacher : calculateWeeklyWorkload()
-        activate AbsentTeacher
-        AbsentTeacher --> AllocationController : float
-        deactivate AbsentTeacher
-        AllocationController -> AuditLog : logAction(managerId, "EMERGENCY_CANCEL", "Lesson cancelled: " + lessonId)
-        activate AuditLog
-        deactivate AuditLog
-        AllocationController --> AllocationUI : CancellationResult
-        AllocationUI --> Manager : ConfirmationView
-    end
+alt submissionTimestamp <= 19th 23:59 SGT (On-time Window)
+    AvailabilityController -> Availability : isSubmittedBeforeCutoff()
+    activate Availability
+    Availability --> AvailabilityController : true
+    deactivate Availability
 
-    deactivate AllocationController
-    deactivate AllocationUI
+    AvailabilityController -> Availability : getApprovalStatus()
+    activate Availability
+    Availability --> AvailabilityController : AUTO_APPROVED
+    deactivate Availability
+
+    AvailabilityController -> AuditLog : logAction(teacherId, "SUBMIT_AVAILABILITY", "On-time availability submitted for: " + month)
+    activate AuditLog
+    deactivate AuditLog
+
+    AvailabilityController --> TeacherUI : SubmissionSuccess(AUTO_APPROVED)
+    TeacherUI --> Teacher : ConfirmationNotice("Availability confirmed (editable until 19th 23:59)")
+else submissionTimestamp > 19th 23:59 SGT (Late Submission)
+    AvailabilityController -> Availability : isSubmittedBeforeCutoff()
+    activate Availability
+    Availability --> AvailabilityController : false
+    deactivate Availability
+
+    AvailabilityController -> Availability : getApprovalStatus()
+    activate Availability
+    Availability --> AvailabilityController : LATE_PENDING
+    deactivate Availability
+
+    AvailabilityController -> AvailabilityController : routeToManagerExceptionQueue(requestId)
+
+    AvailabilityController -> AuditLog : logAction(teacherId, "LATE_AVAILABILITY_FLAGGED", "Pending manager review for: " + month)
+    activate AuditLog
+    deactivate AuditLog
+
+    AvailabilityController --> TeacherUI : LateSubmissionNotice(LATE_PENDING)
+    TeacherUI --> Teacher : AlertModal("Cutoff exceeded: changes routed to Manager Exception Queue")
 end
 
-Manager -> AllocationUI : finalizeAbsenceResolution()
-activate AllocationUI
-AllocationUI -> AllocationController : confirmBatchResolution(teacherId, absenceDate)
-activate AllocationController
-AllocationController --> AllocationUI : BatchComplete
-deactivate AllocationController
-AllocationUI --> Manager : EmergencyAbsenceResolved
-deactivate AllocationUI
+deactivate AvailabilityController
+deactivate TeacherUI
+deactivate Teacher
 
 @enduml

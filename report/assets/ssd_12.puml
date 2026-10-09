@@ -13,111 +13,60 @@ skinparam sequence {
     ActorBackgroundColor #EFF6FF
 }
 
-title SSD-12 : Request Peer Lesson Swap
+title SSD-12 : Onboard New Staff & Manager Accounts
 
-actor "Initiating Teacher" as Teacher
-participant ":TeacherUI" as TeacherUI
-participant ":SwapController" as SwapController
-participant ":ConflictValidator" as ConflictValidator
-participant ":Lesson" as Lesson
-actor "Peer Teacher" as Colleague
-participant ":TeacherUI" as ColleagueUI
-actor Manager
-participant ":ManagerDashboardUI" as ManagerUI
+actor "IT Administrator" as ITAdmin
+participant ":AdminUI" as AdminUI
+participant ":AccountController" as AccountController
+participant ":User" as User
+participant ":Teacher" as Teacher
 participant ":AuditLog" as AuditLog
 
-Teacher -> TeacherUI : selectLesson(lessonId)
-activate Teacher
-activate TeacherUI
-TeacherUI --> Teacher : LessonView
-deactivate TeacherUI
+ITAdmin -> AdminUI : openUserManagement()
+activate ITAdmin
+activate AdminUI
+AdminUI -> AccountController : loadRoles()
+activate AccountController
+AccountController --> AdminUI : AvailableRoles(Teacher, Manager, IT_Administrator)
+deactivate AccountController
+AdminUI --> ITAdmin : OnboardingFormView
+deactivate AdminUI
 
-Teacher -> TeacherUI : proposeSwap(lessonId, colleagueId, exchangeSlot)
-activate TeacherUI
-TeacherUI -> SwapController : proposeSwap(lessonId, colleagueId, exchangeSlot)
-activate SwapController
+ITAdmin -> AdminUI : submitStaffParticulars(name, staffId, email, role)
+activate AdminUI
+AdminUI -> AccountController : provisionUser(name, email, role)
+activate AccountController
 
-SwapController -> ConflictValidator : validateAllocationRules(teacher, studio, exchangeSlot)
-activate ConflictValidator
-ConflictValidator --> SwapController : ValidationResult
-deactivate ConflictValidator
+AccountController -> User : isActiveAccount()
+activate User
+User --> AccountController : Boolean
+deactivate User
 
-alt validation passes without collision
-    SwapController -> ColleagueUI : notifySwapProposal(proposalId, swapDetails)
-    activate ColleagueUI
-    deactivate ColleagueUI
+alt email or staffId already exists
+    AccountController --> AdminUI : DuplicateError
+    AdminUI --> ITAdmin : ErrorView
+else particulars unique
+    AccountController -> User : getStaffId()
+    activate User
+    User --> AccountController : staffId
+    deactivate User
 
-    SwapController --> TeacherUI : ProposalPending
-    TeacherUI --> Teacher : ProposalPendingNotice
-else collision detected
-    SwapController --> TeacherUI : ConflictError
-    TeacherUI --> Teacher : ConflictErrorMessage
-end
+    opt role == Teacher
+        AccountController -> Teacher : hasInstrumentQualification(instrument)
+        activate Teacher
+        Teacher --> AccountController : Boolean
+        deactivate Teacher
+    end
 
-deactivate SwapController
-deactivate TeacherUI
-
-== Peer Teacher Response & Manager Sign-off ==
-
-alt peer teacher confirms swap
-    Colleague -> ColleagueUI : confirmSwapProposal(proposalId)
-    activate Colleague
-    activate ColleagueUI
-    ColleagueUI -> SwapController : confirmSwap(proposalId)
-    activate SwapController
-
-    SwapController -> ManagerUI : notifyManagerSignOffRequired(proposalId)
-    activate ManagerUI
-    deactivate ManagerUI
-
-    SwapController --> ColleagueUI : AwaitingManagerSignOff
-    ColleagueUI --> Colleague : StatusView
-    deactivate ColleagueUI
-    deactivate Colleague
-
-    Manager -> ManagerUI : approveSwap(proposalId)
-    activate Manager
-    activate ManagerUI
-    ManagerUI -> SwapController : confirmSwap(proposalId)
-
-    SwapController -> Lesson : assignTeacher(colleague)
-    activate Lesson
-    Lesson --> SwapController : Boolean
-    deactivate Lesson
-
-    SwapController -> AuditLog : logAction(managerId, "PEER_SWAP_APPROVED", proposalId)
+    AccountController -> AuditLog : logAction(adminId, "PROVISION_USER", "Created " + role + ": " + email)
     activate AuditLog
     deactivate AuditLog
 
-    SwapController --> ManagerUI : SwapComplete
-    ManagerUI --> Manager : ConfirmationMessage
-    deactivate ManagerUI
-    deactivate Manager
-
-    SwapController -> TeacherUI : notifySwapExecuted(proposalId)
-    activate TeacherUI
-    TeacherUI --> Teacher : ScheduleUpdatedView
-    deactivate TeacherUI
-    deactivate SwapController
-else peer teacher declines swap
-    Colleague -> ColleagueUI : declineSwapProposal(proposalId)
-    activate Colleague
-    activate ColleagueUI
-    ColleagueUI -> SwapController : confirmSwap(proposalId)
-    activate SwapController
-
-    SwapController -> AuditLog : logAction(colleagueId, "PEER_SWAP_DECLINED", proposalId)
-    activate AuditLog
-    deactivate AuditLog
-
-    SwapController -> TeacherUI : notifySwapDeclined(proposalId)
-    activate TeacherUI
-    TeacherUI --> Teacher : ProposalDeclinedNotice
-    deactivate TeacherUI
-    deactivate SwapController
-    deactivate ColleagueUI
-    deactivate Colleague
+    AccountController --> AdminUI : CreateSuccess(staffId)
+    AdminUI --> ITAdmin : ConfirmationView
 end
 
-deactivate Teacher
+deactivate AccountController
+deactivate AdminUI
+deactivate ITAdmin
 @enduml

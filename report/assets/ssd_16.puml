@@ -13,72 +13,61 @@ skinparam sequence {
     ActorBackgroundColor #EFF6FF
 }
 
-title SSD-16 : Flag Facility Maintenance Window
+title SSD-16 : Generate Studio Utilization Report
 
-actor "IT Administrator" as ITAdmin
-participant ":AdminUI" as AdminUI
-participant ":StudioController" as StudioController
+actor "Manager" as Manager
+participant ":ManagerDashboardUI" as UI
+participant ":ReportController" as ReportController
+participant ":Schedule" as Schedule
 participant ":Studio" as Studio
-participant ":Lesson" as Lesson
-participant ":AuditLog" as AuditLog
 
-ITAdmin -> AdminUI : selectMaintenanceBlackout(studioId, startTime, endTime, reason)
-activate ITAdmin
-activate AdminUI
-AdminUI -> StudioController : flagMaintenanceWindow(studioId, startTime, endTime, reason)
-activate StudioController
+Manager -> UI : openUtilizationAnalytics()
+activate Manager
+activate UI
 
-StudioController -> Studio : isUnderMaintenanceWindow(timeSlot)
+Manager -> UI : selectReportingPeriod(month)
+UI -> ReportController : generateStudioUtilizationReport(month)
+activate ReportController
+
+ReportController -> Schedule : queryScheduledLessons(month)
+activate Schedule
+Schedule --> ReportController : List<Lesson>
+deactivate Schedule
+
+ReportController -> Studio : queryAllStudios()
 activate Studio
-Studio --> StudioController : Boolean
+Studio --> ReportController : List<Studio>
 deactivate Studio
 
-StudioController -> Lesson : queryLessonsInWindow(studioId, startTime, endTime)
-activate Lesson
-Lesson --> StudioController : List<Lesson>
-deactivate Lesson
-
-opt confirmed lessons exist in blackout window
-    StudioController --> AdminUI : RelocationNoticeDTO(affectedLessons)
-    AdminUI --> ITAdmin : RelocationNoticeView
+loop for each Studio 1..5
+    ReportController -> Schedule : aggregateLessonHours(studioId, month)
+    activate Schedule
+    Schedule --> ReportController : studioHours : float
+    deactivate Schedule
 end
 
-ITAdmin -> AdminUI : confirmBlackoutEntry()
-AdminUI -> StudioController : persistBlackout(studioId, startTime, endTime, reason)
+ReportController -> ReportController : calculateUtilization(totalBookedHours, monthlyCapacityHours)
+activate ReportController
+ReportController -> ReportController : computePeakWindows(studioHours)
+ReportController -> ReportController : computeMaintenanceDowntime(studioHours)
+deactivate ReportController
 
-loop for each affected lesson
-    StudioController -> Lesson : transitionStatus(PendingReallocation)
-    activate Lesson
-    Lesson --> StudioController : Boolean
-    deactivate Lesson
+opt target date range contains active draft rosters
+    ReportController --> UI : AdvisoryNotice("Drafts excluded from confirmed totals")
 end
 
-StudioController -> AuditLog : logAction(adminId, "FLAG_MAINTENANCE", "Blackout flagged for: " + studioId)
-activate AuditLog
-deactivate AuditLog
+ReportController --> UI : UtilizationReport
+deactivate ReportController
 
-StudioController --> AdminUI : MaintenanceScheduleDTO
-deactivate StudioController
-AdminUI --> ITAdmin : ConfirmationDTO
-deactivate AdminUI
+UI --> Manager : UtilizationReportView
 
-opt emergency immediate repair required
-    ITAdmin -> AdminUI : triggerEmergencyLockdown(studioId)
-    activate AdminUI
-    AdminUI -> StudioController : flagMaintenanceWindow(studioId, now, emergencyEnd, "EMERGENCY_LOCKDOWN")
-    activate StudioController
-    StudioController -> Lesson : transitionStatus(PendingReallocation)
-    activate Lesson
-    Lesson --> StudioController : Boolean
-    deactivate Lesson
-    StudioController -> AuditLog : logAction(adminId, "EMERGENCY_LOCKDOWN", studioId)
-    activate AuditLog
-    deactivate AuditLog
-    StudioController --> AdminUI : EmergencyAlertDTO
-    deactivate StudioController
-    AdminUI --> ITAdmin : EmergencyConfirmationView
-    deactivate AdminUI
-end
+Manager -> UI : exportReport(format)
+UI -> ReportController : serializeReport(reportData, format)
+activate ReportController
+ReportController --> UI : ReportFile
+deactivate ReportController
+UI --> Manager : ReportFile
+deactivate UI
+deactivate Manager
 
-deactivate ITAdmin
 @enduml

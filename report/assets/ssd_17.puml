@@ -13,60 +13,70 @@ skinparam sequence {
     ActorBackgroundColor #EFF6FF
 }
 
-title SSD-17 : Generate Studio Utilization Report
+title SSD-17 : Review Labor Compliance & Workload
 
 actor "Manager" as Manager
 participant ":ManagerDashboardUI" as UI
-participant ":ReportController" as ReportController
+participant ":ComplianceController" as ComplianceController
 participant ":Schedule" as Schedule
-participant ":Studio" as Studio
+participant ":Teacher" as Teacher
+participant ":AuditLog" as AuditLog
 
-Manager -> UI : openUtilizationAnalytics()
+Manager -> UI : openLaborCompliancePanel()
 activate Manager
 activate UI
+UI -> ComplianceController : checkWeeklyHours(weekId)
+activate ComplianceController
 
-Manager -> UI : selectReportingPeriod(month)
-UI -> ReportController : generateStudioUtilizationReport(month)
-activate ReportController
-
-ReportController -> Schedule : queryScheduledLessons(month)
+ComplianceController -> Schedule : getActiveTeachers(weekId)
 activate Schedule
-Schedule --> ReportController : List<Lesson>
+Schedule --> ComplianceController : List<Teacher>
 deactivate Schedule
 
-ReportController -> Studio : queryAllStudios()
-activate Studio
-Studio --> ReportController : List<Studio>
-deactivate Studio
-
-loop for each Studio 1..5
-    ReportController -> Schedule : aggregateLessonHours(studioId, month)
-    activate Schedule
-    Schedule --> ReportController : studioHours : float
-    deactivate Schedule
+loop for each teacher
+    ComplianceController -> Teacher : calculateWeeklyWorkload()
+    activate Teacher
+    Teacher --> ComplianceController : weeklyHours : float
+    deactivate Teacher
+    ComplianceController -> ComplianceController : checkStatutoryOvertime(weeklyHours)
 end
 
-ReportController -> ReportController : calculateUtilization(totalBookedHours, monthlyCapacityHours)
-activate ReportController
-ReportController -> ReportController : computePeakWindows(studioHours)
-ReportController -> ReportController : computeMaintenanceDowntime(studioHours)
-deactivate ReportController
+ComplianceController --> UI : ComplianceReport(compliantStaff, warningStaff)
+deactivate ComplianceController
+UI --> Manager : ComplianceDashboardView
 
-opt target date range contains active draft rosters
-    ReportController --> UI : AdvisoryNotice("Drafts excluded from confirmed totals")
+Manager -> UI : inspectDailyDistribution(teacherId)
+UI -> ComplianceController : checkWeeklyHours(weekId)
+activate ComplianceController
+ComplianceController --> UI : DailyDistributionView
+deactivate ComplianceController
+UI --> Manager : DailyDistributionView
+
+opt no staff exceeds 12 daily hours
+    Manager -> UI : submitComplianceSignOff(weekId)
+    UI -> ComplianceController : auditStatutoryLaborCompliance()
+    activate ComplianceController
+    ComplianceController -> AuditLog : logAction(managerId, "COMPLIANCE_SIGN_OFF", weekId)
+    activate AuditLog
+    deactivate AuditLog
+    ComplianceController --> UI : VerificationSnapshot
+    deactivate ComplianceController
+    UI --> Manager : ConfirmationView
 end
 
-ReportController --> UI : UtilizationReport
-deactivate ReportController
+opt instructor in advisory overtime tier (40.0h - 44.0h)
+    UI --> Manager : AdvisoryOvertimeReviewModal
+    Manager -> UI : reviewLoggedOverrideJustification(teacherId)
+    UI -> ComplianceController : checkWeeklyHours(weekId)
+    activate ComplianceController
+    ComplianceController -> AuditLog : logAction(managerId, "AUDIT_ADVISORY_OVERTIME", "Verified override for: " + teacherId)
+    activate AuditLog
+    deactivate AuditLog
+    ComplianceController --> UI : AuditConfirmed
+    deactivate ComplianceController
+    UI --> Manager : AdvisoryAuditConfirmedView
+end
 
-UI --> Manager : UtilizationReportView
-
-Manager -> UI : exportReport(format)
-UI -> ReportController : serializeReport(reportData, format)
-activate ReportController
-ReportController --> UI : ReportFile
-deactivate ReportController
-UI --> Manager : ReportFile
 deactivate UI
 deactivate Manager
 

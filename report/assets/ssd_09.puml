@@ -13,74 +13,49 @@ skinparam sequence {
     ActorBackgroundColor #EFF6FF
 }
 
-title SSD-09 : Submit Weekly Job Preferences
+title SSD-09 : View Confirmed Schedule & Workload
 
 actor Teacher
 participant ":TeacherUI" as TeacherUI
-participant ":PreferenceController" as PreferenceController
+participant ":ScheduleController" as ScheduleController
+participant ":Schedule" as Schedule
 participant ":Teacher" as TeacherEntity
-participant ":Preference" as PreferenceEntity
-participant ":AuditLog" as AuditLog
 
-Teacher -> TeacherUI : openWeeklyPreferences()
+Teacher -> TeacherUI : viewSchedule(teacherId)
 activate Teacher
 activate TeacherUI
-TeacherUI --> Teacher : PreferencesView
-deactivate TeacherUI
 
-Teacher -> TeacherUI : selectPreferredDays(days)
-activate TeacherUI
-TeacherUI --> Teacher : DaysSelected
-deactivate TeacherUI
+TeacherUI -> ScheduleController : getTeacherSchedule(teacherId)
+activate ScheduleController
 
-Teacher -> TeacherUI : toggleBackToBackClustering()
-activate TeacherUI
-TeacherUI --> Teacher : BackToBackToggled
-deactivate TeacherUI
+ScheduleController -> Schedule : getLessonsForTeacher(teacherId)
+activate Schedule
+Schedule --> ScheduleController : List<Lesson>
+deactivate Schedule
 
-Teacher -> TeacherUI : selectPreferredStudio(studioId)
-activate TeacherUI
-TeacherUI --> Teacher : StudioSelected
-deactivate TeacherUI
-
-Teacher -> TeacherUI : submitPreferences(weekId, prefs)
-activate TeacherUI
-TeacherUI -> PreferenceController : submitPreferences(teacherId, weekId, prefs)
-activate PreferenceController
-PreferenceController -> TeacherEntity : isAvailable()
+ScheduleController -> TeacherEntity : calculateWeeklyWorkload()
 activate TeacherEntity
-TeacherEntity --> PreferenceController : Boolean
+TeacherEntity --> ScheduleController : weeklyHours : float
 deactivate TeacherEntity
-PreferenceController -> PreferenceController : validateAgainstAvailability(teacherId, prefs)
 
-alt preferences compatible with availability
-    PreferenceController -> PreferenceEntity : matchesPreference(lesson)
-    activate PreferenceEntity
-    PreferenceEntity --> PreferenceController : Boolean
-    deactivate PreferenceEntity
-    PreferenceController -> AuditLog : logAction(teacherId, "SUBMIT_PREFERENCES", "Preferences submitted for week: " + weekId)
-    activate AuditLog
-    deactivate AuditLog
-    PreferenceController --> TeacherUI : SubmitResult
-    TeacherUI --> Teacher : ConfirmationView
-else preferences conflict with availability
-    PreferenceController --> TeacherUI : ConflictResult
-    TeacherUI --> Teacher : ConflictWarningView
+ScheduleController -> TeacherEntity : calculateMonthlyWorkload()
+activate TeacherEntity
+TeacherEntity --> ScheduleController : monthlyHours : float
+deactivate TeacherEntity
 
-    Teacher -> TeacherUI : adjustPreferences(weekId, revisedPrefs)
-    TeacherUI -> PreferenceController : submitPreferences(teacherId, weekId, revisedPrefs)
-    PreferenceController -> PreferenceEntity : matchesPreference(lesson)
-    activate PreferenceEntity
-    PreferenceEntity --> PreferenceController : Boolean
-    deactivate PreferenceEntity
-    PreferenceController -> AuditLog : logAction(teacherId, "ADJUST_PREFERENCES", "Preferences adjusted for week: " + weekId)
-    activate AuditLog
-    deactivate AuditLog
-    PreferenceController --> TeacherUI : SubmitResult
-    TeacherUI --> Teacher : ConfirmationView
+alt status == Published
+    ScheduleController --> TeacherUI : ScheduleData(lessons, weeklyHours, monthlyHours, isPublished=true)
+    note right of TeacherUI
+      PII masked: student first name,
+      instrument, studio number only
+    end note
+else status == Draft
+    ScheduleController --> TeacherUI : ScheduleData(lessons, weeklyHours, monthlyHours, isPublished=false)
 end
 
-deactivate PreferenceController
+deactivate ScheduleController
+TeacherUI --> Teacher : ScheduleView
 deactivate TeacherUI
 deactivate Teacher
+
 @enduml

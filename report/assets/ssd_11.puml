@@ -13,62 +13,111 @@ skinparam sequence {
     ActorBackgroundColor #EFF6FF
 }
 
-title SSD-11 : Submit Job Rejection Request
+title SSD-11 : Request Peer Lesson Swap
 
-actor Teacher
+actor "Initiating Teacher" as Teacher
 participant ":TeacherUI" as TeacherUI
-participant ":RejectionController" as RejectionController
+participant ":SwapController" as SwapController
+participant ":ConflictValidator" as ConflictValidator
 participant ":Lesson" as Lesson
+actor "Peer Teacher" as Colleague
+participant ":TeacherUI" as ColleagueUI
+actor Manager
+participant ":ManagerDashboardUI" as ManagerUI
 participant ":AuditLog" as AuditLog
 
-Teacher -> TeacherUI : selectConfirmedLesson(lessonId)
+Teacher -> TeacherUI : selectLesson(lessonId)
 activate Teacher
 activate TeacherUI
-
-TeacherUI --> Teacher : LessonDetailsView
+TeacherUI --> Teacher : LessonView
 deactivate TeacherUI
-deactivate Teacher
 
-Teacher -> TeacherUI : requestJobRejection(lessonId)
-activate Teacher
+Teacher -> TeacherUI : proposeSwap(lessonId, colleagueId, exchangeSlot)
 activate TeacherUI
+TeacherUI -> SwapController : proposeSwap(lessonId, colleagueId, exchangeSlot)
+activate SwapController
 
-TeacherUI --> Teacher : ModalPrompt
+SwapController -> ConflictValidator : validateAllocationRules(teacher, studio, exchangeSlot)
+activate ConflictValidator
+ConflictValidator --> SwapController : ValidationResult
+deactivate ConflictValidator
 
-alt Teacher clicks Proceed
-    Teacher -> TeacherUI : proceedWithRejection()
-    TeacherUI --> Teacher : RejectionForm
+alt validation passes without collision
+    SwapController -> ColleagueUI : notifySwapProposal(proposalId, swapDetails)
+    activate ColleagueUI
+    deactivate ColleagueUI
 
-    note right of TeacherUI
-      Reason codes: Scheduling Conflict,
-      Pedagogical Mismatch, Personal / Medical
-    end note
+    SwapController --> TeacherUI : ProposalPending
+    TeacherUI --> Teacher : ProposalPendingNotice
+else collision detected
+    SwapController --> TeacherUI : ConflictError
+    TeacherUI --> Teacher : ConflictErrorMessage
+end
 
-    Teacher -> TeacherUI : submitRejection(reasonCode, remarks)
-    TeacherUI -> RejectionController : submitRejectionRequest(lessonId, reasonCode, remarks)
-    activate RejectionController
+deactivate SwapController
+deactivate TeacherUI
 
-    RejectionController -> Lesson : transitionStatus(PendingReallocation)
+== Peer Teacher Response & Manager Sign-off ==
+
+alt peer teacher confirms swap
+    Colleague -> ColleagueUI : confirmSwapProposal(proposalId)
+    activate Colleague
+    activate ColleagueUI
+    ColleagueUI -> SwapController : confirmSwap(proposalId)
+    activate SwapController
+
+    SwapController -> ManagerUI : notifyManagerSignOffRequired(proposalId)
+    activate ManagerUI
+    deactivate ManagerUI
+
+    SwapController --> ColleagueUI : AwaitingManagerSignOff
+    ColleagueUI --> Colleague : StatusView
+    deactivate ColleagueUI
+    deactivate Colleague
+
+    Manager -> ManagerUI : approveSwap(proposalId)
+    activate Manager
+    activate ManagerUI
+    ManagerUI -> SwapController : confirmSwap(proposalId)
+
+    SwapController -> Lesson : assignTeacher(colleague)
     activate Lesson
-    Lesson --> RejectionController : Boolean
+    Lesson --> SwapController : Boolean
     deactivate Lesson
 
-    RejectionController -> RejectionController : routeToManagerExceptionQueue(lessonId)
-
-    RejectionController -> AuditLog : logAction(teacherId, "REJECTION_REQUEST", lessonId)
+    SwapController -> AuditLog : logAction(managerId, "PEER_SWAP_APPROVED", proposalId)
     activate AuditLog
     deactivate AuditLog
 
-    RejectionController --> TeacherUI : RejectionResult
-    deactivate RejectionController
+    SwapController --> ManagerUI : SwapComplete
+    ManagerUI --> Manager : ConfirmationMessage
+    deactivate ManagerUI
+    deactivate Manager
 
-    TeacherUI --> Teacher : ConfirmationMessage
-else Teacher declines modal
-    Teacher -> TeacherUI : cancelRejection()
-    TeacherUI --> Teacher : LessonDetailsView
+    SwapController -> TeacherUI : notifySwapExecuted(proposalId)
+    activate TeacherUI
+    TeacherUI --> Teacher : ScheduleUpdatedView
+    deactivate TeacherUI
+    deactivate SwapController
+else peer teacher declines swap
+    Colleague -> ColleagueUI : declineSwapProposal(proposalId)
+    activate Colleague
+    activate ColleagueUI
+    ColleagueUI -> SwapController : confirmSwap(proposalId)
+    activate SwapController
+
+    SwapController -> AuditLog : logAction(colleagueId, "PEER_SWAP_DECLINED", proposalId)
+    activate AuditLog
+    deactivate AuditLog
+
+    SwapController -> TeacherUI : notifySwapDeclined(proposalId)
+    activate TeacherUI
+    TeacherUI --> Teacher : ProposalDeclinedNotice
+    deactivate TeacherUI
+    deactivate SwapController
+    deactivate ColleagueUI
+    deactivate Colleague
 end
 
-deactivate TeacherUI
 deactivate Teacher
-
 @enduml

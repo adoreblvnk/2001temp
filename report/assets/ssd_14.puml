@@ -13,74 +13,48 @@ skinparam sequence {
     ActorBackgroundColor #EFF6FF
 }
 
-title SSD-14 : Manage User Account Status & Access
+title SSD-14 : Configure Studio & Instrument Setup
 
 actor "IT Administrator" as ITAdmin
 participant ":AdminUI" as AdminUI
-participant ":AccountController" as AccountController
-participant ":User" as User
-participant ":Lesson" as Lesson
+participant ":StudioController" as StudioController
+participant ":Studio" as Studio
+participant ":ConflictValidator" as ConflictValidator
 participant ":AuditLog" as AuditLog
 
-ITAdmin -> AdminUI : searchAccount(keyword)
+ITAdmin -> AdminUI : accessStudioConfig()
 activate ITAdmin
 activate AdminUI
-AdminUI -> AccountController : searchUsers(keyword)
-activate AccountController
-AccountController -> User : getFullName()
-activate User
-User --> AccountController : userMatches
-deactivate User
-AccountController --> AdminUI : UserList
-deactivate AccountController
-AdminUI --> ITAdmin : UserListView
+AdminUI -> StudioController : getStudioInventory()
+activate StudioController
+StudioController -> Studio : hasDrumKitInstalled()
+activate Studio
+Studio --> StudioController : Boolean
+deactivate Studio
+StudioController --> AdminUI : StudioList
+deactivate StudioController
+AdminUI --> ITAdmin : StudioRegistryView
 deactivate AdminUI
 
-ITAdmin -> AdminUI : selectAccount(userId)
+== Configure Operating Hours ==
+
+ITAdmin -> AdminUI : configureOperatingHours(hours)
 activate AdminUI
-AdminUI -> AccountController : getUserProfile(userId)
-activate AccountController
-AccountController -> User : isActiveAccount()
-activate User
-User --> AccountController : Boolean
-deactivate User
-AccountController -> Lesson : getLessonsForTeacher(userId)
-activate Lesson
-Lesson --> AccountController : List<Lesson>
-deactivate Lesson
-AccountController --> AdminUI : ProfileView(profile, allocations)
-deactivate AccountController
-AdminUI --> ITAdmin : ProfileDisplay
-deactivate AdminUI
-
-== Deactivate Account (only removal action offered) ==
-
-ITAdmin -> AdminUI : selectDeactivateAccount(userId)
-activate AdminUI
-AdminUI --> ITAdmin : DeactivateWarning
-deactivate AdminUI
-
-ITAdmin -> AdminUI : confirmDeactivate()
-activate AdminUI
-AdminUI -> AccountController : deactivateUser(userId)
-activate AccountController
-
-AccountController -> User : isActiveAccount()
-activate User
-User --> AccountController : false
-deactivate User
-
-AccountController -> Lesson : transitionStatus(PendingReallocation)
-activate Lesson
-Lesson --> AccountController : Boolean
-deactivate Lesson
-
-AccountController -> AuditLog : logAction(adminId, "DEACTIVATE_USER", userId)
+AdminUI -> StudioController : configureStudio(studioId, name, hasPiano)
+activate StudioController
+StudioController -> Studio : isOccupied(timeSlot)
+activate Studio
+Studio --> StudioController : Boolean
+deactivate Studio
+StudioController -> ConflictValidator : checkRoomAvailability(studio, timeSlot)
+activate ConflictValidator
+ConflictValidator --> StudioController : Boolean
+deactivate ConflictValidator
+StudioController -> AuditLog : logAction(adminId, "CONFIGURE_STUDIO", studioId)
 activate AuditLog
 deactivate AuditLog
-
-AccountController --> AdminUI : DeactivateResult
-deactivate AccountController
+StudioController --> AdminUI : ConfigResult
+deactivate StudioController
 AdminUI --> ITAdmin : ConfirmationView
 deactivate AdminUI
 
