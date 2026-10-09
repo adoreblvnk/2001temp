@@ -32,10 +32,18 @@ activate AC
 
 AC -> CV : validateAllocationRules(teacher, studio, timeSlot)
 activate CV
+
+== Stage 1: Static Invariant Validation ==
+CV -> T : hasInstrumentQualification(instrument)
+activate T
+T --> CV : isQualified : Boolean
+deactivate T
 CV -> St : hasDrumKitInstalled()
 activate St
 St --> CV : isDrumRoom : Boolean
 deactivate St
+
+== Stage 2: Dynamic State Validation ==
 CV -> St : isOccupied(timeSlot)
 activate St
 St --> CV : roomOccupied : Boolean
@@ -44,10 +52,6 @@ CV -> St : isUnderMaintenanceWindow(timeSlot)
 activate St
 St --> CV : underMaintenance : Boolean
 deactivate St
-CV -> T : hasInstrumentQualification(instrument)
-activate T
-T --> CV : isQualified : Boolean
-deactivate T
 CV -> T : isAvailable()
 activate T
 T --> CV : isFree : Boolean

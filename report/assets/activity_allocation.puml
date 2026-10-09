@@ -31,14 +31,25 @@ repeat
     :Select candidate teacher, studio,
     and 30-min time slot;
     |System|
-    :Validate allocation constraints
-    (instrument qualification, Studio 5 drum rule,
-    room availability, and 4h continuous limit);
-backward:Display specific validation error
-(qualification clash, room collision, or fatigue breach);
-|Manager|
-:Review feedback and adjust selection;
-repeat while (All allocation constraints satisfied?) is ([no - Constraint Violation]) not ([yes - All Checks Pass])
+    :Stage 1: Validate Static Invariants
+    (teacher instrument qualification,
+    Studio 5 drum acoustic exclusivity);
+    backward:Display static validation error
+    ("Uncertified instrument" or "Drums restricted to Studio 5");
+    |Manager|
+    :Adjust teacher or studio selection;
+repeat while (Static invariants satisfied?) is ([no - Static Invariant Violation]) not ([yes - Invariants Pass])
+
+|System|
+repeat
+    :Stage 2: Validate Dynamic Constraints
+    (studio unoccupied, teacher available,
+    continuous teaching block <= 4.0h);
+    backward:Display dynamic validation error
+    ("Room collision", "Teacher unavailable", or "Fatigue limit");
+    |Manager|
+    :Adjust time slot or candidate selection;
+repeat while (Dynamic constraints satisfied?) is ([no - Dynamic Constraint Violation]) not ([yes - All Checks Pass])
 
 |System|
 :Calculate projected weekly workload
@@ -46,15 +57,19 @@ repeat while (All allocation constraints satisfied?) is ([no - Constraint Violat
 
 if (Projected weekly workload > 40.0h?) then ([yes - Workload Exceeds 40h])
     |Manager|
-    if (Projected weekly workload > 44.0h?) then ([yes - Statutory Cap (>44h)])
-        :Review statutory compliance alert:
-        "Statutory 44h cap reached";
-        :Acknowledge alert and record
-        emergency overtime authorization;
-    else ([no - Advisory Tier (40h-44h)])
+    if (Projected weekly workload > 44.0h?) then ([yes - Statutory Cap (>44.0h)])
+        |System|
+        :Display statutory compliance block:
+        "Statutory 44.0h ceiling reached —
+        assignment strictly barred under Employment Act";
+        |Manager|
+        :Selection barred; re-select another candidate;
+        stop
+    else ([no - Advisory Tier (40.5h - 44.0h)])
         :Review advisory notification:
         "Workload exceeds 40h guideline";
-        :Confirm managerial soft-warning override;
+        :Confirm managerial soft-warning override
+        with logged justification;
     endif
 else ([no - Nominal Workload <= 40.0h])
 endif

@@ -64,27 +64,17 @@ opt no staff exceeds 12 daily hours
     UI --> Manager : ConfirmationView
 end
 
-opt instructor exceeds 44h threshold
-    UI --> Manager : ComplianceWarningModal
-    opt manager elects corrective re-allocation
-        Manager -> UI : submitCorrectiveReallocation(teacherId, lessonIds)
-        UI -> ComplianceController : checkWeeklyHours(weekId)
-        activate ComplianceController
-        ComplianceController --> UI : ReallocationSuccess
-        deactivate ComplianceController
-        UI --> Manager : ReallocationConfirmationView
-    end
-    opt manager records emergency overtime justification
-        Manager -> UI : submitJustification(teacherId, justificationText)
-        UI -> ComplianceController : auditStatutoryLaborCompliance()
-        activate ComplianceController
-        ComplianceController -> AuditLog : logAction(managerId, "OVERTIME_JUSTIFICATION", justificationText)
-        activate AuditLog
-        deactivate AuditLog
-        ComplianceController --> UI : JustificationLogged
-        deactivate ComplianceController
-        UI --> Manager : JustificationConfirmationView
-    end
+opt instructor in advisory overtime tier (40.0h - 44.0h)
+    UI --> Manager : AdvisoryOvertimeReviewModal
+    Manager -> UI : reviewLoggedOverrideJustification(teacherId)
+    UI -> ComplianceController : checkWeeklyHours(weekId)
+    activate ComplianceController
+    ComplianceController -> AuditLog : logAction(managerId, "AUDIT_ADVISORY_OVERTIME", "Verified override for: " + teacherId)
+    activate AuditLog
+    deactivate AuditLog
+    ComplianceController --> UI : AuditConfirmed
+    deactivate ComplianceController
+    UI --> Manager : AdvisoryAuditConfirmedView
 end
 
 deactivate UI
