@@ -25,6 +25,35 @@ participant ":Teacher" as T
 participant ":Lesson" as L
 participant ":AuditLog" as AL
 
+== Upfront Filtering (Static Invariants) ==
+
+M -> UI : selectLessonSlot(lessonId)
+activate UI
+UI -> AC : getAllocationOptions(lessonId)
+activate AC
+AC -> CV : findQualifiedTeachers(instrument)
+activate CV
+CV -> T : hasInstrumentQualification(instrument)
+activate T
+T --> CV : isQualified : Boolean
+deactivate T
+CV --> AC : List<Teacher> (certified only)
+deactivate CV
+AC -> CV : findEligibleStudios(instrument)
+activate CV
+CV -> St : hasDrumKitInstalled()
+activate St
+St --> CV : isDrumRoom : Boolean
+deactivate St
+CV --> AC : List<Studio> (Drums: Studio 5 only)
+deactivate CV
+AC --> UI : AllocationOptions(candidates, eligibleStudios)
+deactivate AC
+UI --> M : candidate panel and filtered studio picker
+deactivate UI
+
+== Allocation Request ==
+
 M -> UI : selectJobAllocation(lessonId, teacherId, studioId, timeSlot)
 activate UI
 UI -> AC : allocateWeeklyJob(lessonId, teacherId, studioId, timeSlot)
@@ -33,17 +62,7 @@ activate AC
 AC -> CV : validateAllocationRules(teacher, studio, timeSlot)
 activate CV
 
-== Stage 1: Static Invariant Validation ==
-CV -> T : hasInstrumentQualification(instrument)
-activate T
-T --> CV : isQualified : Boolean
-deactivate T
-CV -> St : hasDrumKitInstalled()
-activate St
-St --> CV : isDrumRoom : Boolean
-deactivate St
-
-== Stage 2: Dynamic State Validation ==
+== Dynamic State Validation ==
 CV -> St : isOccupied(timeSlot)
 activate St
 St --> CV : roomOccupied : Boolean

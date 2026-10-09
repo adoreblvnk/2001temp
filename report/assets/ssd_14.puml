@@ -53,47 +53,36 @@ deactivate AccountController
 AdminUI --> ITAdmin : ProfileDisplay
 deactivate AdminUI
 
-== Select Account Action ==
+== Deactivate Account (only removal action offered) ==
 
-alt Deactivate Account selected
-    ITAdmin -> AdminUI : selectDeactivateAccount(userId)
-    activate AdminUI
-    AdminUI --> ITAdmin : DeactivateWarning
-    deactivate AdminUI
+ITAdmin -> AdminUI : selectDeactivateAccount(userId)
+activate AdminUI
+AdminUI --> ITAdmin : DeactivateWarning
+deactivate AdminUI
 
-    ITAdmin -> AdminUI : confirmDeactivate()
-    activate AdminUI
-    AdminUI -> AccountController : deactivateUser(userId)
-    activate AccountController
+ITAdmin -> AdminUI : confirmDeactivate()
+activate AdminUI
+AdminUI -> AccountController : deactivateUser(userId)
+activate AccountController
 
-    AccountController -> User : isActiveAccount()
-    activate User
-    User --> AccountController : false
-    deactivate User
+AccountController -> User : isActiveAccount()
+activate User
+User --> AccountController : false
+deactivate User
 
-    AccountController -> Lesson : transitionStatus(PendingReallocation)
-    activate Lesson
-    Lesson --> AccountController : Boolean
-    deactivate Lesson
+AccountController -> Lesson : transitionStatus(PendingReallocation)
+activate Lesson
+Lesson --> AccountController : Boolean
+deactivate Lesson
 
-    AccountController -> AuditLog : logAction(adminId, "DEACTIVATE_USER", userId)
-    activate AuditLog
-    deactivate AuditLog
+AccountController -> AuditLog : logAction(adminId, "DEACTIVATE_USER", userId)
+activate AuditLog
+deactivate AuditLog
 
-    AccountController --> AdminUI : DeactivateResult
-    deactivate AccountController
-    AdminUI --> ITAdmin : ConfirmationView
-    deactivate AdminUI
-else Physical deletion attempted
-    ITAdmin -> AdminUI : requestPhysicalDelete(userId)
-    activate AdminUI
-    AdminUI -> AccountController : deactivateUser(userId)
-    activate AccountController
-    AccountController --> AdminUI : OperationProhibitedError
-    deactivate AccountController
-    AdminUI --> ITAdmin : ErrorView
-    deactivate AdminUI
-end
+AccountController --> AdminUI : DeactivateResult
+deactivate AccountController
+AdminUI --> ITAdmin : ConfirmationView
+deactivate AdminUI
 
 deactivate ITAdmin
 @enduml

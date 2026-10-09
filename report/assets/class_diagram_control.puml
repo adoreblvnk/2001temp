@@ -64,7 +64,8 @@ package "Control Layer" {
     class ConflictValidator <<Control>> {
         +validateAllocationRules(teacher : Teacher, studio : Studio, slot : TimeSlot) : ValidationResult
         +checkContinuousTeachingLimit(teacher : Teacher, slot : TimeSlot) : Boolean
-        +checkDrumExclusivity(instrument : InstrumentType, studio : Studio) : Boolean
+        +findQualifiedTeachers(instrument : InstrumentType) : List<Teacher>
+        +findEligibleStudios(instrument : InstrumentType) : List<Studio>
         +checkRoomAvailability(studio : Studio, slot : TimeSlot) : Boolean
         +checkTeacherAvailability(teacher : Teacher, slot : TimeSlot) : Boolean
     }
@@ -88,7 +89,7 @@ package "Control Layer" {
         +deactivateUser(staffId : String) : Boolean
     }
     class StudioController <<Control>> {
-        +configureStudio(studioId : String, name : String, hasPiano : Boolean, hasDrum : Boolean) : Boolean
+        +configureStudio(studioId : String, name : String, hasPiano : Boolean) : Boolean
         +flagMaintenanceWindow(studioId : String, start : DateTime, end : DateTime, reason : String) : Boolean
     }
     class ReportController <<Control>> {

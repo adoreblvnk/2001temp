@@ -20,29 +20,28 @@ start
 |System|
 :Retrieve lesson parameters
 (Instrument, Student, Duration);
-:Query candidate teacher qualifications,
-availability, running workloads,
+
+:Filter candidate teachers to those certified
+for the lesson instrument
+(uncertified teachers are never listed);
+:Query candidate availability, running workloads,
 preferences, and studio reservations;
 :Render allocation matrix
-(displaying up to 3 candidate teachers side-by-side);
+(displaying up to 3 certified candidate teachers side-by-side);
 
 |Manager|
-repeat
-    :Select candidate teacher, studio,
-    and 30-min time slot;
-    |System|
-    :Stage 1: Validate Static Invariants
-    (teacher instrument qualification,
-    Studio 5 drum acoustic exclusivity);
-    backward:Display static validation error
-    ("Uncertified instrument" or "Drums restricted to Studio 5");
-    |Manager|
-    :Adjust teacher or studio selection;
-repeat while (Static invariants satisfied?) is ([no - Static Invariant Violation]) not ([yes - Invariants Pass])
+:Select candidate teacher;
+
+|System|
+:Restrict studio picker to instrument-compatible studios
+(Drums: Studio 5 only; incompatible studios disabled);
+
+|Manager|
+:Select eligible studio and 30-min time slot;
 
 |System|
 repeat
-    :Stage 2: Validate Dynamic Constraints
+    :Validate Dynamic Constraints
     (studio unoccupied, teacher available,
     continuous teaching block <= 4.0h);
     backward:Display dynamic validation error
