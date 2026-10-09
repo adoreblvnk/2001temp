@@ -53,7 +53,6 @@ deactivate AccountController
 AdminUI --> ITAdmin : ProfileDisplay
 deactivate AdminUI
 
-== Deactivate Account (only removal action offered) ==
 
 ITAdmin -> AdminUI : selectDeactivateAccount(userId)
 activate AdminUI

@@ -25,7 +25,6 @@ participant ":Teacher" as T
 participant ":Lesson" as L
 participant ":AuditLog" as AL
 
-== Upfront Candidate & Studio Filtering ==
 
 M -> UI : selectLessonSlot(lessonId)
 activate UI
@@ -71,14 +70,12 @@ deactivate AC
 UI --> M : candidate panel and filtered studio picker
 deactivate UI
 
-== Allocation Request ==
 
 M -> UI : selectJobAllocation(lessonId, teacherId, studioId)
 activate UI
 UI -> AC : allocateWeeklyJob(lessonId, teacherId, studioId)
 activate AC
 
-== Save-time Re-validation (Concurrent Changes) ==
 
 AC -> CV : validateAllocationRules(teacher, studio, timeSlot)
 activate CV

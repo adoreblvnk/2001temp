@@ -36,7 +36,6 @@ deactivate StudioController
 AdminUI --> ITAdmin : StudioRegistryView
 deactivate AdminUI
 
-== Configure Operating Hours ==
 
 ITAdmin -> AdminUI : configureOperatingHours(hours)
 activate AdminUI

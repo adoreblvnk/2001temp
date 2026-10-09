@@ -34,7 +34,6 @@ activate Lesson
 Lesson --> AllocationController : List<Lesson>
 deactivate Lesson
 
-== Auto-compute eligible substitutes for each lesson ==
 
 loop for each confirmed lesson
     AllocationController -> ConflictValidator : findEligibleCandidates(instrument, weekId)
@@ -48,7 +47,6 @@ deactivate AllocationController
 AllocationUI --> Manager : AbsenceView (lessons + candidate lists)
 deactivate AllocationUI
 
-== Manager selects substitutes ==
 
 loop for each confirmed lesson
     alt substitute available

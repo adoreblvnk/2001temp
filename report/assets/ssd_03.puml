@@ -34,7 +34,6 @@ activate L
 L --> AC : List<Lesson>
 deactivate L
 
-== Auto-compute eligible substitutes for each rejection ==
 
 loop for each rejected lesson
     AC -> CV : findEligibleCandidates(instrument, weekId)
