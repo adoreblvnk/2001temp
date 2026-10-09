@@ -31,13 +31,17 @@ M -> UI : selectLessonSlot(lessonId)
 activate UI
 UI -> AC : getAllocationOptions(lessonId)
 activate AC
-AC -> CV : findQualifiedTeachers(instrument)
+AC -> CV : findEligibleCandidates(instrument, weekId)
 activate CV
 CV -> T : hasInstrumentQualification(instrument)
 activate T
 T --> CV : isQualified : Boolean
 deactivate T
-CV --> AC : List<Teacher> (certified only)
+CV -> T : calculateWeeklyWorkload()
+activate T
+T --> CV : currentHours : float
+deactivate T
+CV --> AC : List<Teacher> (certified & projected <= 44.0h)
 deactivate CV
 AC -> CV : findEligibleStudios(instrument)
 activate CV
@@ -82,10 +86,7 @@ CV --> AC : ValidationResult
 deactivate CV
 
 alt validationResult.isValid == true
-    alt teacher weeklyHours + 0.5 > 44.0h
-        AC --> UI : displayStatutoryCapBlock()
-        UI --> M : statutory 44h block modal
-    else teacher weeklyHours + 0.5 > 40.0h
+    alt teacher weeklyHours + 0.5 > 40.0h
         AC --> UI : promptOverCapacityWarningModal()
         M -> UI : confirmManagerialOverride(justification)
         UI -> AC : submitManagerialOverride(justification)
@@ -105,7 +106,7 @@ alt validationResult.isValid == true
         activate S
         S --> AC : Boolean
         deactivate S
-        AC -> AL : logAction(managerId, "ALLOCATE_JOB", lessonId)
+        AC -> AL : logAction(managerId, "ALLOCATE_JOB_OVERRIDE", lessonId)
         activate AL
         deactivate AL
         AC --> UI : allocationSuccess(lessonId)

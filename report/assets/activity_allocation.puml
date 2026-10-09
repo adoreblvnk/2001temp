@@ -22,8 +22,9 @@ start
 (Instrument, Student, Duration);
 
 :Filter candidate teachers to those certified
-for the lesson instrument
-(uncertified teachers are never listed);
+for the lesson instrument with projected
+weekly workload <= 44.0h
+(uncertified or over-capacity staff excluded);
 :Query candidate availability, running workloads,
 preferences, and studio reservations;
 :Render allocation matrix
@@ -54,22 +55,12 @@ repeat while (Dynamic constraints satisfied?) is ([no - Dynamic Constraint Viola
 :Calculate projected weekly workload
 (including +0.5h for current lesson);
 
-if (Projected weekly workload > 40.0h?) then ([yes - Workload Exceeds 40h])
+if (Projected weekly workload > 40.0h?) then ([yes - Advisory Tier (40.5h - 44.0h)])
     |Manager|
-    if (Projected weekly workload > 44.0h?) then ([yes - Statutory Cap (>44.0h)])
-        |System|
-        :Display statutory compliance block:
-        "Statutory 44.0h ceiling reached —
-        assignment strictly barred under Employment Act";
-        |Manager|
-        :Selection barred; re-select another candidate;
-        stop
-    else ([no - Advisory Tier (40.5h - 44.0h)])
-        :Review advisory notification:
-        "Workload exceeds 40h guideline";
-        :Confirm managerial soft-warning override
-        with logged justification;
-    endif
+    :Review advisory notification:
+    "Workload exceeds 40h guideline";
+    :Confirm managerial soft-warning override
+    with logged justification;
 else ([no - Nominal Workload <= 40.0h])
 endif
 

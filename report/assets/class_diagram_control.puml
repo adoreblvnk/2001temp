@@ -64,7 +64,7 @@ package "Control Layer" {
     class ConflictValidator <<Control>> {
         +validateAllocationRules(teacher : Teacher, studio : Studio, slot : TimeSlot) : ValidationResult
         +checkContinuousTeachingLimit(teacher : Teacher, slot : TimeSlot) : Boolean
-        +findQualifiedTeachers(instrument : InstrumentType) : List<Teacher>
+        +findEligibleCandidates(instrument : InstrumentType, weekId : String) : List<Teacher>
         +findEligibleStudios(instrument : InstrumentType) : List<Studio>
         +checkRoomAvailability(studio : Studio, slot : TimeSlot) : Boolean
         +checkTeacherAvailability(teacher : Teacher, slot : TimeSlot) : Boolean
