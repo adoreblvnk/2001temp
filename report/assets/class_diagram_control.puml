@@ -38,12 +38,16 @@ package "Boundary Layer" {
         +renderAvailabilityGrid() : void
         +displayRejectionModal() : void
         +renderPreferencesView() : void
-        +renderSwapInterface() : void
     }
     class AdminUI <<Boundary>> {
         +renderUserManagementConsole() : void
         +renderStudioConfigPanel() : void
         +renderMaintenanceWindowModal() : void
+    }
+    class AuditLogUI <<Boundary>> {
+        +renderAuditConsole() : void
+        +displayFilteredRecords(logs : List<AuditLog>) : void
+        +showExportConfirmation() : void
     }
 }
 
@@ -55,7 +59,7 @@ package "Control Layer" {
         +flagWorkloadOutliers() : List<Teacher>
     }
     class AllocationController <<Control>> {
-        +allocateWeeklyJob(lessonId : String, teacherId : String, studioId : String, slot : TimeSlot) : Boolean
+        +allocateLessonSlot(lessonId : String, teacherId : String, studioId : String, slot : TimeSlot) : Boolean
         +reallocateLesson(lessonId : String, substituteTeacherId : String) : Boolean
         +handleEmergencySubstitute(teacherId : String, date : Date) : Boolean
         +cancelAllocation(lessonId : String) : Boolean
@@ -78,11 +82,6 @@ package "Control Layer" {
         +submitRejectionRequest(lessonId : String, reasonCode : String, remarks : String) : Boolean
         +reviewRejectionTicket(requestId : String) : RejectionTicket
         +resolveRejection(requestId : String, outcome : String) : Boolean
-    }
-    class SwapController <<Control>> {
-        +proposeSwap(lessonId : String, colleagueId : String, slot : TimeSlot) : Boolean
-        +validateSwap(proposalId : String) : Boolean
-        +confirmSwap(proposalId : String) : Boolean
     }
     class AccountController <<Control>> {
         +provisionUser(fullName : String, email : String, role : Role) : Boolean
@@ -107,6 +106,11 @@ package "Control Layer" {
         +submitPreferences(teacherId : String, weekId : String, prefs : Preference) : Boolean
         +validateAgainstAvailability(teacherId : String, prefs : Preference) : Boolean
     }
+    class AuditLogController <<Control>> {
+        +recordAuditEntry(actorId : String, action : String, details : String) : Boolean
+        +queryAuditLogs(actorFilter : String, actionFilter : String) : List<AuditLog>
+        +exportAuditTrail(format : String) : File
+    }
 }
 
 ' ========== DEPENDENCY (Boundary -> Control) ==========
@@ -118,12 +122,11 @@ TeacherUI ..> AvailabilityController : invokes
 TeacherUI ..> RejectionController : invokes
 TeacherUI ..> ScheduleController : invokes
 TeacherUI ..> PreferenceController : invokes
-TeacherUI ..> SwapController : invokes
 AdminUI ..> AccountController : invokes
 AdminUI ..> StudioController : invokes
+AuditLogUI ..> AuditLogController : invokes
 
 ' ========== DEPENDENCY (Control -> Control) ==========
 AllocationController ..> ConflictValidator : validates via
-SwapController ..> ConflictValidator : delegates
 
 @enduml

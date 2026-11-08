@@ -67,9 +67,14 @@ abstract class User <<Entity>> {
 class Teacher <<Entity>> {
     - instrumentQualifications : List<InstrumentType>
     - weeklyHoursTarget : float
+    - runningWeeklyHours : float
+    - runningMonthlyHours : float
     + hasInstrumentQualification(type : InstrumentType) : Boolean
     + calculateWeeklyWorkload() : float
     + calculateMonthlyWorkload() : float
+    + getRunningWeeklyHours() : float
+    + getRunningMonthlyHours() : float
+    + updateRunningHours(deltaHours : float) : void
     + isAvailable() : Boolean
 }
 
@@ -161,6 +166,11 @@ class AuditLog <<Entity>> {
     - timestamp : DateTime
     - details : String
     + logAction(actorId : String, action : String, details : String) : void
+    + getLogId() : String
+    + getActorId() : String
+    + getActionType() : String
+    + getTimestamp() : DateTime
+    + getDetails() : String
 }
 
 ' ========== INHERITANCE ==========

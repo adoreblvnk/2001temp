@@ -44,6 +44,9 @@ actor "Manager" as Manager
 actor "Teacher" as Teacher
 actor "IT Administrator" as ITAdmin
 
+actor "External Notification\nService" as ExtNotification <<system>>
+actor "Database Gateway" as ExtDatabase <<system>>
+
 rectangle "Music School Workload Allocation & Resource Scheduling System" as SystemBoundary {
 
     package "Executive Reporting & Statutory Compliance" {
@@ -55,13 +58,12 @@ rectangle "Music School Workload Allocation & Resource Scheduling System" as Sys
         usecase "UC-06: Handle Emergency\nAbsence Substitute" as UC06
         usecase "UC-05: Publish Confirmed\nWeekly Roster" as UC05
         usecase "UC-04: Process Late\nAvailability Exception" as UC04
-        usecase "UC-02: Allocate\nWeekly Teaching Job" as UC02
         usecase "UC-03: Review &\nRe-allocate Rejected Lesson" as UC03
+        usecase "UC-02: Allocate\nLesson Slot" as UC02
         usecase "UC-01: View Workload\nDashboard & Outliers" as UC01
     }
 
     package "Teacher Availability & Schedule" {
-        usecase "UC-11: Request Peer\nLesson Swap" as UC11
         usecase "UC-10: Submit Job\nRejection Request" as UC10
         usecase "UC-09: View Confirmed\nSchedule & Workload" as UC09
         usecase "UC-08: Submit Weekly\nJob Preferences" as UC08
@@ -73,6 +75,7 @@ rectangle "Music School Workload Allocation & Resource Scheduling System" as Sys
         usecase "UC-14: Configure Studio\n& Instrument Setup" as UC14
         usecase "UC-13: Manage User Account\nStatus & Access" as UC13
         usecase "UC-12: Onboard New Staff\n& Manager Accounts" as UC12
+        usecase "UC-11: Inspect System\nAudit Log" as UC11
     }
 
     usecase "Validate Allocation\nConstraints" as ValidateAlloc <<Included>>
@@ -85,13 +88,12 @@ Manager -- UC16
 Manager -- UC06
 Manager -- UC05
 Manager -- UC04
-Manager -- UC02
 Manager -- UC03
+Manager -- UC02
 Manager -- UC01
 Manager -- UC11
 
 ' Teacher associations
-Teacher -- UC11
 Teacher -- UC10
 Teacher -- UC09
 Teacher -- UC08
@@ -102,30 +104,25 @@ ITAdmin -- UC15
 ITAdmin -- UC14
 ITAdmin -- UC13
 ITAdmin -- UC12
+ITAdmin -- UC11
+
+' External Systems associations
+UC05 -- ExtNotification : dispatches >
+UC10 -- ExtNotification : alerts >
+UC17 -- ExtDatabase : persists >
+UC11 -- ExtDatabase : queries >
 
 ' Include and Extend relationships
-UC06 ..> ValidateAlloc : <U+003C><U+003C>include<U+003E><U+003E>
-UC03 ..> ValidateAlloc : <U+003C><U+003C>include<U+003E><U+003E>
-UC02 ..> ValidateAlloc : <U+003C><U+003C>include<U+003E><U+003E>
-UC11 ..> ValidateAlloc : <U+003C><U+003C>include<U+003E><U+003E>
+UC02 ..> ValidateAlloc : <<include>>
+UC03 ..> UC02 : <<include>>
+UC06 ..> UC02 : <<include>>
 
-UC06 <.. AuthOT : <U+003C><U+003C>extend<U+003E><U+003E>
-UC02 <.. AuthOT : <U+003C><U+003C>extend<U+003E><U+003E>
+UC02 <.. AuthOT : <<extend>>
 
-' Vertical ordering hints (in left-to-right mode, "right" stacks top-to-bottom)
+' Vertical ordering hints
 UC17 -[hidden]right-> UC16
 UC06 -[hidden]right-> UC05
 UC05 -[hidden]right-> UC04
 UC04 -[hidden]right-> UC03
 UC03 -[hidden]right-> UC02
-UC02 -[hidden]right-> UC01
-UC11 -[hidden]right-> UC10
-UC10 -[hidden]right-> UC09
-UC09 -[hidden]right-> UC08
-UC08 -[hidden]right-> UC07
-UC15 -[hidden]right-> UC14
-UC14 -[hidden]right-> UC13
-UC13 -[hidden]right-> UC12
-ValidateAlloc -[hidden]right-> AuthOT
-
 @enduml
