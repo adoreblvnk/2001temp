@@ -1,0 +1,200 @@
+@startuml final_class_diagram
+top to bottom direction
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam defaultFontName "Helvetica", "Arial", sans-serif
+skinparam defaultFontSize 10
+skinparam class {
+    BackgroundColor #FFFFFF
+    BorderColor #1E3A8A
+    BorderThickness 1.5
+}
+skinparam arrow {
+    Color #1E3A8A
+    FontSize 9
+}
+skinparam interface {
+    BackgroundColor #EFF6FF
+    BorderColor #2563EB
+    BorderThickness 1.5
+}
+skinparam package {
+    BorderColor #94A3B8
+    FontStyle bold
+    FontSize 11
+}
+
+' ========== BOUNDARIES ==========
+package "Presentation Layer" {
+    class AllocationUI <<Boundary>> {
+        +renderCandidateComparison() : void
+        +showValidationError(error : String) : void
+    }
+    class ManagerDashboardUI <<Boundary>> {
+        +displayWorkloadMetrics() : void
+        +highlightOutliers() : void
+    }
+    class TeacherUI <<Boundary>> {
+        +renderSchedule() : void
+        +renderAvailabilityGrid() : void
+    }
+    class AdminUI <<Boundary>> {
+        +renderUserManagementConsole() : void
+        +renderStudioConfigPanel() : void
+    }
+    class AuditLogUI <<Boundary>> {
+        +renderAuditConsole() : void
+        +displayFilteredRecords(logs : List<AuditLog>) : void
+    }
+}
+
+' ========== INTERFACES ==========
+package "Service Interfaces" {
+    interface IScheduleService <<interface>> {
+        +allocateLessonSlot(lessonId : String, teacherId : String, studioId : String, slot : TimeSlot) : Boolean
+        +reallocateLesson(lessonId : String, substituteTeacherId : String) : Boolean
+        +handleEmergencySubstitute(teacherId : String, date : Date) : Boolean
+        +publishWeeklyRoster(weekId : String) : Boolean
+    }
+
+    interface IConflictValidator <<interface>> {
+        +validateAllocationRules(teacher : Teacher, studio : Studio, slot : TimeSlot) : ValidationResult
+        +findEligibleCandidates(instrument : InstrumentType, slot : TimeSlot, weekId : String) : List<Teacher>
+        +findEligibleStudios(instrument : InstrumentType, slot : TimeSlot) : List<Studio>
+        +checkContinuousTeachingLimit(teacher : Teacher, slot : TimeSlot) : Boolean
+    }
+
+    interface IFacultyService <<interface>> {
+        +submitAvailability(teacherId : String, month : Date, slots : List<TimeSlot>) : Boolean
+        +submitPreferences(teacherId : String, weekId : String, prefs : Preference) : Boolean
+        +getLowestWorkloadStaff() : List<Teacher>
+        +flagWorkloadOutliers() : List<Teacher>
+    }
+
+    interface IFacilityService <<interface>> {
+        +configureStudio(studioId : String, name : String, hasPiano : Boolean) : Boolean
+        +flagMaintenanceWindow(studioId : String, start : DateTime, end : DateTime, reason : String) : Boolean
+        +generateStudioUtilizationReport(month : Date) : UtilizationReport
+    }
+
+    interface IAuditLogService <<interface>> {
+        +recordAuditEntry(actorId : String, action : String, details : String) : Boolean
+        +queryAuditLogs(actorFilter : String, actionFilter : String) : List<AuditLog>
+    }
+
+    interface ITieBreakerStrategy <<interface>> {
+        +rankCandidates(candidates : List<Teacher>, slot : TimeSlot) : List<Teacher>
+    }
+}
+
+' ========== CONTROLLERS ==========
+package "Control Layer" {
+    class AllocationController <<Control>> {
+        -validator : IConflictValidator
+        -tieBreaker : ITieBreakerStrategy
+        -auditService : IAuditLogService
+        +allocateLessonSlot(lessonId : String, teacherId : String, studioId : String, slot : TimeSlot) : Boolean
+        +reallocateLesson(lessonId : String, substituteTeacherId : String) : Boolean
+        +handleEmergencySubstitute(teacherId : String, date : Date) : Boolean
+        +publishWeeklyRoster(weekId : String) : Boolean
+    }
+
+    class ConflictValidator <<Control>> {
+        +validateAllocationRules(teacher : Teacher, studio : Studio, slot : TimeSlot) : ValidationResult
+        +findEligibleCandidates(instrument : InstrumentType, slot : TimeSlot, weekId : String) : List<Teacher>
+        +findEligibleStudios(instrument : InstrumentType, slot : TimeSlot) : List<Studio>
+        +checkContinuousTeachingLimit(teacher : Teacher, slot : TimeSlot) : Boolean
+    }
+
+    class WorkloadController <<Control>> {
+        +getLowestWorkloadStaff() : List<Teacher>
+        +flagWorkloadOutliers() : List<Teacher>
+    }
+
+    class AvailabilityController <<Control>> {
+        +submitAvailability(teacherId : String, month : Date, slots : List<TimeSlot>) : Boolean
+    }
+
+    class AuditLogController <<Control>> {
+        +recordAuditEntry(actorId : String, action : String, details : String) : Boolean
+        +queryAuditLogs(actorFilter : String, actionFilter : String) : List<AuditLog>
+    }
+
+    class WorkloadDeficitStrategy {
+        +rankCandidates(candidates : List<Teacher>, slot : TimeSlot) : List<Teacher>
+    }
+
+    class PreferenceMatchStrategy {
+        +rankCandidates(candidates : List<Teacher>, slot : TimeSlot) : List<Teacher>
+    }
+}
+
+' ========== ENTITIES ==========
+package "Domain Entities" {
+    abstract class User <<Entity>> {
+        - staffId : String
+        - fullName : String
+        - email : String
+        - isActive : Boolean
+    }
+
+    class Teacher <<Entity>> {
+        - instrumentQualifications : List<InstrumentType>
+        - weeklyHoursTarget : float
+        - runningWeeklyHours : float
+        - runningMonthlyHours : float
+        + getRunningWeeklyHours() : float
+        + getRunningMonthlyHours() : float
+        + updateRunningHours(deltaHours : float) : void
+    }
+
+    class Lesson <<Entity>> {
+        - lessonId : String
+        - studentName : String
+        - startDateTime : DateTime
+        - endDateTime : DateTime
+        - status : LessonStatus
+    }
+
+    class Studio <<Entity>> {
+        - studioId : String
+        - hasDrumKit : Boolean
+        - isUnderMaintenance : Boolean
+    }
+
+    class AuditLog <<Entity>> {
+        - logId : String
+        - actorId : String
+        - actionType : String
+        - timestamp : DateTime
+        - details : String
+    }
+}
+
+' Realizations
+AllocationController ..|> IScheduleService
+ConflictValidator ..|> IConflictValidator
+AuditLogController ..|> IAuditLogService
+WorkloadDeficitStrategy ..|> ITieBreakerStrategy
+PreferenceMatchStrategy ..|> ITieBreakerStrategy
+
+' Inheritance
+User <|-- Teacher
+
+' Dependencies
+AllocationUI ..> IScheduleService : invokes
+AuditLogUI ..> IAuditLogService : invokes
+AllocationController --> IConflictValidator : uses
+AllocationController --> ITieBreakerStrategy : injects
+AllocationController --> IAuditLogService : audits via
+
+' Associations
+Lesson "0..*" --> "0..1" Teacher : assignedTo >
+Lesson "0..*" --> "0..1" Studio : conductedIn >
+
+' Vertical layout constraints
+AllocationUI -[hidden]down-> IScheduleService
+IScheduleService -[hidden]down-> AllocationController
+AllocationController -[hidden]down-> User
+
+@enduml

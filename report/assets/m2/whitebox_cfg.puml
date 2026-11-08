@@ -1,0 +1,57 @@
+@startuml whitebox_cfg
+skinparam shadowing false
+skinparam defaultFontName "Helvetica", "Arial", sans-serif
+skinparam defaultFontSize 11
+
+skinparam state {
+    BackgroundColor #F8FAFC
+    BorderColor #1E3A8A
+    BorderThickness 1.5
+    FontColor #0F172A
+    FontSize 11
+}
+
+skinparam arrow {
+    Color #1E3A8A
+    FontColor #1E3A8A
+    FontSize 10
+    FontStyle bold
+}
+
+title Control Flow Graph (CFG) - ConflictValidator.findEligibleCandidates()
+
+state "1. Entry & Initialize\n(Lines 1-4)" as N1
+state "2. while (i < facultyPool.size())\n[Predicate Node] (Line 5)" as N2
+state "3. if (hasInstrumentQualification)\n[Predicate Node] (Lines 6-7)" as N3
+state "4. if (isAvailable)\n[Predicate Node] (Line 8)" as N4
+state "5. if (checkContinuousTeachingLimit)\n[Predicate Node] (Line 9)" as N5
+state "6. if (runningWeeklyHours + 0.5 <= 44.0)\n[Predicate Node] (Line 10)" as N6
+state "7. eligibleCandidates.add(candidate)\n(Lines 11-12)" as N7
+state "8. i = i + 1\n(Lines 16-17)" as N8
+state "9. return eligibleCandidates\n[Exit Node] (Lines 18-19)" as N9
+
+[*] --> N1
+N1 --> N2 : e1
+N2 --> N3 : e2 [True]
+N2 --> N9 : e3 [False]
+N3 --> N4 : e4 [True]
+N3 --> N8 : e5 [False]
+N4 --> N5 : e6 [True]
+N4 --> N8 : e7 [False]
+N5 --> N6 : e8 [True]
+N5 --> N8 : e9 [False]
+N6 --> N7 : e10 [True]
+N6 --> N8 : e11 [False]
+N7 --> N8 : e12
+N8 --> N2 : e13 [Loop Back]
+N9 --> [*]
+
+note right of N2
+  <b>Cyclomatic Complexity Metrics:</b>
+  * V(G) = E - N + 2P = 13 - 9 + 2(1) = 6
+  * V(G) = Predicate Nodes + 1 = 5 + 1 = 6
+  * V(G) = Enclosed Regions + 1 = 5 + 1 = 6
+  * Basis Paths = 6 independent paths
+end note
+
+@enduml

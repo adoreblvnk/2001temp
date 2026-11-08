@@ -1,0 +1,51 @@
+@startuml pattern_before_excerpt
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam defaultFontName "Helvetica", "Arial", sans-serif
+skinparam defaultFontSize 11
+skinparam class {
+    BackgroundColor #FFFFFF
+    BorderColor #B91C1C
+    BorderThickness 1.5
+}
+skinparam arrow {
+    Color #B91C1C
+    FontSize 10
+}
+
+title Detailed Design - Before Pattern Implementation (Monolithic / Violates OCP)
+
+class AllocationController <<Control>> {
+    - validator : ConflictValidator
+    - rankingMode : String
+    + allocateLessonSlot(lessonId : String, teacherId : String, studioId : String, slot : TimeSlot) : Boolean
+    + rankCandidates(candidates : List<Teacher>, slot : TimeSlot, mode : String) : List<Teacher>
+}
+
+class Teacher <<Entity>> {
+    - weeklyHoursTarget : float
+    - runningWeeklyHours : float
+    + getRunningWeeklyHours() : float
+    + getRunningMonthlyHours() : float
+}
+
+AllocationController --> "0..*" Teacher : directly sorts >
+
+note right of AllocationController::rankCandidates
+  <b>Monolithic Conditional Logic:</b>
+  <code>
+  if (mode.equals("WORKLOAD_DEFICIT")) {
+      // Inline sort by (40.0 - runningWeeklyHours)
+  } else if (mode.equals("PREFERENCE_MATCH")) {
+      // Inline sort by teacher day/clustering preference
+  } else if (mode.equals("SENIORITY")) {
+      // Requires modifying AllocationController!
+  }
+  </code>
+  <b>Critical Design Flaws:</b>
+  * Violates Open-Closed Principle (OCP): Adding new ranking rules requires editing and recompiling core controller.
+  * Violates Single Responsibility Principle (SRP): Orchestration controller bloated with mathematical ranking logic.
+  * Tightly coupled to sorting internals, impeding isolated unit testing.
+end note
+
+@enduml

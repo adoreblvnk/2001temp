@@ -1,0 +1,62 @@
+@startuml strategy_pattern_template
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam defaultFontName "Helvetica", "Arial", sans-serif
+skinparam defaultFontSize 11
+skinparam class {
+    BackgroundColor #FFFFFF
+    BorderColor #1E3A8A
+    BorderThickness 1.5
+}
+skinparam interface {
+    BackgroundColor #EFF6FF
+    BorderColor #2563EB
+    BorderThickness 1.5
+}
+skinparam arrow {
+    Color #1E3A8A
+    FontSize 10
+}
+
+title Gang of Four (GoF) Strategy Pattern - Standard Structural Template
+
+class Context {
+    - strategy : Strategy
+    + Context(strategy : Strategy)
+    + setStrategy(strategy : Strategy) : void
+    + executeContextInterface() : void
+}
+
+interface Strategy <<interface>> {
+    + executeAlgorithm(data : Object) : Object
+}
+
+class ConcreteStrategyA {
+    + executeAlgorithm(data : Object) : Object
+}
+
+class ConcreteStrategyB {
+    + executeAlgorithm(data : Object) : Object
+}
+
+Context o-> Strategy : strategy
+ConcreteStrategyA .up.|> Strategy : <<implements>>
+ConcreteStrategyB .up.|> Strategy : <<implements>>
+
+note bottom of Context
+  Context delegates algorithm execution
+  to the Strategy interface without knowing
+  the concrete algorithm details.
+end note
+
+note bottom of ConcreteStrategyA
+  Implements Algorithm A
+  (e.g., Workload Deficit Prioritization)
+end note
+
+note bottom of ConcreteStrategyB
+  Implements Algorithm B
+  (e.g., Preference-Match Prioritization)
+end note
+
+@enduml

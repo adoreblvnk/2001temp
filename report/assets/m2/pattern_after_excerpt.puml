@@ -1,0 +1,79 @@
+@startuml pattern_after_excerpt
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam defaultFontName "Helvetica", "Arial", sans-serif
+skinparam defaultFontSize 11
+skinparam class {
+    BackgroundColor #FFFFFF
+    BorderColor #1E3A8A
+    BorderThickness 1.5
+}
+skinparam interface {
+    BackgroundColor #EFF6FF
+    BorderColor #2563EB
+    BorderThickness 1.5
+}
+skinparam arrow {
+    Color #1E3A8A
+    FontSize 10
+}
+
+title Detailed Design - After Strategy Pattern Implementation (Complies with OCP & SRP)
+
+class AllocationController <<Control>> {
+    - validator : IConflictValidator
+    - tieBreakerStrategy : ITieBreakerStrategy
+    + setTieBreakerStrategy(strategy : ITieBreakerStrategy) : void
+    + allocateLessonSlot(lessonId : String, teacherId : String, studioId : String, slot : TimeSlot) : Boolean
+    + getRankedCandidates(candidates : List<Teacher>, slot : TimeSlot) : List<Teacher>
+}
+
+interface ITieBreakerStrategy <<interface>> {
+    + rankCandidates(candidates : List<Teacher>, slot : TimeSlot) : List<Teacher>
+}
+
+class WorkloadDeficitStrategy {
+    + rankCandidates(candidates : List<Teacher>, slot : TimeSlot) : List<Teacher>
+}
+
+class PreferenceMatchStrategy {
+    + rankCandidates(candidates : List<Teacher>, slot : TimeSlot) : List<Teacher>
+}
+
+class Teacher <<Entity>> {
+    - weeklyHoursTarget : float
+    - runningWeeklyHours : float
+    + getRunningWeeklyHours() : float
+    + getRunningMonthlyHours() : float
+}
+
+AllocationController o-> ITieBreakerStrategy : injects strategy >
+WorkloadDeficitStrategy .up.|> ITieBreakerStrategy : <<implements>>
+PreferenceMatchStrategy .up.|> ITieBreakerStrategy : <<implements>>
+
+ITieBreakerStrategy ..> Teacher : orders
+
+note bottom of WorkloadDeficitStrategy
+  <b>Primary Operational Policy (FR-06):</b>
+  Sorts candidates in descending order of workload deficit:
+  <code>Deficit = 40.0 - runningWeeklyHours</code>
+  Staff farthest from statutory target are surfaced first.
+end note
+
+note bottom of PreferenceMatchStrategy
+  <b>Secondary Operational Policy:</b>
+  Sorts candidates by matching declared teaching days
+  and consecutive 4-hour lesson clustering preferences.
+end note
+
+note right of AllocationController
+  <b>Design Pattern Benefits:</b>
+  * <b>Open-Closed Principle (OCP):</b> New policies (e.g. SeniorityStrategy)
+    can be plugged in without modifying AllocationController.
+  * <b>Single Responsibility Principle (SRP):</b> Separates scheduling orchestration
+    from complex tie-breaking mathematics.
+  * <b>Runtime Flexibility:</b> Managers can toggle ranking strategies dynamically
+    from the AllocationUI interface.
+end note
+
+@enduml
