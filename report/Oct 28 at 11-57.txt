@@ -1,0 +1,322 @@
+[Speaker 1]
+You say that you want to keep track of the running weekly advantage located hours?
+
+[Speaker 2]
+Um, I can't. I don't see you have your attributes matters in your class to handle that. If you can find it? Which methods which attributes are meant to keep kind of all this? Okay, okay.
+
+[Speaker 1]
+Uh, dynamically surface. What does that mean?
+
+[Speaker 3]
+Okay, um, display in certain colors. Is it functional or non-functional? That's not functional. And it seems that you tend to have more than one big problems in each statement.
+
+[Speaker 1]
+Yeah, we'll break it down. Different requirements, just bring it down to different statements. The issue of common is.
+
+[Speaker 3]
+So, so you go through every of your requirements. Half past half field is considered fail. And that you'll bring out your success rate. Um, same thing, five, after five.
+
+What deficit? What do you mean by this deficit? All right, free time. The free time that the teachers have to work. It's a time lapse before the 40 or 45 hours.
+
+[Speaker 2]
+Okay, then, what's teaching conditions?
+
+[Speaker 4]
+This is the teachers. Um, yeah, what does that mean? Um, like, specifically, what it means. How you build your system?
+
+The instrument. Is teaching condition as well as the, you know, the time that he wants to?
+
+[Speaker 1]
+To actually choose user
+
+[Speaker 2]
+Availability. Yeah, like
+
+[Speaker 4]
+Each sticker, the fact that we need to discuss on this means it's not clear. Okay, okay. So, so you might?
+
+[Speaker 1]
+I'm not saying he's really just is very vague. What that's it actually means. Seven, uh, okay, now you have preference for teaching days. But you have a variety, right? How does these two come hand in hand? Preferences. It's like, I want us to teach in a certain. I want to teach at a certain time, but availability can also say, oh, I'm also available at night, sure.
+
+But I prefer to teach in the morning, sure, but watch human nature. To teach in the morning. Will you? Will you tell people up available for something I don't prefer? No. System. Goals that?
+
+[Speaker 3]
+Since you have to work 40 hours, you must give me 80 hours from before 80 hours of availability so that I can schedule you because you have false.
+
+If not, wow, people do. I'm aware for one hour human nature.
+
+If you know?
+
+[Speaker 1]
+That by working for what hour, you still get paid the same amount for working for 100 hours. How many hours will you work?
+
+My point is, even if I don't say anything, are we trying to dig a hole for the planet?
+
+Okay, okay, okay?
+
+[Speaker 3]
+Uh, back-to-back clustering. It depends on the availability, right. Yeah, okay, so you need reading your preference. What does it mean? Is
+
+[Speaker 1]
+Deliberately left fire.
+
+[Speaker 3]
+Because we want you to analyze, what does it mean? All right, okay, um? I don't think in the initial requirement. Well, he says that you can reject, but it doesn't say so. You can do a buy that will swap, so why? Um. What do you add on this?
+
+So, what you need another mechanisms? I think we got this from our minutes. In the absence of the rejection workflow, my question is? Why is, I don't think this is what my question is? Why is it on top of the rejection workflow? The original flow is is?
+
+So, why? Why is this required on top of the rejection level where you already have a means to say, I'm not going to do this? Let's talk to.
+
+[Speaker 2]
+I can't do this lesson for that time slot, which is rejecting the time slot, right? Yeah, it's like.
+
+[Speaker 3]
+What I'm hoping to hear is that,
+
+[Speaker 4]
+What does
+
+[Speaker 3]
+It do or capture, that the things that your rejection before cannot capture, isn't it? If you already accept the drug, then something last minute comes up. You already. Have you already have that mechanism, right? Oh yeah, see that this is only a single action where it is just a rejection of a workflow and then swapping off another time is another.
+
+By putting it every level, what does she do?
+
+[Speaker 1]
+That you
+
+[Speaker 3]
+Don't already able to learn. You're saying a conflicts with which one is redundant?
+
+[Speaker 5]
+Why isn't if I already accept the job and somebody else already accepts a job? But then, something comes up last minute, but I already accepted the job. This allows me to stop by right. Why can't you reject the job because I didn't know at the time I already accepted it, but reach out means that I have to like.
+
+Go One Step by rejecting and then. Having your ncy?
+
+[Speaker 2]
+Yes, but swapping will allow us to, yeah, poor
+
+[Speaker 3]
+Fellow, having a view of 50 degrees used to make him call out people a singer. Can you help me to do this?
+
+[Speaker 4]
+By letting the rejection workflow handles the manager, he becomes a manager's responsibility to find a replacement. Okay, so that's like the so difference and responsible question. Here is, why is that? What does it do? That your rejection workflow starting
+
+[Speaker 2]
+The rejection flow does not. Schedule does not allow to swap lessons. You can
+
+[Speaker 4]
+Reject right swap means you find your own replacement.
+
+[Speaker 6]
+Yes,
+
+[Speaker 4]
+Why are you insisting that
+
+[Speaker 1]
+You, the teacher, must find his own place? That's the big question.
+
+[Speaker 4]
+And why is it not the manager's decision? To find cool replaces who he felt is the best university. And why is it that it is the teacher's responsibility and decision to find a replacement. That's the questions, because
+
+[Speaker 2]
+Allowed a teacher like the, I don't know, the freedom to choose instead of, like, oh, manager. I decide this for you. He went to the teacher.
+
+[Speaker 7]
+He's working Wednesday, right? And something comes up on my Wednesday, but I still want to work those hours so that I want to take this story, I need to pay for something. Okay, tell the manager, but instead of footage where you, I just saw it look. Like, I said, it still can be handled.
+
+[Speaker 3]
+I mean, I agree, it can be handled by manager, but what's wrong with, like, oh, giving the giving, the? Teacher, the freedom.
+
+[Speaker 2]
+Right, and stuff like eating to go through, like the manager at the middle Bank. What if the manager is like, not available if you are paid for it? There's nothing wrong.
+
+[Speaker 1]
+In the initial requirement. If it's not covered, that means. It's not something be murdered by the client. You put it something extra.
+
+[Speaker 3]
+That's my
+
+[Speaker 7]
+Point. But then, just now, you also said that he was vague on purpose so we can add extra stuff. Uh-huh, but the difference is, are you safeguarding the interest? Or, are you putting in something more? So, my point, I keep saying. Thus, what?
+
+[Speaker 3]
+So is it? Is it? From the client they pay for it. It's fine, but if they don't pay for it and you think it's a good idea, you want to put it in. That is not fine, so you shouldn't put in extra ideas. Unless
+
+[Speaker 7]
+It safeguards the fire.
+
+[Speaker 4]
+Like, I don't know whether I I share with this energy when you go and buy a car.
+
+[Speaker 3]
+You don't mention anything about. No, I need a break.
+
+[Speaker 4]
+We used to get bricks. Yes, yes, yes, okay. Okay, I understand that energy.
+
+[Speaker 3]
+But if you're, if you don't say that, oh, I need, uh, I need a spoiler. I need a. Will you get that?
+
+[Speaker 4]
+You won't get a spoiler if you don't request me. If you don't say you think, you will get that when you get your car? No,
+
+[Speaker 5]
+So is
+
+[Speaker 4]
+This extra, or is it a safe number?
+
+[Speaker 2]
+But this is, this is making the teacher's life easier because I don't need to go through the managers, like, okay, what I'm trying?
+
+[Speaker 4]
+When you tried, I know you're thinking from the castle. Just like, if you're gonna make your system not ready.
+
+Yes, you will be employee of the mind.
+
+[Speaker 1]
+Okay, so basically don't do more than expect.
+
+[Speaker 4]
+Digital feature that is not. Regarding safety also. So great. Then you need to ask yourself whether I should I need to change, and most of that. What we do, is, is to try even if the client says, I want this. After the contract is signed, we won't say no.
+
+Nice idea. Good idea. Can we put in Facebook. Can we go in the in the in the expansion space?
+
+Yeah, most
+
+[Speaker 3]
+Of all, you see the difference. Yeah, business. Okay, tactic of I want recurring business basically. Okay, okay, it's a very
+
+[Speaker 4]
+Realistic thing. Yeah,
+
+[Speaker 3]
+Yeah, I know, I know, I don't understand. It
+
+[Speaker 4]
+Will jump on you, you
+
+[Speaker 1]
+Are. Yeah, I understand, why should I say, yeah, okay. This is something very common in engineers. We want our product to be perfect. Yeah.
+
+Okay, I want you to realize this,
+
+[Speaker 2]
+But if we okay, we think of it from the flip side, right? Let's assume we never implemented this bilateral sword. If the contract has not been signed, negotiate anything you want. But now. The contracts, beside which is why you have no non-negotiable.
+
+Okay, we only paying X dollar.
+
+[Speaker 4]
+Before the country is, like, you're right, okay. I, I understand after the contract is high. No stick to the letter. I am not saying this is not a good idea. I am saying, when is this going to be faced? Okay, I understand, okay?
+
+[Speaker 2]
+So, I want you to realize this, you know, you'll be very frustrated when you go to work. Why my boss? I want to do this channel. I want to do that at all.
+
+[Speaker 1]
+Right,
+
+[Speaker 5]
+Because in school projects, they usually like reward going above and beyond myself. So,
+
+[Speaker 3]
+Yeah, I also want you to give you some realism. Yeah, yeah, oh no, you go to Industry. Yeah, you feel very upset, though. It's like, for example, I
+
+[Speaker 2]
+Wants to go to excite right, but then suddenly I need to like, go to the mail, go to the lock, and go to whatever before. Like, why can I just go to excite directly, but maybe maybe the customer never will spreck it out and everything? Signed a contract? No, no, I want to link it up ANL 500, 000.
+
+[Speaker 1]
+Especially aside again. Is there a use case? Is there a class? I'm not saying this is not a good idea. Is there a class? Is there? Okay, okay.
+
+[Speaker 2]
+Uh, audit lock. I don't recall, I see that in your use case. Or your class. Okay, okay, you say you need all the log, right?
+
+[Speaker 3]
+Quite obvious that the person who works your function requirement is not the same people who write your non-functional requirement. All requirements should be writing the same way the system. Okay, okay. Of the rest is fine, normally challenged it.
+
+[Speaker 2]
+Your use case. Your use case is fine, but again, your external systems are not. They're not all they get all not there. Okay.
+
+Um, the only thing that I find a bit funny is. There's a double tree girl. You'll extend your UC6 extent to. Something, and then you use it to extend to something. So, two of the use case up you two, you got the save option?
+
+It triggers the same option. This this door. Is it no use the o6?
+
+[Speaker 1]
+And then if
+
+[Speaker 3]
+A name there's an optional condition, it triggers authorized over time. This is a sign that something can be generalized.
+
+[Speaker 2]
+Uc2, you say you are okay by week?
+
+[Speaker 1]
+If you twist it around if you look it, if you, if you frame it in the other way, if the UC is about me fulfilling one time slot, how would I change the equation?
+
+For your CO2.
+
+[Speaker 2]
+Yep, if you now, you're saying, oh, okay, weekly, right? Yeah, you think your use case will only close when you finish the video location?
+
+[Speaker 1]
+But if your use case you change it to just a low here a day?
+
+[Speaker 2]
+So, we should not have the week. Yeah, we should generalize. Will that have already? Would that cover your own six as well? You are trying to handle?
+
+[Speaker 1]
+Uh, you're trying to find people to. You're just relocating, right?
+
+[Speaker 4]
+We are trying to bring people out and allocate, and we are located right. Whether people just don't emergency, I'm unlocating, allocating right. So, if you look at it from? The lowest common indominator, okay? That, would you be able to generally?
+
+[Speaker 2]
+Is like a subset of ucl2. Basically, are you generalize? Yeah, it's just the whole idea is just reallocation.
+
+[Speaker 1]
+The first criteria for your software engineer used to be late. We want to do the least to achieve the price. Right, okay?
+
+[Speaker 3]
+Um, yeah, for your
+
+[Speaker 4]
+Use case description. Things that mentioned in the general feedback I will mention again, but some of the things like, you know, a few of the use case start with the system should not be starting the system.
+
+Case is quite all right on many stocks. Yeah, except for the for the many for the system starts, other than that.
+
+[Speaker 1]
+Um, for
+
+[Speaker 3]
+Your for your activity diagram. I only look at the notations if your notations are sound. I assume that your logic is the same as your
+
+[Speaker 1]
+Yeah,
+
+[Speaker 3]
+Your use case description, right? Yeah, if you think it's, we think it's summer. Well, I, I assume now, but sorry, I mean, we think that, uh? The formatting is in a correct notation. Yeah, I checked the notation. I only checked the solutions. Okay, so it's it's okay, plus.
+
+[Speaker 8]
+The only thing that I mean, I disappear anything before. Oh, wow, you, you broke up in two different people, got into two different, yeah.
+
+[Speaker 3]
+Anything, because the only thing I caught was. If you have found milk, the bottom line is you have an attribute. You have a method I know. All this, you say you want to do this. You don't have them in your classes. That's the bottom line. Okay. Or likewise for your sequence diagram.
+
+Make sure that you you have the respective classes and the matters. I did check full.
+
+[Speaker 4]
+Okay, okay to make sure that they're consistent because you need to submit your requirements again. You need to submit your class again. Okay, so take the opportunity to. Idea of all these? Why? Because your M2 presentation is going to be a u18?
+
+[Speaker 2]
+Okay,
+
+[Speaker 4]
+So our Revenue, one of the advantage of it, yeah.
+
+Okay, okay. To your class and wireframes.
+
+[Speaker 3]
+Okay, and last one is your game short, I think. Should be okay. It's all right. Okay, your name, you have your? Um, okay, I think yours is fairly fairly detailed.
+
+[Speaker 1]
+Okay, so go through this again by any further questions, all right.
