@@ -1,4 +1,5 @@
 @startuml whitebox_cfg
+hide empty description
 skinparam shadowing false
 skinparam defaultFontName "Helvetica", "Arial", sans-serif
 skinparam defaultFontSize 11
@@ -18,34 +19,34 @@ skinparam arrow {
     FontStyle bold
 }
 
-title Control Flow Graph (CFG) - ConflictValidator.findEligibleCandidates()
+title Control Flow Graph - ConflictValidator.findEligibleCandidates()
 
 state "1. Entry & Initialization" as N1
 state "2. while (i < facultyPool.size())" as N2
-state "3. if (hasInstrumentQualification && isAvailable)" as N3
-state "4. if (checkContinuousTeachingLimit)" as N4
-state "5. switch (classifyWeeklyWorkloadTier(projectedHours))" as N5
-state "6. Tier 1 (< 40.0h): status = OK\neligibleCandidates.add(candidate)" as N6
-state "7. Tier 2 (40.0h - 44.0h): status = WARNING\neligibleCandidates.add(candidate)" as N7
-state "8. Tier 3 (> 44.0h): status = OVERWORKED\nexclude candidate" as N8
+state "3. if (isQualified && isAvailable)" as N3
+state "4. if (continuousHours + 0.5 <= 4.0)" as N4
+state "5. switch (workloadTier(weeklyHours + 0.5))" as N5
+state "6. status = OK\neligible.add(candidate)" as N6
+state "7. status = WARNING\neligible.add(candidate)" as N7
+state "8. status = OVERWORKED" as N8
 state "9. i = i + 1" as N9
-state "10. return eligibleCandidates" as N10
+state "10. return eligible" as N10
 
 [*] --> N1
-N1 --> N2 : e1
-N2 --> N3 : e2 [True]
-N2 --> N10 : e3 [False]
-N3 --> N4 : e4 [True]
-N3 --> N9 : e5 [False]
-N4 --> N5 : e6 [True]
-N4 --> N9 : e7 [False]
-N5 --> N6 : e8 [< 40.0h: OK]
-N5 --> N7 : e9 [40.0h - 44.0h: Warning]
-N5 --> N8 : e10 [> 44.0h: Overworked]
-N6 --> N9 : e11
-N7 --> N9 : e12
-N8 --> N9 : e13
-N9 --> N2 : e14 [Loop Back]
+N1 --> N2
+N2 --> N3 : True
+N2 --> N10 : False
+N3 --> N4 : True
+N3 --> N9 : False
+N4 --> N5 : True
+N4 --> N9 : False
+N5 --> N6 : < 40.0h
+N5 --> N7 : 40.0h - 44.0h
+N5 --> N8 : > 44.0h
+N6 --> N9
+N7 --> N9
+N8 --> N9
+N9 --> N2
 N10 --> [*]
 
 @enduml
