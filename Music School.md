@@ -26,6 +26,7 @@ Below is the number of teachers and enrolled students.
 | Teachers                | 5     | 1     | 2      | 1       |
 | Students                | 168   | 26    | 38     | 19      |
 | New unassigned students | 17    | 5     | 7      | 2       |
+|                         |       |       |        |         |
 
 There are two managers on shift to run the school. One manager must be always on shift during the opening hours to manage the teaching schedule, attend to enquires, and handle new students joining and any students intending to stop classes. Each manager work on a 43-hour week schedule.
 

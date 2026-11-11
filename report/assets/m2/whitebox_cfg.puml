@@ -20,15 +20,15 @@ skinparam arrow {
 
 title Control Flow Graph (CFG) - ConflictValidator.findEligibleCandidates()
 
-state "1. Entry & Initialize\n(Lines 1-4)" as N1
-state "2. while (i < facultyPool.size())\n[Predicate Node] (Line 5)" as N2
-state "3. if (hasInstrumentQualification)\n[Predicate Node] (Lines 6-7)" as N3
-state "4. if (isAvailable)\n[Predicate Node] (Line 8)" as N4
-state "5. if (checkContinuousTeachingLimit)\n[Predicate Node] (Line 9)" as N5
-state "6. if (runningWeeklyHours + 0.5 <= 44.0)\n[Predicate Node] (Line 10)" as N6
-state "7. eligibleCandidates.add(candidate)\n(Lines 11-12)" as N7
-state "8. i = i + 1\n(Lines 16-17)" as N8
-state "9. return eligibleCandidates\n[Exit Node] (Lines 18-19)" as N9
+state "1. Entry & Initialization" as N1
+state "2. while (i < facultyPool.size())" as N2
+state "3. if (hasInstrumentQualification)" as N3
+state "4. if (isAvailable)" as N4
+state "5. if (checkContinuousTeachingLimit)" as N5
+state "6. if (runningWeeklyHours + 0.5 <= 44.0)" as N6
+state "7. eligibleCandidates.add(candidate)" as N7
+state "8. i = i + 1" as N8
+state "9. return eligibleCandidates" as N9
 
 [*] --> N1
 N1 --> N2 : e1
@@ -45,13 +45,5 @@ N6 --> N8 : e11 [False]
 N7 --> N8 : e12
 N8 --> N2 : e13 [Loop Back]
 N9 --> [*]
-
-note right of N2
-  <b>Cyclomatic Complexity Metrics:</b>
-  * V(G) = E - N + 2P = 13 - 9 + 2(1) = 6
-  * V(G) = Predicate Nodes + 1 = 5 + 1 = 6
-  * V(G) = Enclosed Regions + 1 = 5 + 1 = 6
-  * Basis Paths = 6 independent paths
-end note
 
 @enduml

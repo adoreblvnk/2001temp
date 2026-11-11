@@ -13,7 +13,7 @@ skinparam sequence {
     ActorBackgroundColor #EFF6FF
 }
 
-title SSD-17 : Review Labor Compliance & Workload
+title SSD-17 : Review Labor Compliance & Audit Trail
 
 actor "Manager" as Manager
 participant ":ManagerDashboardUI" as UI
@@ -45,13 +45,16 @@ ComplianceController --> UI : ComplianceReport(compliantStaff, warningStaff)
 deactivate ComplianceController
 UI --> Manager : ComplianceDashboardView
 
-Manager -> UI : inspectDailyDistribution(teacherId)
-UI -> ComplianceController : checkWeeklyHours(weekId)
+Manager -> UI : inspectAuditTrail(weekId)
+UI -> ComplianceController : getAuditTrail(weekId)
 activate ComplianceController
-ComplianceController --> UI : DailyDistributionView
+ComplianceController -> AuditLog : getAuditTrail(weekId)
+activate AuditLog
+AuditLog --> ComplianceController : List<AuditLog>
+deactivate AuditLog
+ComplianceController --> UI : AuditTrailView(List<AuditLog>)
 deactivate ComplianceController
-UI --> Manager : DailyDistributionView
-
+UI --> Manager : AuditTrailView
 opt no staff exceeds 12 daily hours
     Manager -> UI : submitComplianceSignOff(weekId)
     UI -> ComplianceController : auditStatutoryLaborCompliance()

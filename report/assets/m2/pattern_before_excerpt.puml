@@ -13,7 +13,7 @@ skinparam arrow {
     FontSize 10
 }
 
-title Detailed Design - Before Pattern Implementation (Monolithic / Violates OCP)
+title Detailed Design - Before Strategy Pattern Implementation
 
 class AllocationController <<Control>> {
     - validator : ConflictValidator
@@ -30,22 +30,5 @@ class Teacher <<Entity>> {
 }
 
 AllocationController --> "0..*" Teacher : directly sorts >
-
-note right of AllocationController::rankCandidates
-  <b>Monolithic Conditional Logic:</b>
-  <code>
-  if (mode.equals("WORKLOAD_DEFICIT")) {
-      // Inline sort by (40.0 - runningWeeklyHours)
-  } else if (mode.equals("PREFERENCE_MATCH")) {
-      // Inline sort by teacher day/clustering preference
-  } else if (mode.equals("SENIORITY")) {
-      // Requires modifying AllocationController!
-  }
-  </code>
-  <b>Critical Design Flaws:</b>
-  * Violates Open-Closed Principle (OCP): Adding new ranking rules requires editing and recompiling core controller.
-  * Violates Single Responsibility Principle (SRP): Orchestration controller bloated with mathematical ranking logic.
-  * Tightly coupled to sorting internals, impeding isolated unit testing.
-end note
 
 @enduml

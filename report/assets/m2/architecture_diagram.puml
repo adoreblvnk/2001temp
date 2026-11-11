@@ -1,8 +1,8 @@
 @startuml architecture_diagram
+top to bottom direction
 skinparam shadowing false
 skinparam defaultFontName "Helvetica", "Arial", sans-serif
 skinparam defaultFontSize 11
-skinparam packageStyle rectangle
 
 skinparam package {
     BackgroundColor #F8FAFC
@@ -12,10 +12,10 @@ skinparam package {
     FontStyle bold
 }
 
-skinparam component {
+skinparam class {
     BackgroundColor #FFFFFF
     BorderColor #2563EB
-    BorderThickness 1.5
+    BorderThickness 1.2
     FontSize 11
 }
 
@@ -24,56 +24,36 @@ skinparam arrow {
     FontSize 10
 }
 
-package "Tier 1: Presentation & Boundary Layer (Web / Desktop)" {
-    component [Manager Dashboard UI] as UI_Manager
-    component [Job Allocation Interface] as UI_Alloc
-    component [Teacher Schedule & Availability UI] as UI_Teacher
-    component [Admin Facility & User Console] as UI_Admin
-    component [Audit Trail Viewer] as UI_Audit
+package "Presentation Layer (Web Boundary)" as Layer1 {
+    class "AllocationUI" as UI1
+    class "ManagerDashboardUI" as UI2
+    class "TeacherUI" as UI3
+    class "AdminUI" as UI4
 }
 
-package "Tier 2: Business Logic & Control Layer (Domain Services & Application)" {
-    component [Scheduling & Allocation Controller] as Ctrl_Alloc
-    component [Multi-Constraint Conflict Validator] as Ctrl_Val
-    component [Faculty Availability & Workload Controller] as Ctrl_Fac
-    component [Facility & Blackout Controller] as Ctrl_Studio
-    component [Audit & Regulatory Compliance Controller] as Ctrl_Audit
-    component [Candidate Tie-Breaker Strategy Engine] as Ctrl_Strat
+package "Business & Application Layer (Core & Faculty Services)" as Layer2A {
+    class "SchedulingService" as S1
+    class "ConflictValidationService" as S2
+    class "TieBreakerStrategy" as S6
 }
 
-package "Tier 3: Domain Entity & Infrastructure Integration Layer" {
-    package "Core Domain Model (Entities)" {
-        component [Schedule & Lesson Entities] as Ent_Sched
-        component [User & Teacher Entities] as Ent_Teacher
-        component [Studio & Maintenance Entities] as Ent_Studio
-        component [Immutable Audit Log Records] as Ent_Audit
-    }
-    package "External Gateways & Hardware Adapters" {
-        component [Database Gateway Adapter (PostgreSQL / SQLite)] as GW_DB
-        component [External Notification Gateway (SMTP / SMS)] as GW_Notify
-    }
+package "Business & Application Layer (Facility & Governance Services)" as Layer2B {
+    class "FacultyService" as S3
+    class "FacilityService" as S4
+    class "AuditLoggingService" as S5
 }
 
-' Inter-tier dependencies
-UI_Alloc --> Ctrl_Alloc : HTTP/RPC Request
-UI_Manager --> Ctrl_Fac : Query Metrics
-UI_Teacher --> Ctrl_Fac : Submit Availability
-UI_Admin --> Ctrl_Studio : Manage Blackouts
-UI_Audit --> Ctrl_Audit : Query Records
+package "Data & Infrastructure Layer (Closed)" as Layer3 {
+    class "Database Persistence (PostgreSQL)" as DB
+    class "External Notification Gateway (SMTP/SMS)" as GW
+}
 
-Ctrl_Alloc --> Ctrl_Val : Validates Constraints
-Ctrl_Alloc --> Ctrl_Strat : Injects Ranking Strategy
-Ctrl_Alloc --> Ctrl_Audit : Emits Log Events
-Ctrl_Alloc --> GW_Notify : Dispatches Roster Alerts
+Layer1 --> Layer2A : Invocations via Service Interfaces
+Layer2A --> Layer2B : Internal Domain Collaboration
+Layer2B --> Layer3 : Persistence & Gateway Contracts
 
-Ctrl_Alloc --> Ent_Sched : Mutates State
-Ctrl_Val --> Ent_Teacher : Checks Workload & Skills
-Ctrl_Val --> Ent_Studio : Checks Capacity & Baffling
-Ctrl_Audit --> Ent_Audit : Appends Immutable Entry
-
-Ent_Sched --> GW_DB : Persists Records
-Ent_Teacher --> GW_DB : Persists Records
-Ent_Studio --> GW_DB : Persists Records
-Ent_Audit --> GW_DB : Cryptographic Snapshots
+Layer1 -[hidden]down-> Layer2A
+Layer2A -[hidden]down-> Layer2B
+Layer2B -[hidden]down-> Layer3
 
 @enduml

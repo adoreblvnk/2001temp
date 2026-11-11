@@ -72,12 +72,8 @@ class Teacher <<Entity>> {
     + hasInstrumentQualification(type : InstrumentType) : Boolean
     + calculateWeeklyWorkload() : float
     + calculateMonthlyWorkload() : float
-    + getRunningWeeklyHours() : float
-    + getRunningMonthlyHours() : float
-    + updateRunningHours(deltaHours : float) : void
     + isAvailable() : Boolean
 }
-
 class Manager <<Entity>> {
     - managedShiftHours : float
     + getManagedShiftHours() : float
@@ -166,13 +162,8 @@ class AuditLog <<Entity>> {
     - timestamp : DateTime
     - details : String
     + logAction(actorId : String, action : String, details : String) : void
-    + getLogId() : String
-    + getActorId() : String
-    + getActionType() : String
-    + getTimestamp() : DateTime
-    + getDetails() : String
+    + getAuditTrail(weekId : String) : List<AuditLog>
 }
-
 ' ========== INHERITANCE ==========
 User <|-- Teacher
 User <|-- Manager

@@ -13,75 +13,110 @@ skinparam sequence {
     ActorBackgroundColor #EFF6FF
 }
 
-title SSD-11 : Inspect System Audit Log
+title SSD-11 : Request Peer Lesson Swap
 
-actor "Manager / IT Administrator" as Staff
-participant ":AuditLogUI" as AuditLogUI
-participant ":AuditLogController" as AuditLogController
+actor "Initiating Teacher" as Teacher
+participant ":TeacherUI" as TeacherUI
+participant ":SwapController" as SwapController
+participant ":ConflictValidator" as ConflictValidator
+participant ":Lesson" as Lesson
+actor "Peer Teacher" as Colleague
+participant ":TeacherUI" as ColleagueUI
+actor Manager
+participant ":ManagerDashboardUI" as ManagerUI
 participant ":AuditLog" as AuditLog
-participant ":DatabaseGateway" as ExtDB
 
-Staff -> AuditLogUI : navigateToAuditConsole()
-activate Staff
-activate AuditLogUI
+Teacher -> TeacherUI : selectLesson(lessonId)
+activate Teacher
+activate TeacherUI
+TeacherUI --> Teacher : LessonView
+deactivate TeacherUI
 
-AuditLogUI -> AuditLogController : queryAuditLogs("", "")
-activate AuditLogController
+Teacher -> TeacherUI : proposeSwap(lessonId, colleagueId, exchangeSlot)
+activate TeacherUI
+TeacherUI -> SwapController : proposeSwap(lessonId, colleagueId, exchangeSlot)
+activate SwapController
 
-AuditLogController -> ExtDB : fetchAuditRecords()
-activate ExtDB
-ExtDB --> AuditLogController : List<AuditLogRecord>
-deactivate ExtDB
+SwapController -> ConflictValidator : validateAllocationRules(teacher, studio, exchangeSlot)
+activate ConflictValidator
+ConflictValidator --> SwapController : ValidationResult
+deactivate ConflictValidator
 
-AuditLogController --> AuditLogUI : List<AuditLog>
-deactivate AuditLogController
+alt validation passes without collision
+    SwapController -> ColleagueUI : notifySwapProposal(proposalId, swapDetails)
+    activate ColleagueUI
+    deactivate ColleagueUI
 
-AuditLogUI --> Staff : renderAuditLogConsole(records)
-deactivate AuditLogUI
-
-Staff -> AuditLogUI : applyFilter(actorFilter, actionFilter)
-activate AuditLogUI
-
-AuditLogUI -> AuditLogController : queryAuditLogs(actorFilter, actionFilter)
-activate AuditLogController
-
-AuditLogController -> ExtDB : executeFilteredQuery(actorFilter, actionFilter)
-activate ExtDB
-ExtDB --> AuditLogController : List<AuditLogRecord>
-deactivate ExtDB
-
-loop for each record
-    AuditLogController -> AuditLog : getTimestamp()
-    activate AuditLog
-    AuditLog --> AuditLogController : DateTime
-    deactivate AuditLog
-
-    AuditLogController -> AuditLog : getActionType()
-    activate AuditLog
-    AuditLog --> AuditLogController : String
-    deactivate AuditLog
+    SwapController --> TeacherUI : ProposalPending
+    TeacherUI --> Teacher : ProposalPendingNotice
+else collision detected
+    SwapController --> TeacherUI : ConflictError
+    TeacherUI --> Teacher : ConflictErrorMessage
 end
 
-AuditLogController --> AuditLogUI : filteredLogs
-deactivate AuditLogController
+deactivate SwapController
+deactivate TeacherUI
 
-AuditLogUI --> Staff : displayFilteredRecords(filteredLogs)
-deactivate AuditLogUI
 
-opt Export Audit Trail
-    Staff -> AuditLogUI : exportAuditTrail("CSV")
-    activate AuditLogUI
-    AuditLogUI -> AuditLogController : exportAuditTrail("CSV")
-    activate AuditLogController
-    AuditLogController -> ExtDB : generateExportBundle("CSV")
-    activate ExtDB
-    ExtDB --> AuditLogController : exportFile
-    deactivate ExtDB
-    AuditLogController --> AuditLogUI : exportFile
-    deactivate AuditLogController
-    AuditLogUI --> Staff : showExportConfirmation()
-    deactivate AuditLogUI
+alt peer teacher confirms swap
+    Colleague -> ColleagueUI : confirmSwapProposal(proposalId)
+    activate Colleague
+    activate ColleagueUI
+    ColleagueUI -> SwapController : confirmSwap(proposalId)
+    activate SwapController
+
+    SwapController -> ManagerUI : notifyManagerSignOffRequired(proposalId)
+    activate ManagerUI
+    deactivate ManagerUI
+
+    SwapController --> ColleagueUI : AwaitingManagerSignOff
+    ColleagueUI --> Colleague : StatusView
+    deactivate ColleagueUI
+    deactivate Colleague
+
+    Manager -> ManagerUI : approveSwap(proposalId)
+    activate Manager
+    activate ManagerUI
+    ManagerUI -> SwapController : confirmSwap(proposalId)
+
+    SwapController -> Lesson : assignTeacher(colleague)
+    activate Lesson
+    Lesson --> SwapController : Boolean
+    deactivate Lesson
+
+    SwapController -> AuditLog : logAction(managerId, "PEER_SWAP_APPROVED", proposalId)
+    activate AuditLog
+    deactivate AuditLog
+
+    SwapController --> ManagerUI : SwapComplete
+    ManagerUI --> Manager : ConfirmationMessage
+    deactivate ManagerUI
+    deactivate Manager
+
+    SwapController -> TeacherUI : notifySwapExecuted(proposalId)
+    activate TeacherUI
+    TeacherUI --> Teacher : ScheduleUpdatedView
+    deactivate TeacherUI
+    deactivate SwapController
+else peer teacher declines swap
+    Colleague -> ColleagueUI : declineSwapProposal(proposalId)
+    activate Colleague
+    activate ColleagueUI
+    ColleagueUI -> SwapController : confirmSwap(proposalId)
+    activate SwapController
+
+    SwapController -> AuditLog : logAction(colleagueId, "PEER_SWAP_DECLINED", proposalId)
+    activate AuditLog
+    deactivate AuditLog
+
+    SwapController -> TeacherUI : notifySwapDeclined(proposalId)
+    activate TeacherUI
+    TeacherUI --> Teacher : ProposalDeclinedNotice
+    deactivate TeacherUI
+    deactivate SwapController
+    deactivate ColleagueUI
+    deactivate Colleague
 end
 
-deactivate Staff
+deactivate Teacher
 @enduml

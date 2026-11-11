@@ -1,15 +1,17 @@
 @startuml component_diagram
+top to bottom direction
 skinparam componentStyle uml2
 skinparam shadowing false
 skinparam defaultFontName "Helvetica", "Arial", sans-serif
-skinparam defaultFontSize 11
+skinparam defaultFontSize 10
+skinparam linetype ortho
 
 skinparam component {
     BackgroundColor #FFFFFF
     BorderColor #1E3A8A
     BorderThickness 1.5
     HeaderBackgroundColor #EFF6FF
-    FontSize 12
+    FontSize 10
     FontStyle bold
 }
 
@@ -25,159 +27,95 @@ skinparam package {
     BackgroundColor #F8FAFC
     BorderColor #94A3B8
     BorderThickness 1.2
+    FontSize 11
+    FontStyle bold
+}
+
+skinparam frame {
+    BackgroundColor #FFFFFF
+    BorderColor #0F172A
+    BorderThickness 1.8
     FontSize 12
     FontStyle bold
 }
 
-skinparam note {
-    BackgroundColor #FEF3C7
-    BorderColor #D97706
-    FontSize 10
+frame "System Boundary: Music School Scheduling System" {
+
+    package "Presentation Layer" {
+        component [WebClientUI] as UI <<subsystem>>
+    }
+
+    ' Service Interfaces
+    () "IScheduleService" as ISchedule
+    () "IFacultyService" as IFaculty
+    () "IFacilityService" as IFacility
+    () "IAuditLogService" as IAudit
+
+    package "Business & Application Layer (Core Scheduling Services)" {
+        component [SchedulingService] as SchedComp <<component>>
+        component [ConflictValidationService] as ValComp <<component>>
+        component [TieBreakerStrategy] as RankComp <<component>>
+    }
+
+    ' Internal Business Interfaces
+    () "IConflictValidator" as IVal
+    () "ITieBreakerStrategy" as IRank
+
+    package "Business & Application Layer (Faculty, Facilities & Audit)" {
+        component [FacultyService] as FacComp <<component>>
+        component [FacilityService] as FacilComp <<component>>
+        component [AuditLoggingService] as AuditComp <<component>>
+    }
+
+    ' Persistence Interface
+    () "IPersistenceGateway" as IData
+
+    package "Data & Infrastructure Layer" {
+        component [PersistenceService] as DataComp <<component>>
+    }
+
+    port "pExtNotify" as pExtNotify
 }
 
-' ==============================================================
-' BOUNDARY / PRESENTATION SUBSYSTEM
-' ==============================================================
-package "Presentation Layer (Web / Desktop Boundary)" {
-    component [PresentationComponent] as Presentation <<subsystem>> {
-        note as N_UI
-            Boundaries:
-            * AllocationUI
-            * ManagerDashboardUI
-            * TeacherUI
-            * AdminUI
-            * AuditLogUI
-        end note
-    }
-}
+' External System
+component [ExternalNotificationGateway] as ExtNotify <<external system>>
 
-' ==============================================================
-' APPLICATION & BUSINESS CONTROL SUBSYSTEMS
-' ==============================================================
-package "Core Business Logic & Control Subsystems" {
+' Presentation to Service Interfaces
+UI -( ISchedule
+UI -( IFaculty
+UI -( IFacility
+UI -( IAudit
 
-    component [SchedulingComponent] as Scheduling <<component>> {
-        note as N_Sched
-            Controllers:
-            * AllocationController
-            * ScheduleController
-            * RejectionController
-        end note
-    }
+' Service Realizations
+SchedComp -up- ISchedule
+FacComp -up- IFaculty
+FacilComp -up- IFacility
+AuditComp -up- IAudit
 
-    component [ValidationComponent] as Validation <<component>> {
-        note as N_Val
-            Domain Service:
-            * ConflictValidator
-        end note
-    }
+' Internal Business Wiring
+SchedComp -( IVal
+SchedComp -( IRank
+ValComp -up- IVal
+RankComp -up- IRank
 
-    component [FacultyComponent] as Faculty <<component>> {
-        note as N_Fac
-            Controllers:
-            * AvailabilityController
-            * PreferenceController
-            * WorkloadController
-        end note
-    }
+' Data Tier Realization and Requirements
+SchedComp -( IData
+FacComp -( IData
+FacilComp -( IData
+AuditComp -( IData
+DataComp -up- IData
 
-    component [FacilityComponent] as Facility <<component>> {
-        note as N_Facil
-            Controllers:
-            * StudioController
-            * ReportController
-        end note
-    }
+' External Notification Port Connection
+() "INotificationGateway" as INotify
+AuditComp -down- INotify
+pExtNotify -up-( INotify
+pExtNotify -down- ExtNotify
 
-    component [AuditComplianceComponent] as AuditComp <<component>> {
-        note as N_Audit
-            Controllers:
-            * AuditLogController
-            * ComplianceController
-        end note
-    }
-
-    component [RankingStrategyComponent] as Ranking <<component>> {
-        note as N_Rank
-            Strategies:
-            * WorkloadDeficitStrategy
-            * PreferenceMatchStrategy
-        end note
-    }
-}
-
-' ==============================================================
-' EXTERNAL INTEGRATION / INFRASTRUCTURE SUBSYSTEM
-' ==============================================================
-package "Infrastructure & External Gateways" {
-    component [NotificationComponent] as Notification <<gateway>> {
-        note as N_Notify
-            Adapter:
-            * NotificationGatewayAdapter
-        end note
-    }
-
-    component [PersistenceComponent] as Persistence <<gateway>> {
-        note as N_DB
-            Repository & Data Mapper:
-            * DatabaseGateway
-        end note
-    }
-}
-
-' ==============================================================
-' PROVIDED INTERFACES (Lollipops)
-' ==============================================================
-() "IScheduleService" as IScheduleService
-() "IConflictValidator" as IConflictValidator
-() "IFacultyService" as IFacultyService
-() "IFacilityService" as IFacilityService
-() "IAuditLogService" as IAuditLogService
-() "IComplianceService" as IComplianceService
-() "ITieBreakerStrategy" as ITieBreakerStrategy
-() "INotificationGateway" as INotificationGateway
-() "IPersistenceGateway" as IPersistenceGateway
-
-' Realization of Provided Interfaces (Component -> Lollipop)
-Scheduling -up- IScheduleService
-Validation -up- IConflictValidator
-Faculty -up- IFacultyService
-Facility -up- IFacilityService
-AuditComp -up- IAuditLogService
-AuditComp -right- IComplianceService
-Ranking -up- ITieBreakerStrategy
-Notification -up- INotificationGateway
-Persistence -up- IPersistenceGateway
-
-' ==============================================================
-' REQUIRED INTERFACES (Sockets / Invocations)
-' ==============================================================
-' Presentation layer dependencies
-Presentation ..( IScheduleService : requires
-Presentation ..( IFacultyService : requires
-Presentation ..( IFacilityService : requires
-Presentation ..( IAuditLogService : requires
-Presentation ..( IComplianceService : requires
-
-' SchedulingComponent dependencies
-Scheduling ..( IConflictValidator : requires
-Scheduling ..( ITieBreakerStrategy : requires
-Scheduling ..( INotificationGateway : requires
-Scheduling ..( IAuditLogService : requires
-Scheduling ..( IFacultyService : requires
-
-' ValidationComponent dependencies
-Validation ..( IFacultyService : requires
-Validation ..( IFacilityService : requires
-
-' Faculty and Facility audit dependencies
-Faculty ..( IAuditLogService : requires
-Facility ..( IAuditLogService : requires
-
-' Persistence dependencies
-Scheduling ..( IPersistenceGateway : requires
-Faculty ..( IPersistenceGateway : requires
-Facility ..( IPersistenceGateway : requires
-AuditComp ..( IPersistenceGateway : requires
+' Vertical Alignment Constraints
+UI -[hidden]down-> ISchedule
+ISchedule -[hidden]down-> SchedComp
+SchedComp -[hidden]down-> FacComp
+FacComp -[hidden]down-> IData
+IData -[hidden]down-> DataComp
 
 @enduml

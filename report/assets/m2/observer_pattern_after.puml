@@ -1,0 +1,52 @@
+@startuml observer_pattern_after
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam defaultFontName "Helvetica", "Arial", sans-serif
+skinparam defaultFontSize 11
+skinparam class {
+    BackgroundColor #FFFFFF
+    BorderColor #1E3A8A
+    BorderThickness 1.5
+}
+skinparam interface {
+    BackgroundColor #EFF6FF
+    BorderColor #2563EB
+    BorderThickness 1.5
+}
+skinparam arrow {
+    Color #1E3A8A
+    FontSize 10
+}
+
+title Detailed Design - After Observer Pattern Implementation (Decoupled Notification Dispatch)
+
+class AllocationController <<Control>> {
+    - observers : List<IScheduleObserver>
+    + attach(observer : IScheduleObserver) : void
+    + detach(observer : IScheduleObserver) : void
+    + notifyObservers(event : ScheduleEvent) : void
+    + publishWeeklyRoster(weekId : String) : Boolean
+}
+
+interface IScheduleObserver <<interface>> {
+    + onScheduleEvent(event : ScheduleEvent) : void
+}
+
+class EmailNotificationObserver {
+    + onScheduleEvent(event : ScheduleEvent) : void
+}
+
+class DashboardAlertObserver {
+    + onScheduleEvent(event : ScheduleEvent) : void
+}
+
+class AuditNotificationObserver {
+    + onScheduleEvent(event : ScheduleEvent) : void
+}
+
+AllocationController o-> "0..*" IScheduleObserver : notifies >
+EmailNotificationObserver .up.|> IScheduleObserver : <<implements>>
+DashboardAlertObserver .up.|> IScheduleObserver : <<implements>>
+AuditNotificationObserver .up.|> IScheduleObserver : <<implements>>
+
+@enduml

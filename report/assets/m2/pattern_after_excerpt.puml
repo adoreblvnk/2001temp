@@ -18,7 +18,7 @@ skinparam arrow {
     FontSize 10
 }
 
-title Detailed Design - After Strategy Pattern Implementation (Complies with OCP & SRP)
+title Detailed Design - After Strategy Pattern Implementation
 
 class AllocationController <<Control>> {
     - validator : IConflictValidator
@@ -50,30 +50,6 @@ class Teacher <<Entity>> {
 AllocationController o-> ITieBreakerStrategy : injects strategy >
 WorkloadDeficitStrategy .up.|> ITieBreakerStrategy : <<implements>>
 PreferenceMatchStrategy .up.|> ITieBreakerStrategy : <<implements>>
-
 ITieBreakerStrategy ..> Teacher : orders
-
-note bottom of WorkloadDeficitStrategy
-  <b>Primary Operational Policy (FR-06):</b>
-  Sorts candidates in descending order of workload deficit:
-  <code>Deficit = 40.0 - runningWeeklyHours</code>
-  Staff farthest from statutory target are surfaced first.
-end note
-
-note bottom of PreferenceMatchStrategy
-  <b>Secondary Operational Policy:</b>
-  Sorts candidates by matching declared teaching days
-  and consecutive 4-hour lesson clustering preferences.
-end note
-
-note right of AllocationController
-  <b>Design Pattern Benefits:</b>
-  * <b>Open-Closed Principle (OCP):</b> New policies (e.g. SeniorityStrategy)
-    can be plugged in without modifying AllocationController.
-  * <b>Single Responsibility Principle (SRP):</b> Separates scheduling orchestration
-    from complex tie-breaking mathematics.
-  * <b>Runtime Flexibility:</b> Managers can toggle ranking strategies dynamically
-    from the AllocationUI interface.
-end note
 
 @enduml

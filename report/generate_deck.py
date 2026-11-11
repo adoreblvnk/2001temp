@@ -244,75 +244,64 @@ def create_deck(output_path):
     # -------------------------------------------------------------
     # SLIDE 8: WIREFRAME 1 - WORKLOAD DASHBOARD & OUTLIERS (UC-01)
     # -------------------------------------------------------------
+    asset_dir = os.path.join(os.path.dirname(os.path.abspath(output_path)), "assets", "m2")
+
     s8 = prs.slides.add_slide(blank_layout)
     add_header(s8, "Wireframe System 1: Workload Intelligence Cockpit (UC-01)")
-    add_card(s8, Inches(0.8), Inches(1.6), Inches(5.6), Inches(5.2),
-             "Operational Purpose & Supported Requirements",
-             ["Supports FR-01, FR-02, FR-03, and NFR-USE-02.",
-              "Provides school managers with an executive operational dashboard summarizing weekly faculty capacity prior to timetable construction.",
-              "Visual Tiering: Implements WCAG 2.2 AA compliant indicators: Green (<35.0h), Amber (35.0h-40.0h), and Red (>40.0h).",
-              "Proactive Outlier Detection: Automatically identifies and surfaces the top 3 under-allocated instructors to facilitate equitable scheduling."])
-    add_card(s8, Inches(6.8), Inches(1.6), Inches(5.6), Inches(5.2),
-             "Key User Interactions & Data Flow",
-             ["Capacity Progress Meters: Visual real-time bars displaying running weekly hours against statutory caps.",
-              "Priority Balancing Panel: One-click navigation to assign lessons to the highest workload-deficit instructors.",
-              "Statutory Cap Lock Badges: Automatically disables allocation buttons for instructors reaching 44.0h, mitigating organizational liability under the Singapore Employment Act.",
-              "Synchronous Cache Fallback: Seamless offline caching ensures continuous monitoring during transient campus Wi-Fi dropouts."])
+    add_card(s8, Inches(0.8), Inches(1.5), Inches(4.5), Inches(5.4),
+             "Purpose, Traceability & Interactions",
+             ["Supports UC-01, FR-01, FR-02, FR-03, FR-15, FR-17, NFR-USE-02.",
+              "WCAG 2.2 AA dual-encoded capacity meters: Green (<35.0h), Amber (35.0h-44.0h), Red (44.0h Cap).",
+              "Priority Balancing Queue surfaces top 3 lowest-workload instructors for 1-click assignment.",
+              "Statutory Cap Lock disables allocation at 44.0h (Singapore Employment Act Part IV)."])
+    wf1_path = os.path.join(asset_dir, "wireframe_manager_cockpit.png")
+    if os.path.exists(wf1_path):
+        s8.shapes.add_picture(wf1_path, Inches(5.5), Inches(1.5), width=Inches(7.1))
 
     # -------------------------------------------------------------
     # SLIDE 9: WIREFRAME 2 - SIDE-BY-SIDE ALLOCATION MATRIX (UC-02)
     # -------------------------------------------------------------
     s9 = prs.slides.add_slide(blank_layout)
-    add_header(s9, "Wireframe System 2: Side-by-Side Slot Allocation Matrix (UC-02)")
-    add_card(s9, Inches(0.8), Inches(1.6), Inches(5.6), Inches(5.2),
-             "Operational Purpose & Supported Requirements",
-             ["Supports FR-04, FR-05, FR-06, FR-17, and FR-20.",
-              "Assists managers during granular 30-minute lesson placement with real-time multi-constraint validation.",
-              "Side-by-Side Comparison: Presents up to 3 qualified candidates side-by-side with running hours, fatigue status, and studio location.",
-              "Strategy Integration: Applies WorkloadDeficitStrategy to dynamically recommend the optimal instructor."])
-    add_card(s9, Inches(6.8), Inches(1.6), Inches(5.6), Inches(5.2),
-             "Key User Interactions & Constraint Enforcement",
-             ["Acoustic Studio Isolation: Restricts Drums lesson placements exclusively to Studio 5; incompatible studios are disabled.",
-              "Continuous Block Protection: Warns if placing a lesson causes an instructor to exceed 4 continuous teaching hours.",
-              "Advisory Overtime Modal: Triggers soft-warning confirmation requiring recorded justification if hours enter 40.5h-44.0h.",
-              "Sub-300ms Validation: Instant clash detection ensures zero double-booking of rooms or instructors."])
+    add_header(s9, "Wireframe System 2: Side-by-Side Slot Allocation Matrix (UC-02, UC-03, UC-06)")
+    add_card(s9, Inches(0.8), Inches(1.5), Inches(4.5), Inches(5.4),
+             "Purpose, Traceability & Constraints",
+             ["Supports UC-02, UC-03, UC-06, FR-04, FR-05, FR-11, FR-14, FR-17, FR-18.",
+              "Presents 3 eligible candidates side-by-side ranked via ITieBreakerStrategy (WorkloadDeficitStrategy).",
+              "Acoustic Isolation locks Drums lessons exclusively to Studio 5; maintenance blackouts disabled.",
+              "Advisory Overtime Gate requires managerial justification before committing 40.5h-44.0h slots."])
+    wf2_path = os.path.join(asset_dir, "wireframe_allocation_matrix.png")
+    if os.path.exists(wf2_path):
+        s9.shapes.add_picture(wf2_path, Inches(5.5), Inches(1.65), width=Inches(7.1))
 
     # -------------------------------------------------------------
     # SLIDE 10: WIREFRAME 3 - TEACHER AVAILABILITY & TIMETABLE (UC-07-10)
     # -------------------------------------------------------------
     s10 = prs.slides.add_slide(blank_layout)
-    add_header(s10, "Wireframe System 3: Teacher Availability & Timetable Portal (UC-07-10)")
-    add_card(s10, Inches(0.8), Inches(1.6), Inches(5.6), Inches(5.2),
-             "Operational Purpose & Supported Requirements",
-             ["Supports FR-07, FR-08, FR-09, FR-10, FR-11, and NFR-SEC-01.",
-              "Provides instructors with an intuitive web/mobile portal to manage monthly availability, preferences, and view schedules.",
-              "Minimum Availability Rule: Enforces submission of at least 60.0 hours per week to guarantee manager allocation flexibility.",
-              "Cutoff Countdown Clock: Visual timer counting down to 19th 23:59 cutoff; late submissions are flagged for manager adjudication."])
-    add_card(s10, Inches(6.8), Inches(1.6), Inches(5.6), Inches(5.2),
-             "Key User Interactions & Statutory Privacy",
-             ["PDPA Masked Student PII: Displays student first names and lesson levels while strictly masking contact details (PDPA Section 24).",
-              "Preference Capture: Allows instructors to declare preferred working days and request 4-hour consecutive lesson clustering.",
-              "2-Stage Rejection Modal: Features a mandatory consultation warning modal and standardized reason codes for rejected assignments.",
-              "Draft Auto-Caching: Caches unsubmitted availability in browser session storage, preventing data loss during network dropouts."])
+    add_header(s10, "Wireframe System 3: Teacher Availability & Timetable Portal (UC-07 to UC-10)")
+    add_card(s10, Inches(0.8), Inches(1.5), Inches(4.5), Inches(5.4),
+             "Purpose, Traceability & Privacy",
+             ["Supports UC-07 to UC-10, FR-06 to FR-10, NFR-SEC-01.",
+              "Enforces minimum 60.0h monthly availability declaration prior to 19th 23:59 cutoff clock.",
+              "PDPA Section 24 compliance: masks student contact numbers on published read-only rosters.",
+              "Mandatory Consultation & Rejection Modal routes rejected slots to Manager Exception Queue (UC-03)."])
+    wf3_path = os.path.join(asset_dir, "wireframe_teacher_portal.png")
+    if os.path.exists(wf3_path):
+        s10.shapes.add_picture(wf3_path, Inches(5.5), Inches(1.65), width=Inches(7.1))
 
     # -------------------------------------------------------------
     # SLIDE 11: WIREFRAME 4 - AUDIT CONSOLE & MOM COMPLIANCE (UC-11, 17)
     # -------------------------------------------------------------
     s11 = prs.slides.add_slide(blank_layout)
-    add_header(s11, "Wireframe System 4: Audit Console & Statutory Governance (UC-11, 17)")
-    add_card(s11, Inches(0.8), Inches(1.6), Inches(5.6), Inches(5.2),
-             "Operational Purpose & Supported Requirements",
-             ["Supports FR-20, FR-21, NFR-COM-01, and NFR-COM-02.",
-              "Furnishes academy leadership and regulatory auditors with an unalterable, chronological ledger of all scheduling operations.",
-              "Statutory Labor Monitoring: Tracks faculty hours against the 44.0-hour statutory cap under Singapore Employment Act Part IV.",
-              "MOM Record Retention: Retains cryptographic audit logs for at least 24 calendar months."])
-    add_card(s11, Inches(6.8), Inches(1.6), Inches(5.6), Inches(5.2),
-             "Key User Interactions & Export Facilities",
-             ["Multi-Parameter Filter Console: Query audit events by Date Range, Staff ID, Action Code, or Target Entity ID.",
-              "Cryptographic Integrity Badges: Displays SHA-256 hash status confirming tamper-evident record preservation.",
-              "Overtime Audit Trail: Details managerial justification records for any allocations approved above 40.0 hours.",
-              "Compliance Certificate Export: One-click export of verified CSV and PDF bundles for Ministry of Manpower filing."])
-
+    add_header(s11, "Wireframe System 4: Audit Console & Statutory Governance (UC-11, UC-17)")
+    add_card(s11, Inches(0.8), Inches(1.5), Inches(4.5), Inches(5.4),
+             "Purpose, Traceability & Governance",
+             ["Supports UC-11, UC-17, FR-18, NFR-COM-01, NFR-COM-02.",
+              "Multi-parameter filtering across Date Range, Actor ID, and Action Type (OVERTIME_OVERRIDE).",
+              "Verifies SHA-256 tamper-evident hash chain across 24-month MOM retention window.",
+              "One-click export of CSV Audit Ledger and MOM Compliance Certificate PDF."])
+    wf4_path = os.path.join(asset_dir, "wireframe_audit_console.png")
+    if os.path.exists(wf4_path):
+        s11.shapes.add_picture(wf4_path, Inches(5.5), Inches(1.8), width=Inches(7.1))
     # -------------------------------------------------------------
     # SLIDE 12: CONCLUSION & TRACEABILITY SUMMARY
     # -------------------------------------------------------------
@@ -332,5 +321,5 @@ def create_deck(output_path):
     print(f"Successfully generated PowerPoint presentation at {output_path}")
 
 if __name__ == "__main__":
-    out = "/home/blvnk/Documents/school/INF2001/project/report/INF2001-M2-P5-5-Presentation.pptx"
+    out = os.path.join(os.path.dirname(os.path.abspath(__file__)), "INF2001-M2-P5-5-Presentation.pptx")
     create_deck(out)

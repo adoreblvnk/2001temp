@@ -1,0 +1,53 @@
+@startuml observer_pattern_template
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam defaultFontName "Helvetica", "Arial", sans-serif
+skinparam defaultFontSize 11
+skinparam class {
+    BackgroundColor #FFFFFF
+    BorderColor #1E3A8A
+    BorderThickness 1.5
+}
+skinparam interface {
+    BackgroundColor #EFF6FF
+    BorderColor #2563EB
+    BorderThickness 1.5
+}
+skinparam arrow {
+    Color #1E3A8A
+    FontSize 10
+}
+
+title Gang of Four (GoF) Observer Pattern - Structural Template
+
+abstract class Subject {
+    - observers : List<Observer>
+    + attach(observer : Observer) : void
+    + detach(observer : Observer) : void
+    + notifyObservers() : void
+}
+
+interface Observer <<interface>> {
+    + update(subject : Subject) : void
+}
+
+class ConcreteSubject {
+    - state : Object
+    + getState() : Object
+    + setState(state : Object) : void
+}
+
+class ConcreteObserverA {
+    + update(subject : Subject) : void
+}
+
+class ConcreteObserverB {
+    + update(subject : Subject) : void
+}
+
+Subject <|-- ConcreteSubject
+Subject o-> "0..*" Observer : observers
+ConcreteObserverA .up.|> Observer : <<implements>>
+ConcreteObserverB .up.|> Observer : <<implements>>
+
+@enduml
