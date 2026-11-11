@@ -24,9 +24,10 @@ class AllocationController <<Control>> {
 
 class Teacher <<Entity>> {
     - weeklyHoursTarget : float
-    - runningWeeklyHours : float
-    + getRunningWeeklyHours() : float
-    + getRunningMonthlyHours() : float
+    - weeklyHours : float
+    - assignedLocation : String
+    + getWeeklyHours() : float
+    + getAssignedLocation() : String
 }
 
 AllocationController --> "0..*" Teacher : directly sorts >

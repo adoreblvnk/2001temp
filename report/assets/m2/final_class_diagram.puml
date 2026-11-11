@@ -49,7 +49,7 @@ package "Service Interfaces" {
     interface IScheduleService <<interface>> {
         +allocateLessonSlot(lessonId, teacherId, studioId, slot) : Boolean
         +reallocateLesson(lessonId, substituteTeacherId) : Boolean
-        +publishWeeklyRoster(weekId) : Boolean
+        +notifyAssignedTeachers(weekId) : Boolean
     }
     interface IConflictValidator <<interface>> {
         +validateAllocationRules(teacher, studio, slot) : ValidationResult
@@ -111,9 +111,11 @@ package "Domain Entities (Data Tier)" {
     }
     class Teacher <<Entity>> {
         - instrumentQualifications : List<InstrumentType>
-        - runningWeeklyHours : float
-        - runningMonthlyHours : float
-        + getRunningWeeklyHours() : float
+        - weeklyHours : float
+        - monthlyHours : float
+        - assignedLocation : String
+        + getWeeklyHours() : float
+        + getAssignedLocation() : String
     }
     class Lesson <<Entity>> {
         - lessonId : String

@@ -25,7 +25,7 @@ class AllocationController <<Control>> {
     + attach(observer : IScheduleObserver) : void
     + detach(observer : IScheduleObserver) : void
     + notifyObservers(event : ScheduleEvent) : void
-    + publishWeeklyRoster(weekId : String) : Boolean
+    + notifyAssignedTeachers(weekId : String) : Boolean
 }
 
 interface IScheduleObserver <<interface>> {

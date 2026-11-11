@@ -42,9 +42,10 @@ class PreferenceMatchStrategy {
 
 class Teacher <<Entity>> {
     - weeklyHoursTarget : float
-    - runningWeeklyHours : float
-    + getRunningWeeklyHours() : float
-    + getRunningMonthlyHours() : float
+    - weeklyHours : float
+    - assignedLocation : String
+    + getWeeklyHours() : float
+    + getAssignedLocation() : String
 }
 
 AllocationController o-> ITieBreakerStrategy : injects strategy >

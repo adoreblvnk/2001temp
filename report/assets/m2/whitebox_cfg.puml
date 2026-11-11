@@ -22,28 +22,30 @@ title Control Flow Graph (CFG) - ConflictValidator.findEligibleCandidates()
 
 state "1. Entry & Initialization" as N1
 state "2. while (i < facultyPool.size())" as N2
-state "3. if (hasInstrumentQualification)" as N3
-state "4. if (isAvailable)" as N4
-state "5. if (checkContinuousTeachingLimit)" as N5
-state "6. if (runningWeeklyHours + 0.5 <= 44.0)" as N6
-state "7. eligibleCandidates.add(candidate)" as N7
-state "8. i = i + 1" as N8
-state "9. return eligibleCandidates" as N9
+state "3. if (hasInstrumentQualification && isAvailable)" as N3
+state "4. if (checkContinuousTeachingLimit)" as N4
+state "5. switch (classifyWeeklyWorkloadTier(projectedHours))" as N5
+state "6. Tier 1 (< 40.0h): status = OK\neligibleCandidates.add(candidate)" as N6
+state "7. Tier 2 (40.0h - 44.0h): status = WARNING\neligibleCandidates.add(candidate)" as N7
+state "8. Tier 3 (> 44.0h): status = OVERWORKED\nexclude candidate" as N8
+state "9. i = i + 1" as N9
+state "10. return eligibleCandidates" as N10
 
 [*] --> N1
 N1 --> N2 : e1
 N2 --> N3 : e2 [True]
-N2 --> N9 : e3 [False]
+N2 --> N10 : e3 [False]
 N3 --> N4 : e4 [True]
-N3 --> N8 : e5 [False]
+N3 --> N9 : e5 [False]
 N4 --> N5 : e6 [True]
-N4 --> N8 : e7 [False]
-N5 --> N6 : e8 [True]
-N5 --> N8 : e9 [False]
-N6 --> N7 : e10 [True]
-N6 --> N8 : e11 [False]
-N7 --> N8 : e12
-N8 --> N2 : e13 [Loop Back]
-N9 --> [*]
+N4 --> N9 : e7 [False]
+N5 --> N6 : e8 [< 40.0h: OK]
+N5 --> N7 : e9 [40.0h - 44.0h: Warning]
+N5 --> N8 : e10 [> 44.0h: Overworked]
+N6 --> N9 : e11
+N7 --> N9 : e12
+N8 --> N9 : e13
+N9 --> N2 : e14 [Loop Back]
+N10 --> [*]
 
 @enduml
