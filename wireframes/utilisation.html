@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Studio Utilisation · Harmony Academy</title>
+<link rel="stylesheet" href="shared.css">
+<style>.app { --hue: var(--hue-manager); }</style>
+</head>
+<body>
+<div class="app">
+
+  <aside class="rail">
+    <div class="wordmark">
+      <h1>Harmony Academy</h1>
+      <p>Resource Scheduling</p>
+    </div>
+    <hr class="rule-double">
+    <nav class="nav" aria-label="Sections">
+      <a class="tab" style="--step:0" href="cockpit.html"><span class="dot"></span>Workload Cockpit</a>
+      <a class="tab" style="--step:1" href="allocation.html"><span class="dot"></span>Allocation Matrix</a>
+      <a class="tab" style="--step:2" href="exceptions.html"><span class="dot"></span>Exception Queue</a>
+      <a class="tab" style="--step:3" href="utilisation.html" aria-current="page"><span class="dot"></span>Studio Utilisation</a>
+      <a class="tab" style="--step:4" href="teacher.html"><span class="dot"></span>Teacher Portal</a>
+      <a class="tab" style="--step:5" href="admin.html"><span class="dot"></span>Admin Console</a>
+      <a class="tab" style="--step:6" href="audit.html"><span class="dot"></span>Audit Log</a>
+      <a class="tab" style="--step:7" href="design-system.html"><span class="dot" style="background:var(--rule-strong)"></span>Design System</a>
+    </nav>
+    <div class="rail-foot">
+      <div class="role-chip">
+        <span class="avatar">G</span>
+        <span><b>Grace Tan</b><span>M-01 · Manager on shift</span></span>
+      </div>
+      <div class="cutoff">
+        <b>Availability cutoff</b>
+        <span class="clock num">7 d 11 h</span>
+        <small>19 Nov 23:59 · December roster</small>
+      </div>
+    </div>
+  </aside>
+
+  <main class="sheet">
+
+    <header class="masthead">
+      <div class="titles">
+        <h2>Studio Utilisation</h2>
+        <p>Monthly analytics · booked hours against the 86-hour weekly operating capacity per studio · peak windows and report exports · November 2026</p>
+      </div>
+      <div class="actions">
+        <div class="weeksel" role="group" aria-label="Target month">
+          <span class="wk-label">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="3.5" width="11" height="10.5" rx="1.5"/><path d="M2.5 6.5h11M5.5 2v3M10.5 2v3"/></svg>
+            Target month
+          </span>
+          <button type="button" aria-label="Previous month"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3 5 8l5 5"/></svg></button>
+          <select aria-label="Select target month">
+            <option>October 2026</option>
+            <option selected>November 2026</option>
+            <option>December 2026</option>
+          </select>
+          <button type="button" aria-label="Next month"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3l5 5-5 5"/></svg></button>
+        </div>
+        <button class="btn" type="button">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v8M4.5 6.5 8 10l3.5-3.5M2.5 13.5h11"/></svg>
+          Export PDF</button>
+        <button class="btn btn-quiet" type="button">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v8M4.5 6.5 8 10l3.5-3.5M2.5 13.5h11"/></svg>
+          Export CSV</button>
+      </div>
+    </header>
+
+    <div class="state-strip">
+      <div class="cell"><span class="k">Booked this month</span><span class="v num">1,076.0<small> / 1,712.0 h</small></span></div>
+      <div class="cell"><span class="k">Academy utilisation</span><span class="v num">62.9<small>%</small></span></div>
+      <div class="cell"><span class="k">Peak window</span><span class="v">Wed<small> 14:00–18:00</small></span></div>
+      <div class="cell"><span class="k">Busiest studio</span><span class="v num">S-02<small> · 72%</small></span></div>
+      <div class="cell"><span class="k">Lightest studio</span><span class="v num">S-04<small> · 49% (maintenance)</small></span></div>
+    </div>
+
+    <section class="plate" style="margin-bottom:24px" aria-label="Monthly booked hours per studio">
+      <div class="plate-head">
+        <h3>Booked vs available · per studio, November 2026</h3>
+        <span class="aux">4 teaching weeks × 86.0 h operating week (Mon–Fri 09:00–21:00 · Sat–Sun 08:00–21:00) · maintenance windows deducted from capacity</span>
+      </div>
+      <div class="plate-body">
+        <div class="util">
+          <span><b>S-01</b> Grand piano</span>
+          <span class="bar"><i style="width:69%"></i></span>
+          <span class="cap num"><b>238.0 h</b> / 344.0 h · 69%</span>
+
+          <span><b>S-02</b> Upright piano</span>
+          <span class="bar"><i style="width:72%"></i></span>
+          <span class="cap num"><b>248.0 h</b> / 344.0 h · 72%</span>
+
+          <span><b>S-03</b> Upright piano</span>
+          <span class="bar"><i style="width:56%"></i></span>
+          <span class="cap num"><b>192.0 h</b> / 344.0 h · 56%</span>
+
+          <span><b>S-04</b> Upright piano</span>
+          <span class="bar"><i style="width:49%"></i></span>
+          <span class="cap num"><b>166.0 h</b> / 336.0 h · 49% <small>(−8.0 h maintenance)</small></span>
+
+          <span><b>S-05</b> Drum kit</span>
+          <span class="bar"><i style="width:67%"></i></span>
+          <span class="cap num"><b>232.0 h</b> / 344.0 h · 67%</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="ds-grid" style="margin-bottom:24px">
+      <section class="plate" aria-label="Peak window heatmap">
+        <div class="plate-head">
+          <h3>Peak-hour heatmap</h3>
+          <span class="aux">Share of the academy's five studios booked in each two-hour band · darker = busier · teal = academy-wide peak</span>
+        </div>
+        <div class="plate-body" style="padding-top:12px">
+          <div class="heat" role="img" aria-label="Peak-hour heatmap: weekday afternoons 14:00 to 18:00 and Saturday mornings are the busiest bands">
+            <span class="hd"></span>
+            <span class="hd">08–10</span><span class="hd">10–12</span><span class="hd">12–14</span><span class="hd">14–16</span><span class="hd">16–18</span><span class="hd">18–20</span>
+
+            <span class="tm">Mon</span><span class="hcell h1"></span><span class="hcell h2"></span><span class="hcell h1"></span><span class="hcell h4"></span><span class="hcell h4"></span><span class="hcell h2"></span>
+            <span class="tm">Tue</span><span class="hcell h1"></span><span class="hcell h2"></span><span class="hcell h0"></span><span class="hcell h4"></span><span class="hcell h3"></span><span class="hcell h2"></span>
+            <span class="tm">Wed</span><span class="hcell h2"></span><span class="hcell h2"></span><span class="hcell h1"></span><span class="hcell h4"></span><span class="hcell h4"></span><span class="hcell h2"></span>
+            <span class="tm">Thu</span><span class="hcell h1"></span><span class="hcell h2"></span><span class="hcell h0"></span><span class="hcell h3"></span><span class="hcell h4"></span><span class="hcell h2"></span>
+            <span class="tm">Fri</span><span class="hcell h1"></span><span class="hcell h2"></span><span class="hcell h1"></span><span class="hcell h3"></span><span class="hcell h3"></span><span class="hcell h1"></span>
+            <span class="tm">Sat</span><span class="hcell h4"></span><span class="hcell h3"></span><span class="hcell h2"></span><span class="hcell h2"></span><span class="hcell h1"></span><span class="hcell h0"></span>
+            <span class="tm">Sun</span><span class="hcell h3"></span><span class="hcell h2"></span><span class="hcell h1"></span><span class="hcell h1"></span><span class="hcell h0"></span><span class="hcell h0"></span>
+          </div>
+          <div class="heat-legend">
+            <span><i style="background:var(--paper-sunken)"></i>empty</span>
+            <span><i style="background:#d9d9d9"></i>light</span>
+            <span><i style="background:#b5b5b5"></i>moderate</span>
+            <span><i style="background:#7d7d7d"></i>busy</span>
+            <span><i style="background:var(--hue-manager);box-shadow:inset 0 0 0 1.5px var(--ink)"></i>academy-wide peak</span>
+          </div>
+          <div class="notice" style="margin-top:14px">
+            <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="var(--ink-soft)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex:none;margin-top:2px"><circle cx="8" cy="8" r="6.2"/><path d="M8 7.4v3.4"/><circle cx="8" cy="5.2" r=".4" fill="var(--ink-soft)"/></svg>
+            <span><b>Reading.</b> Weekday 14:00–18:00 and Saturday 08:00–10:00 run at or near full booking; Wednesday 14:00–18:00 is the academy-wide peak. Midday bands (12:00–14:00) and Sunday afternoons hold spare capacity for priority rescheduling.</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="plate" aria-label="Studio and equipment directory">
+        <div class="plate-head">
+          <h3>Studio &amp; equipment directory</h3>
+          <span class="aux">Each studio's equipped instruments and operational status · the allocation engine restricts lessons to equipped studios</span>
+        </div>
+        <div class="plate-body" style="padding-top:6px">
+          <div class="table-wrap">
+            <table class="ledger">
+              <thead><tr><th>Studio</th><th>Room</th><th>Equipped instruments</th><th>Status</th><th>Nov booked</th><th>Utilisation</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td class="num"><b>S-01</b></td><td>Grand piano room</td>
+                  <td><span class="chip chip-on">Grand piano ✓</span></td>
+                  <td><span class="chip chip-ok">Operational</span></td>
+                  <td class="num">238.0 / 344.0 h</td><td class="num"><b>69%</b></td>
+                </tr>
+                <tr>
+                  <td class="num"><b>S-02</b></td><td>Upright piano room</td>
+                  <td><span class="chip chip-on">Upright piano ✓</span></td>
+                  <td><span class="chip chip-ok">Operational</span></td>
+                  <td class="num">248.0 / 344.0 h</td><td class="num"><b>72%</b></td>
+                </tr>
+                <tr>
+                  <td class="num"><b>S-03</b></td><td>Upright piano room</td>
+                  <td><span class="chip chip-on">Upright piano ✓</span></td>
+                  <td><span class="chip chip-ok">Operational</span></td>
+                  <td class="num">192.0 / 344.0 h</td><td class="num"><b>56%</b></td>
+                </tr>
+                <tr class="rowflag">
+                  <td class="num"><b>S-04</b></td><td>Upright piano room</td>
+                  <td><span class="chip chip-on">Upright piano ✓</span></td>
+                  <td><span class="chip chip-alert">Maintenance Wed 14:00–16:00</span></td>
+                  <td class="num">166.0 / 336.0 h</td><td class="num"><b>49%</b></td>
+                </tr>
+                <tr>
+                  <td class="num"><b>S-05</b></td><td>Drum studio</td>
+                  <td><span class="chip chip-on">Upright piano ✓</span> <span class="chip chip-on">Acoustic drum kit ✓</span></td>
+                  <td><span class="chip chip-ok">Operational</span></td>
+                  <td class="num">232.0 / 344.0 h</td><td class="num"><b>67%</b></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p style="margin:12px 0 0;font-size:12px;color:var(--ink-soft)">Sole drum-equipped studio: S-05 · all drum lessons are therefore constrained to it, which explains its 67% loading and the S-05 peak on Saturday mornings. Equipment configuration lives on the Admin Console.</p>
+        </div>
+      </section>
+    </div>
+
+    <section class="plate" aria-label="Weekly basis and export">
+      <div class="plate-head">
+        <h3>Operating basis</h3>
+        <span class="aux">Figures behind every meter on this page</span>
+      </div>
+      <div class="plate-body">
+        <dl class="kv" style="grid-template-columns:auto minmax(0,1fr);max-width:760px">
+          <dt>Operating week</dt><dd>Mon–Fri 09:00–21:00 · Sat–Sun 08:00–21:00 · 86.0 h per studio per week</dd>
+          <dt>Teaching weeks in November 2026</dt><dd>4 · monthly capacity 4 × 430.0 h = 1,720.0 h, less 8.0 h S-04 maintenance = 1,712.0 h</dd>
+          <dt>Booked</dt><dd>1,076.0 h across all studios · 62.9% of effective capacity</dd>
+          <dt>Exports</dt><dd>PDF report (one page per studio, heatmap included) · CSV (raw booked hours per studio, week and band)</dd>
+        </dl>
+      </div>
+    </section>
+
+  </main>
+</div>
+</body>
+</html>

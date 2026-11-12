@@ -1,0 +1,11 @@
+Remove emdashes
+Remove all references to FRs and NFRs in the wireframes
+Remove all Apparatus
+Why is the whole layout per FR so confusing? Like I need to go into different pages to do the same FR. It looks like this was made
+USE ICONS. TO make identification easier, use icons in buttons (i.e. notification uses bell)
+FR-10 flagged avail is too small, make it more obvious. The desc should emphasize the date/time more
+FR-10 I see that you flag the notification that the teacher can see, which is good, but in the manager side, where exatly is this lateness reflected and how would it look like on the dashboard, whether if the manager acknowledged this
+FR-12 good that we have this, but how does the process of reassignment look like on the wireframes? Remember, we are going to take screenshots of this and we need to be clear
+FR-14 studio selection frame is missing. How would you show each studio's instruments and whether if the studio is equipeed with whatever instruments it has
+FR-14 what is synthetic-data source? It is not mentioned in the M2 report
+FR-16 perhaps we should use a separate tab specifically for school studio utilization and make a simple hardcoded dashboard utilization

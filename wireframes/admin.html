@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin Console — Harmony Academy</title>
+<title>Admin Console · Harmony Academy</title>
 <link rel="stylesheet" href="shared.css">
-<style>.app { --hue: var(--hue-admin); }</style>
+<style>.app { --hue: var(--hue-manager); }</style>
 </head>
 <body>
 <div class="app">
@@ -19,14 +19,16 @@
     <nav class="nav" aria-label="Sections">
       <a class="tab" style="--step:0" href="cockpit.html"><span class="dot"></span>Workload Cockpit</a>
       <a class="tab" style="--step:1" href="allocation.html"><span class="dot"></span>Allocation Matrix</a>
-      <a class="tab" style="--step:2" href="teacher.html"><span class="dot"></span>Teacher Portal</a>
-      <a class="tab" style="--step:3" href="admin.html" aria-current="page"><span class="dot"></span>Admin Console</a>
-      <a class="tab" style="--step:4" href="audit.html"><span class="dot"></span>Audit Log</a>
-      <a class="tab" style="--step:5" href="design-system.html"><span class="dot" style="background:var(--rule-strong)"></span>Design System</a>
+      <a class="tab" style="--step:2" href="exceptions.html"><span class="dot"></span>Exception Queue</a>
+      <a class="tab" style="--step:3" href="utilisation.html"><span class="dot"></span>Studio Utilisation</a>
+      <a class="tab" style="--step:4" href="teacher.html"><span class="dot"></span>Teacher Portal</a>
+      <a class="tab" style="--step:5" href="admin.html" aria-current="page"><span class="dot"></span>Admin Console</a>
+      <a class="tab" style="--step:6" href="audit.html"><span class="dot"></span>Audit Log</a>
+      <a class="tab" style="--step:7" href="design-system.html"><span class="dot" style="background:var(--rule-strong)"></span>Design System</a>
     </nav>
     <div class="rail-foot">
       <div class="role-chip">
-        <span class="avatar" style="background:var(--hue-admin)">A</span>
+        <span class="avatar">A</span>
         <span><b>Alex Wong</b><span>IT-01 · IT Administrator</span></span>
       </div>
       <div class="cutoff">
@@ -42,57 +44,64 @@
     <header class="masthead">
       <div class="titles">
         <h2>Admin Console</h2>
-        <p>Accounts, studio equipment and maintenance · configuration restricted to IT Administrators (NFR-SEC-01) · every change is deactivation-only and appended to the ledger<sup class="ref"><a href="#fn1">1</a></sup></p>
+        <p>Accounts, studio equipment and maintenance · configuration restricted to IT Administrators · every change is appended to the immutable audit ledger</p>
       </div>
       <div class="actions">
         <span class="chip">12 accounts · 11 active</span>
       </div>
     </header>
 
-    <section class="plate" style="margin-bottom:24px" aria-label="User accounts (FR-13)">
+    <section class="plate" style="margin-bottom:24px" aria-label="User accounts">
       <div class="plate-head">
         <h3>User accounts</h3>
-        <span class="aux">Provisioning, role assignment and logical deactivation (FR-13) · removals are status flags only, no physical deletion (NFR-REL-02)</span>
+        <span class="aux">Provisioning, role assignment and logical deactivation · removals are status flags only, no physical deletion</span>
       </div>
       <div class="plate-body" style="padding-top:6px">
+        <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;margin-bottom:12px">
+          <div class="field" style="flex:1 1 320px;max-width:480px">
+            <label for="acct-search">Search accounts</label>
+            <input id="acct-search" type="search" value="chen" placeholder="Name, Staff ID or school email">
+          </div>
+          <span style="font-size:12px;color:var(--ink-soft)">1 match for “chen”</span>
+        </div>
         <div class="table-wrap">
           <table class="ledger">
             <thead>
-              <tr><th>Account</th><th>Role</th><th>Status</th><th>Last active</th><th>Action</th></tr>
+              <tr><th>Account</th><th>Staff ID</th><th>Role</th><th>Status</th><th>Last active</th><th>Action</th></tr>
             </thead>
             <tbody>
               <tr>
-                <td class="who"><b>Grace Tan</b><span>M-01</span></td><td>Manager</td>
+                <td class="who"><b>Grace Tan</b><span>grace.tan@harmony.edu.sg</span></td><td class="num">M-01</td><td>Manager</td>
                 <td><span class="badge badge-ok"><span class="sw"></span>Active</span></td>
                 <td class="num">Today 08:52</td>
                 <td><button class="btn btn-sm btn-quiet" type="button">Manage</button></td>
               </tr>
               <tr>
-                <td class="who"><b>Daniel Ong</b><span>M-02</span></td><td>Manager</td>
-                <td><span class="badge badge-ok"><span class="sw"></span>Active</span></td>
-                <td class="num">Today 14:05</td>
-                <td><button class="btn btn-sm btn-quiet" type="button">Manage</button></td>
-              </tr>
-              <tr>
-                <td class="who"><b>Sarah Jenkins</b><span>T-01</span></td><td>Teacher · Piano</td>
+                <td class="who"><b>Sarah Jenkins</b><span>sarah.jenkins@harmony.edu.sg</span></td><td class="num">T-01</td><td>Teacher · Piano</td>
                 <td><span class="badge badge-ok"><span class="sw"></span>Active</span></td>
                 <td class="num">Today 16:41</td>
                 <td><button class="btn btn-sm btn-quiet" type="button">Manage</button></td>
               </tr>
-              <tr>
-                <td class="who"><b>Michael Chen</b><span>T-04</span></td><td>Teacher · Drums</td>
+              <tr class="rowflag">
+                <td class="who"><b>Michael Chen</b><span>michael.chen@harmony.edu.sg</span></td><td class="num">T-04</td><td>Teacher · Drums</td>
                 <td><span class="badge badge-ok"><span class="sw"></span>Active</span></td>
                 <td class="num">11 Nov 19:12</td>
                 <td><button class="btn btn-sm btn-quiet" type="button">Manage</button></td>
               </tr>
+              <tr>
+                <td class="who"><b>Chloe Teo</b><span>chloe.teo@harmony.edu.sg</span></td><td class="num">T-05</td><td>Teacher · Trumpet</td>
+                <td><span class="badge badge-ok"><span class="sw"></span>Active</span></td>
+                <td class="num">Today 09:20</td>
+                <td><button class="btn btn-sm btn-quiet" type="button">Manage</button></td>
+              </tr>
               <tr class="is-off">
-                <td class="who"><b>Ruth Gomez</b><span>T-10</span></td><td>Teacher · Violin</td>
-                <td><span class="badge badge-ok"><span class="sw"></span>Deactivated</span></td>
+                <td class="who"><b>Ruth Gomez</b><span>ruth.gomez@harmony.edu.sg</span></td><td class="num">T-10</td><td>Teacher · Violin</td>
+                <td><span class="badge badge-muted"><span class="sw"></span>Deactivated</span></td>
                 <td class="num">31 Oct 2026</td>
                 <td><button class="btn btn-sm btn-quiet" type="button">Reactivate</button></td>
               </tr>
               <tr>
-                <td class="who"><b>Alex Wong</b><span>IT-01</span></td><td>IT Administrator</td>
+                <td class="who"><b>Alex Wong</b><span>alex.wong@harmony.edu.sg</span></td><td class="num">IT-01</td><td>IT Administrator</td>
                 <td><span class="badge badge-ok"><span class="sw"></span>Active</span></td>
                 <td class="num">Today 15:30</td>
                 <td><button class="btn btn-sm btn-quiet" type="button">Manage</button></td>
@@ -100,22 +109,55 @@
             </tbody>
           </table>
         </div>
-        <p style="margin:12px 0 0;font-size:12px;color:var(--ink-soft)">Showing 6 of 12 accounts · deactivated records persist for audit and utilisation history (NFR-REL-02).</p>
+        <p style="margin:12px 0 0;font-size:12px;color:var(--ink-soft)">Showing 6 of 12 accounts · deactivated records persist for audit and utilisation history.</p>
         <div class="isolated">
-          <button class="btn btn-danger" type="button">Deactivate selected account<sup class="ref"><a href="#fn1">1</a></sup></button>
+          <button class="btn btn-danger" type="button">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="6.5" cy="5.5" r="2.5"/><path d="M2.5 13.5c.5-2.7 2-4.2 4-4.2s3.5 1.5 4 4.2"/><path d="M11 8.5h4"/></svg>
+            Deactivate selected account</button>
         </div>
       </div>
     </section>
 
-    <div class="ds-grid">
-      <section class="plate" aria-label="Provision a new account (FR-13)">
+    <section class="plate" style="margin-bottom:24px" aria-label="Deactivation confirmation">
+      <div class="plate-head">
+        <h3>Deactivation confirmation</h3>
+        <span class="aux">Static confirmation state · the system details every future lesson allocation before the status flag is set</span>
+      </div>
+      <div class="plate-body">
+        <div class="modal-scrim">
+          <div class="modal">
+            <h4>Deactivate account?</h4>
+            <p><b>James Lee · T-08 · Teacher · Piano.</b> Deactivation is logical: the record is retained, the user loses access, and <b>no lessons are deleted</b>.</p>
+            <div class="modal-lessons">
+              <b>11 confirmed future lessons will become Pending Re-allocation</b>
+              <ul>
+                <li>Wed 18 Nov · 15:00–18:00 · 4 lessons · Studio 2</li>
+                <li>Thu 19 Nov · 10:00–12:30 · 5 lessons · Studio 2</li>
+                <li>Fri 20 Nov · 14:00–15:00 · 2 lessons · Studio 2</li>
+              </ul>
+            </div>
+            <p style="font-size:12.5px;color:var(--ink-soft)">All affected slots move to <b>Pending Re-allocation</b> on the manager's Exception Queue, and the manager on shift is notified.</p>
+            <div class="modal-actions">
+              <button class="btn btn-quiet" type="button">Cancel</button>
+              <button class="btn btn-danger" type="button">Deactivate account</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="ds-grid" style="margin-bottom:24px">
+      <section class="plate" aria-label="Provision a new account">
         <div class="plate-head">
           <h3>Provision a new account</h3>
-          <span class="aux">Role gates the screens the user may reach (NFR-SEC-01)</span>
+          <span class="aux">Staff ID and school email must be unique · role gates the screens the user may reach</span>
         </div>
         <div class="plate-body">
           <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px">
             <div class="field"><label for="pn">Full name</label><input id="pn" value="Mei Ling Chan"></div>
+            <div class="field"><label for="pid">Staff ID</label><input id="pid" value="T-05" class="field-error"></div>
+            <div class="field"><label for="pe">School email</label><input id="pe" value="meiling.chan@harmony.edu.sg"></div>
+            <div class="field"><label for="pc">Contact number</label><input id="pc" value="9123 4567"></div>
             <div class="field"><label for="pr">Role</label>
               <select id="pr"><option selected>Teacher</option><option>Manager</option><option>IT Administrator</option></select>
             </div>
@@ -126,41 +168,69 @@
               <select id="ph"><option selected>S-01</option><option>S-02</option><option>S-03</option><option>S-04</option><option>S-05</option></select>
             </div>
           </div>
+          <div class="notice alert" style="margin-top:14px">
+            <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="var(--apparatus)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex:none;margin-top:2px"><path d="M8 2 15 14H1L8 1.8Z"/><path d="M8 6.2v3.4"/><circle cx="8" cy="12" r=".4" fill="var(--apparatus)"/></svg>
+            <span><b>Duplicate account detected.</b> Staff ID <b class="num">T-05</b> already belongs to <b>Chloe Teo</b>. Enter a unique Staff ID and school email to create the account.</span>
+          </div>
           <div style="margin-top:14px;display:flex;justify-content:flex-end">
-            <button class="btn btn-primary" type="button">Create account &amp; commit audit log</button>
+            <button class="btn btn-primary" type="button">
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3v10M3 8h10"/></svg>
+              Create account &amp; commit audit log</button>
           </div>
         </div>
       </section>
 
-      <section class="plate" aria-label="Studio equipment (FR-14)">
+      <section class="plate" aria-label="Studio equipment">
         <div class="plate-head">
-          <h3>Studio equipment — Studios 1 to 5</h3>
-          <span class="aux">Lessons are allocated only to studios equipped with the required instrument (FR-14)</span>
+          <h3>Studio equipment · Studios 1 to 5</h3>
+          <span class="aux">Editable configuration · lessons are allocated only to studios equipped with the required instrument</span>
         </div>
         <div class="plate-body" style="padding-top:6px">
           <div class="table-wrap">
             <table class="ledger">
-              <thead><tr><th>Studio</th><th>Name</th><th>Piano</th><th>Drum kit</th><th>Notes</th></tr></thead>
+              <thead><tr><th>Studio</th><th>Name</th><th>Piano</th><th>Type</th><th>Drum kit</th><th>Notes</th></tr></thead>
               <tbody>
-                <tr><td class="num"><b>S-01</b></td><td>Grand piano room</td><td>✓ Grand</td><td>—</td><td>Preferred for recital prep</td></tr>
-                <tr><td class="num"><b>S-02</b></td><td>Upright piano room</td><td>✓ Upright</td><td>—</td><td></td></tr>
-                <tr><td class="num"><b>S-03</b></td><td>Upright piano room</td><td>✓ Upright</td><td>—</td><td>Violin-friendly acoustics</td></tr>
-                <tr><td class="num"><b>S-04</b></td><td>Upright piano room</td><td>✓ Upright</td><td>—</td><td>Under maintenance Wed 14:00–16:00</td></tr>
-                <tr><td class="num"><b>S-05</b></td><td>Drum studio</td><td>✓ Upright</td><td>✓ Acoustic kit</td><td>Only drum-equipped studio</td></tr>
+                <tr><td class="num"><b>S-01</b></td><td>Grand piano room</td>
+                  <td><span class="switch on" role="switch" aria-checked="true" aria-label="S-01 piano equipped"><i></i></span></td>
+                  <td><select aria-label="S-01 piano type" style="font:inherit;font-size:12px;padding:4px 6px;border:1px solid var(--rule-strong);border-radius:4px;background:var(--paper-raised)"><option selected>Grand</option><option>Upright</option></select></td>
+                  <td><span class="switch" role="switch" aria-checked="false" aria-label="S-01 drum kit"><i></i></span></td>
+                  <td><input value="Preferred for recital prep" style="font:inherit;font-size:12px;padding:4px 6px;border:1px solid var(--rule);border-radius:4px;background:var(--paper-raised);width:100%;min-width:0"></td></tr>
+                <tr><td class="num"><b>S-02</b></td><td>Upright piano room</td>
+                  <td><span class="switch on" role="switch" aria-checked="true" aria-label="S-02 piano equipped"><i></i></span></td>
+                  <td><select aria-label="S-02 piano type" style="font:inherit;font-size:12px;padding:4px 6px;border:1px solid var(--rule-strong);border-radius:4px;background:var(--paper-raised)"><option>Grand</option><option selected>Upright</option></select></td>
+                  <td><span class="switch" role="switch" aria-checked="false" aria-label="S-02 drum kit"><i></i></span></td>
+                  <td><input value="" style="font:inherit;font-size:12px;padding:4px 6px;border:1px solid var(--rule);border-radius:4px;background:var(--paper-raised);width:100%;min-width:0"></td></tr>
+                <tr><td class="num"><b>S-03</b></td><td>Upright piano room</td>
+                  <td><span class="switch on" role="switch" aria-checked="true" aria-label="S-03 piano equipped"><i></i></span></td>
+                  <td><select aria-label="S-03 piano type" style="font:inherit;font-size:12px;padding:4px 6px;border:1px solid var(--rule-strong);border-radius:4px;background:var(--paper-raised)"><option>Grand</option><option selected>Upright</option></select></td>
+                  <td><span class="switch" role="switch" aria-checked="false" aria-label="S-03 drum kit"><i></i></span></td>
+                  <td><input value="Violin-friendly acoustics" style="font:inherit;font-size:12px;padding:4px 6px;border:1px solid var(--rule);border-radius:4px;background:var(--paper-raised);width:100%;min-width:0"></td></tr>
+                <tr><td class="num"><b>S-04</b></td><td>Upright piano room</td>
+                  <td><span class="switch on" role="switch" aria-checked="true" aria-label="S-04 piano equipped"><i></i></span></td>
+                  <td><select aria-label="S-04 piano type" style="font:inherit;font-size:12px;padding:4px 6px;border:1px solid var(--rule-strong);border-radius:4px;background:var(--paper-raised)"><option>Grand</option><option selected>Upright</option></select></td>
+                  <td><span class="switch" role="switch" aria-checked="false" aria-label="S-04 drum kit"><i></i></span></td>
+                  <td><input value="Maintenance Wed 14:00–16:00" style="font:inherit;font-size:12px;padding:4px 6px;border:1px solid var(--rule);border-radius:4px;background:var(--paper-raised);width:100%;min-width:0"></td></tr>
+                <tr><td class="num"><b>S-05</b></td><td>Drum studio</td>
+                  <td><span class="switch on" role="switch" aria-checked="true" aria-label="S-05 piano equipped"><i></i></span></td>
+                  <td><select aria-label="S-05 piano type" style="font:inherit;font-size:12px;padding:4px 6px;border:1px solid var(--rule-strong);border-radius:4px;background:var(--paper-raised)"><option>Grand</option><option selected>Upright</option></select></td>
+                  <td><span class="switch on" role="switch" aria-checked="true" aria-label="S-05 drum kit equipped"><i></i></span></td>
+                  <td><input value="Only drum-equipped studio" style="font:inherit;font-size:12px;padding:4px 6px;border:1px solid var(--rule);border-radius:4px;background:var(--paper-raised);width:100%;min-width:0"></td></tr>
               </tbody>
             </table>
           </div>
           <div style="margin-top:12px;display:flex;justify-content:flex-end;gap:10px">
-            <button class="btn" type="button">Save equipment configuration</button>
+            <button class="btn btn-primary" type="button">
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M13.7 4.3a3.6 3.6 0 0 1-4.9 4.2l-4.6 4.6a1.4 1.4 0 0 1-2-2l4.6-4.6a3.6 3.6 0 0 1 4.2-4.9L8.9 3.7l2.6 2.6 2.2-2Z"/></svg>
+              Save equipment configuration</button>
           </div>
         </div>
       </section>
     </div>
 
-    <section class="plate" style="margin-top:24px" aria-label="Studio maintenance (FR-11)">
+    <section class="plate" aria-label="Studio maintenance">
       <div class="plate-head">
         <h3>Studio maintenance windows</h3>
-        <span class="aux">Studios under maintenance are excluded from lesson allocation (FR-11)</span>
+        <span class="aux">Studios under maintenance are excluded from lesson allocation · confirmed lessons inside a new window are flagged before scheduling</span>
       </div>
       <div class="plate-body" style="padding-top:6px">
         <div class="ds-grid" style="gap:22px">
@@ -175,9 +245,13 @@
                 </tbody>
               </table>
             </div>
-            <div class="isolated">
-              <button class="btn btn-danger" type="button">Cancel selected window<sup class="ref"><a href="#fn1">1</a></sup></button>
+            <div class="isolated" style="justify-content:space-between;flex-wrap:wrap;gap:10px">
+              <button class="btn btn-quiet" type="button">Cancel selected window</button>
+              <button class="btn btn-danger" type="button">
+                <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2 15 14H1L8 2Z"/><path d="M8 6.4v3.2"/><circle cx="8" cy="11.9" r=".4" fill="currentColor"/></svg>
+                Emergency blackout · immediate lock</button>
             </div>
+            <p style="margin:10px 0 0;font-size:12px;color:var(--apparatus);font-weight:600">Emergency blackout locks a studio instantly, cancels its active sessions and alerts both managers.</p>
           </div>
           <div>
             <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px">
@@ -188,21 +262,19 @@
               <div class="field"><label for="m1">Start</label><input id="m1" value="08:00"></div>
               <div class="field"><label for="m2">End</label><input id="m2" value="11:00"></div>
             </div>
-            <div class="field" style="margin-top:12px"><label for="mr">Reason</label><input id="mr" value="Violin-friendly acoustics — re-padding"></div>
-            <div style="margin-top:14px;display:flex;justify-content:flex-end">
-              <button class="btn btn-primary" type="button">Schedule maintenance</button>
+            <div class="field" style="margin-top:12px"><label for="mr">Reason</label><input id="mr" value="Acoustics re-padding"></div>
+            <div class="notice alert" style="margin-top:12px">
+              <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="var(--apparatus)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex:none;margin-top:2px"><path d="M8 2 15 14H1L8 1.8Z"/><path d="M8 6.2v3.4"/><circle cx="8" cy="12" r=".4" fill="var(--apparatus)"/></svg>
+              <span><b>2 confirmed lessons fall inside this window.</b> Sat 21 Nov 09:00 Aiden C. (S-03) and Sat 21 Nov 09:30 Grace L. (S-03) will move to <b>Pending Re-allocation</b> on the manager's Exception Queue, and the manager is notified.</span>
+            </div>
+            <div style="margin-top:14px;display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap">
+              <button class="btn btn-quiet" type="button">Review affected lessons</button>
+              <button class="btn btn-primary" type="button">Schedule maintenance anyway</button>
             </div>
           </div>
         </div>
       </div>
     </section>
-
-    <footer class="apparatus" id="footnotes">
-      <b>Apparatus.</b>
-      <ol>
-        <li id="fn1">Account and configuration changes deactivate logically and append an immutable ledger entry; no physical deletion ever occurs (FR-13, FR-18, NFR-REL-02).</li>
-      </ol>
-    </footer>
 
   </main>
 </div>

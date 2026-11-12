@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Audit Log — Harmony Academy</title>
+<title>Audit Log · Harmony Academy</title>
 <link rel="stylesheet" href="shared.css">
-<style>.app { --hue: var(--hue-audit); }</style>
+<style>.app { --hue: var(--hue-manager); }</style>
 </head>
 <body>
 <div class="app">
@@ -19,15 +19,17 @@
     <nav class="nav" aria-label="Sections">
       <a class="tab" style="--step:0" href="cockpit.html"><span class="dot"></span>Workload Cockpit</a>
       <a class="tab" style="--step:1" href="allocation.html"><span class="dot"></span>Allocation Matrix</a>
-      <a class="tab" style="--step:2" href="teacher.html"><span class="dot"></span>Teacher Portal</a>
-      <a class="tab" style="--step:3" href="admin.html"><span class="dot"></span>Admin Console</a>
-      <a class="tab" style="--step:4" href="audit.html" aria-current="page"><span class="dot"></span>Audit Log</a>
-      <a class="tab" style="--step:5" href="design-system.html"><span class="dot" style="background:var(--rule-strong)"></span>Design System</a>
+      <a class="tab" style="--step:2" href="exceptions.html"><span class="dot"></span>Exception Queue</a>
+      <a class="tab" style="--step:3" href="utilisation.html"><span class="dot"></span>Studio Utilisation</a>
+      <a class="tab" style="--step:4" href="teacher.html"><span class="dot"></span>Teacher Portal</a>
+      <a class="tab" style="--step:5" href="admin.html"><span class="dot"></span>Admin Console</a>
+      <a class="tab" style="--step:6" href="audit.html" aria-current="page"><span class="dot"></span>Audit Log</a>
+      <a class="tab" style="--step:7" href="design-system.html"><span class="dot" style="background:var(--rule-strong)"></span>Design System</a>
     </nav>
     <div class="rail-foot">
       <div class="role-chip">
-        <span class="avatar" style="background:var(--hue-audit)">G</span>
-        <span><b>Grace Tan</b><span>M-01 · Manager — ledger reader</span></span>
+        <span class="avatar">G</span>
+        <span><b>Grace Tan</b><span>M-01 · Manager · ledger reader</span></span>
       </div>
       <div class="cutoff">
         <b>Availability cutoff</b>
@@ -42,37 +44,38 @@
     <header class="masthead">
       <div class="titles">
         <h2>Audit Log</h2>
-        <p>Immutable compliance ledger · append-only · retained 24 calendar months (NFR-COM-01) · Ministry of Manpower, Employment Act Part IV (NFR-COM-02)</p>
+        <p>Immutable compliance ledger · append-only · retained 24 calendar months · Ministry of Manpower, Employment Act Part IV</p>
       </div>
       <div class="actions">
         <button class="btn" type="button">
-          Export compliance certificate (PDF)
           <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v8M4.5 6.5 8 10l3.5-3.5M2.5 13.5h11"/></svg>
-        </button>
+          Export compliance certificate (PDF)</button>
       </div>
     </header>
 
-    <section class="plate" style="margin-bottom:24px" aria-label="Ledger filters (FR-18)">
+    <section class="plate" style="margin-bottom:24px" aria-label="Ledger filters">
       <div class="plate-body" style="padding:16px 20px">
         <div style="display:grid;grid-template-columns:1.2fr 1fr 1fr auto;gap:12px;align-items:end">
           <div class="field"><label for="f-date">Date range</label>
             <select id="f-date"><option selected>Last 30 days</option><option>November 2026</option><option>October 2026</option><option>Custom…</option></select>
           </div>
           <div class="field"><label for="f-actor">Actor</label>
-            <select id="f-actor"><option selected>All staff</option><option>M-01 Grace Tan</option><option>M-02 Daniel Ong</option><option>IT-01 Alex Wong</option></select>
+            <select id="f-actor"><option selected>All staff</option><option>M-01 Grace Tan</option><option>M-02 Daniel Ong</option><option>IT-01 Alex Wong</option><option>T-01 Sarah Jenkins</option></select>
           </div>
           <div class="field"><label for="f-action">Action type</label>
-            <select id="f-action"><option selected>All actions</option><option>Allocation committed</option><option>Overtime authorised</option><option>Rejection updated</option><option>Configuration change</option></select>
+            <select id="f-action"><option selected>All actions</option><option>Allocation committed</option><option>Overtime authorised</option><option>Rejection requested</option><option>Rejection resolved</option><option>Availability submitted</option><option>Preferences updated</option><option>Late availability adjudicated</option><option>Configuration change</option><option>Account change</option><option>Roster published</option><option>Compliance sign-off</option></select>
           </div>
-          <button class="btn btn-primary" type="button">Apply filter</button>
+          <button class="btn btn-primary" type="button">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="7" r="4.2"/><path d="m10.2 10.2 3.3 3.3"/></svg>
+            Apply filter</button>
         </div>
       </div>
     </section>
 
-    <section class="plate" aria-label="Immutable audit trail (FR-18)">
+    <section class="plate" style="margin-bottom:24px" aria-label="Immutable audit trail">
       <div class="plate-head">
-        <h3>Immutable audit trail — scheduling &amp; configuration mutations</h3>
-        <span class="aux">Superscripts cross-reference the actions on the cockpit and allocation screens (FR-18)</span>
+        <h3>Immutable audit trail · scheduling &amp; configuration mutations</h3>
+        <span class="aux">Every allocation, overtime confirmation, rejection update, availability submission, preference update and configuration change appends a record</span>
       </div>
       <div class="plate-body" style="padding-top:6px">
         <div class="table-wrap">
@@ -82,12 +85,39 @@
             </thead>
             <tbody>
               <tr>
+                <td class="num">13 Nov 2026 · 10:15:40</td>
+                <td>M-01 · Grace Tan</td>
+                <td style="color:var(--tier-ok);font-weight:600">Late availability adjudicated</td>
+                <td class="num">T-01 · Nov declaration</td>
+                <td>Approved Late · Wed 12 Nov 14:00–15:00 accepted two days after cutoff; preliminary roster unaffected; justification logged; teacher notified</td>
+                <td class="num">AL-2216</td>
+                <td><code class="num" style="font-size:11px;color:var(--ink-soft)">c4a2…77b1</code></td>
+              </tr>
+              <tr>
+                <td class="num">12 Nov 2026 · 17:05:12</td>
+                <td>T-01 · Sarah Jenkins</td>
+                <td>Preferences updated</td>
+                <td class="num">T-01</td>
+                <td>Preferred days Mon/Tue/Thu/Sat; preferred studio S-01; verified against the declared December availability</td>
+                <td class="num">AL-2215</td>
+                <td><code class="num" style="font-size:11px;color:var(--ink-soft)">2e9d…f0c3</code></td>
+              </tr>
+              <tr>
+                <td class="num">12 Nov 2026 · 16:41:08</td>
+                <td>T-01 · Sarah Jenkins</td>
+                <td style="color:var(--tier-ok);font-weight:600">Availability submitted</td>
+                <td class="num">T-01 · Dec declaration</td>
+                <td>214.0 h declared across 30-minute slots · auto-approved, above the 60.0 h minimum</td>
+                <td class="num">AL-2214</td>
+                <td><code class="num" style="font-size:11px;color:var(--ink-soft)">a17f…3d92</code></td>
+              </tr>
+              <tr>
                 <td class="num">12 Nov 2026 · 15:22:04</td>
                 <td>M-01 · Grace Tan</td>
                 <td style="color:var(--apparatus);font-weight:600">Overtime authorised</td>
                 <td class="num">T-03 Priya Nair</td>
-                <td>Weekly 41.5 h within the 40.0–44.0 h authorised band; justification recorded<sup class="ref"><a href="allocation.html#fn2">2</a></sup></td>
-                <td class="num">AL-2214</td>
+                <td>Weekly 41.5 h within the 40.0–44.0 h authorised band; justification recorded</td>
+                <td class="num">AL-2213</td>
                 <td><code class="num" style="font-size:11px;color:var(--ink-soft)">8f9a…3e21</code></td>
               </tr>
               <tr>
@@ -95,8 +125,8 @@
                 <td>M-01 · Grace Tan</td>
                 <td style="color:var(--tier-ok);font-weight:600">Allocation committed</td>
                 <td class="num">L-409</td>
-                <td>Elena Lim (T-07) · S-02 · Wed 15:00–15:30 · Rule R7</td>
-                <td class="num">AL-2213</td>
+                <td>Elena Lim (T-07) · S-02 · Wed 15:00–15:30 · Rule R7 · re-validated before save</td>
+                <td class="num">AL-2212</td>
                 <td><code class="num" style="font-size:11px;color:var(--ink-soft)">4c1b…9a04</code></td>
               </tr>
               <tr>
@@ -104,8 +134,8 @@
                 <td>IT-01 · Alex Wong</td>
                 <td>Configuration change</td>
                 <td class="num">S-04</td>
-                <td>Maintenance window added 18 Nov 14:00–16:00 (FR-11)</td>
-                <td class="num">AL-2212</td>
+                <td>Maintenance window added 18 Nov 14:00–16:00; 2 lessons moved to Pending Re-allocation</td>
+                <td class="num">AL-2211</td>
                 <td><code class="num" style="font-size:11px;color:var(--ink-soft)">7d2e…1f88</code></td>
               </tr>
               <tr>
@@ -113,8 +143,8 @@
                 <td>T-01 · Sarah Jenkins</td>
                 <td style="color:var(--apparatus);font-weight:600">Rejection requested</td>
                 <td class="num">L-352</td>
-                <td>MED-01 certified medical leave; routed to manager discussion, slot held (FR-09)</td>
-                <td class="num">AL-2211</td>
+                <td>Personal · Medical; ticket EX-207 opened in the Exception Queue; slot held</td>
+                <td class="num">AL-2210</td>
                 <td><code class="num" style="font-size:11px;color:var(--ink-soft)">b8d3…22c7</code></td>
               </tr>
               <tr>
@@ -122,8 +152,8 @@
                 <td>M-01 · Grace Tan</td>
                 <td>Rejection resolved</td>
                 <td class="num">L-352</td>
-                <td>Discussion held; lesson retained; teacher notified of decision (FR-09)</td>
-                <td class="num">AL-2210</td>
+                <td>Discussion held; lesson retained; teacher notified of decision</td>
+                <td class="num">AL-2209</td>
                 <td><code class="num" style="font-size:11px;color:var(--ink-soft)">9e3f…6b42</code></td>
               </tr>
               <tr>
@@ -131,8 +161,8 @@
                 <td>M-02 · Daniel Ong</td>
                 <td style="color:var(--tier-ok);font-weight:600">Roster published</td>
                 <td class="num">Week 46</td>
-                <td>46 lessons confirmed; 9 teachers notified (FR-15)</td>
-                <td class="num">AL-2209</td>
+                <td>46 lessons confirmed; 9 teachers notified</td>
+                <td class="num">AL-2208</td>
                 <td><code class="num" style="font-size:11px;color:var(--ink-soft)">1a77…d530</code></td>
               </tr>
               <tr>
@@ -140,7 +170,7 @@
                 <td>IT-01 · Alex Wong</td>
                 <td>Account deactivated</td>
                 <td class="num">T-10 Ruth Gomez</td>
-                <td>Logical deactivation; records retained for audit history (NFR-REL-02)</td>
+                <td>Logical deactivation; records retained for audit history</td>
                 <td class="num">AL-2201</td>
                 <td><code class="num" style="font-size:11px;color:var(--ink-soft)">6f21…8ba9</code></td>
               </tr>
@@ -149,17 +179,88 @@
         </div>
         <div class="notice" style="margin-top:16px">
           <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="var(--ink-soft)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex:none;margin-top:2px"><rect x="2.5" y="6.5" width="11" height="7.5" rx="1"/><path d="M5.5 6.5V4.5a2.5 2.5 0 0 1 5 0v2"/></svg>
-          <span><b>Append-only ledger.</b> Entries cannot be edited or deleted; corrections are appended as new entries. Showing 7 of 1,284 records · retention window Nov 2024 – Nov 2026 (24 months, NFR-COM-01).</span>
+          <span><b>Append-only ledger.</b> Entries cannot be edited or deleted; corrections are appended as new entries. Showing 10 of 1,286 records · retention window Nov 2024 – Nov 2026 (24 months).</span>
         </div>
       </div>
     </section>
 
-    <footer class="apparatus" id="footnotes">
-      <b>Apparatus.</b>
-      <ol>
-        <li>Overtime authorisations between 40.0 and 44.0 weekly hours are recorded with manager justification under Employment Act Part IV (FR-17, NFR-COM-02).</li>
-      </ol>
-    </footer>
+    <section class="plate" aria-label="Weekly compliance sign-off">
+      <div class="plate-head">
+        <h3>Weekly compliance sign-off · Employment Act Part IV</h3>
+        <span class="aux">Verification snapshot per target week · the signed record is appended to the ledger above</span>
+      </div>
+      <div class="plate-body" style="padding-top:12px">
+        <div class="weeksel" style="margin-bottom:16px" role="group" aria-label="Compliance target week">
+          <span class="wk-label">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="3.5" width="11" height="10.5" rx="1.5"/><path d="M2.5 6.5h11M5.5 2v3M10.5 2v3"/></svg>
+            Target week
+          </span>
+          <button type="button" aria-label="Previous week"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3 5 8l5 5"/></svg></button>
+          <select aria-label="Select compliance week">
+            <option>Week 45 · 2–8 Nov 2026</option>
+            <option selected>Week 46 · 9–15 Nov 2026</option>
+            <option>Week 47 · 16–22 Nov 2026</option>
+          </select>
+          <button type="button" aria-label="Next week"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3l5 5-5 5"/></svg></button>
+        </div>
+
+        <div class="ds-grid" style="gap:22px">
+          <div>
+            <p class="col-label" style="font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 8px">Verification checklist · Week 46</p>
+            <ul class="checklist">
+              <li>
+                <span>Zero instructors exceed the 44.0 h statutory ceiling</span>
+                <span class="res"><span class="chip chip-over">1 breach · Chloe Teo 45.5 h</span></span>
+              </li>
+              <li>
+                <span>No teacher exceeds 12.0 h in any single day</span>
+                <span class="res"><span class="chip chip-ok">Pass</span></span>
+              </li>
+              <li>
+                <span>All warning-tier allocations carry manager justification</span>
+                <span class="res"><span class="flagchip">1 missing · T-03 advisory overtime</span></span>
+              </li>
+              <li>
+                <span>Overtime confirmations recorded for the week</span>
+                <span class="res"><span class="chip chip-ok">2 recorded</span></span>
+              </li>
+            </ul>
+            <div class="notice alert" style="margin-top:14px">
+              <svg width="15" height="15" viewBox="0 0 16 15" fill="none" stroke="var(--apparatus)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex:none;margin-top:2px"><path d="M8 2 15 14H1L8 1.8Z"/><path d="M8 6.2v3.4"/><circle cx="8" cy="12" r=".4" fill="var(--apparatus)"/></svg>
+              <span><b>Sign-off blocked.</b> Resolve the 45.5 h breach (Chloe Teo, T-05) and append the missing justification before signing. The blocked attempt is itself logged.</span>
+            </div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px">
+              <button class="btn btn-primary" type="button" disabled>
+                <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="7" width="9" height="6.5" rx="1.2"/><path d="M5.5 7V5.2a2.5 2.5 0 0 1 5 0V7"/></svg>
+                Sign off Week 46</button>
+              <button class="btn" type="button">Append justification</button>
+            </div>
+          </div>
+
+          <div>
+            <p class="col-label" style="font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 8px">Snapshot &amp; missing-justification prompt</p>
+            <div class="modal" style="max-width:none;box-shadow:none;margin-bottom:14px">
+              <h4 style="font-size:17px">Week 46 verification snapshot</h4>
+              <dl class="kv" style="margin-top:6px">
+                <dt>Lessons in week</dt><dd>46 confirmed</dd>
+                <dt>Teachers reviewed</dt><dd>9 of 9</dd>
+                <dt>Warning tier</dt><dd>2 teachers (Priya Nair 41.5 h · Michael Chen 44.0 h)</dd>
+                <dt>Overworked</dt><dd style="color:var(--tier-over);font-weight:700">Chloe Teo 45.5 h · above the 44.0 h ceiling</dd>
+                <dt>Verification executed</dt><dd>14 Nov 08:00 · automatic, pre-sign-off</dd>
+                <dt>Sign-off record</dt><dd style="color:var(--apparatus)">Not yet appended · blocked by breach</dd>
+              </dl>
+            </div>
+            <ul class="subs">
+              <li style="background:var(--paper-sunken)">
+                <span class="who"><b>Priya Nair (T-03)</b><span>Advisory overtime · 41.5 h · no justification on file</span></span>
+                <span class="fit">Prompted before sign-off: append a justification to proceed</span>
+                <button class="btn btn-sm" type="button">Append justification</button>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
 
   </main>
 </div>

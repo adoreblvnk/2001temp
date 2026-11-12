@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Workload Cockpit — Harmony Academy</title>
+<title>Workload Cockpit · Harmony Academy</title>
 <link rel="stylesheet" href="shared.css">
 <style>.app { --hue: var(--hue-manager); }</style>
 </head>
@@ -19,10 +19,12 @@
     <nav class="nav" aria-label="Sections">
       <a class="tab" style="--step:0" href="cockpit.html" aria-current="page"><span class="dot"></span>Workload Cockpit</a>
       <a class="tab" style="--step:1" href="allocation.html"><span class="dot"></span>Allocation Matrix</a>
-      <a class="tab" style="--step:2" href="teacher.html"><span class="dot"></span>Teacher Portal</a>
-      <a class="tab" style="--step:3" href="admin.html"><span class="dot"></span>Admin Console</a>
-      <a class="tab" style="--step:4" href="audit.html"><span class="dot"></span>Audit Log</a>
-      <a class="tab" style="--step:5" href="design-system.html"><span class="dot" style="background:var(--rule-strong)"></span>Design System</a>
+      <a class="tab" style="--step:2" href="exceptions.html"><span class="dot"></span>Exception Queue</a>
+      <a class="tab" style="--step:3" href="utilisation.html"><span class="dot"></span>Studio Utilisation</a>
+      <a class="tab" style="--step:4" href="teacher.html"><span class="dot"></span>Teacher Portal</a>
+      <a class="tab" style="--step:5" href="admin.html"><span class="dot"></span>Admin Console</a>
+      <a class="tab" style="--step:6" href="audit.html"><span class="dot"></span>Audit Log</a>
+      <a class="tab" style="--step:7" href="design-system.html"><span class="dot" style="background:var(--rule-strong)"></span>Design System</a>
     </nav>
     <div class="rail-foot">
       <div class="role-chip">
@@ -42,29 +44,52 @@
     <header class="masthead">
       <div class="titles">
         <h2>Workload Cockpit</h2>
-        <p>Week 47 · Mon 16 – Sun 22 Nov 2026 · <em>draft roster</em> — publish notifies all assigned teachers<sup class="ref"><a href="#fn1">1</a></sup></p>
+        <p>Draft roster for the selected week · publishing notifies all assigned teachers and records the publication in the audit ledger</p>
       </div>
       <div class="actions">
-        <a class="btn btn-quiet" href="design-system.html">Utilisation report</a>
+        <div class="weeksel" role="group" aria-label="Target calendar week">
+          <span class="wk-label">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="3.5" width="11" height="10.5" rx="1.5"/><path d="M2.5 6.5h11M5.5 2v3M10.5 2v3"/></svg>
+            Target week
+          </span>
+          <button type="button" aria-label="Previous week"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3 5 8l5 5"/></svg></button>
+          <select aria-label="Select target week">
+            <option>Week 45 · 2–8 Nov 2026</option>
+            <option>Week 46 · 9–15 Nov 2026</option>
+            <option selected>Week 47 · 16–22 Nov 2026</option>
+            <option>Week 48 · 23–29 Nov 2026</option>
+          </select>
+          <button type="button" aria-label="Next week"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3l5 5-5 5"/></svg></button>
+        </div>
+        <a class="btn btn-quiet" href="utilisation.html">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13.5V9.5M6.5 13.5V5.5M10 13.5V8M13.5 13.5V3.5"/></svg>
+          Utilisation dashboard</a>
         <button class="btn btn-primary" type="button">
-          Publish roster &amp; notify
-          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8h11M9 3.5 13.5 8 9 12.5"/></svg>
-        </button>
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2a4 4 0 0 0-4 4v2.6c0 .9-.4 1.7-1.1 2.4h10.2C12.4 10.3 12 9.5 12 8.6V6a4 4 0 0 0-4-4Z"/><path d="M6.5 13.3a1.5 1.5 0 0 0 3 0"/></svg>
+          Publish roster &amp; notify</button>
       </div>
     </header>
+
+    <div class="alertline">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M8 2 15 14H1L8 2Z"/><path d="M8 6.4v3.2"/><circle cx="8" cy="11.9" r=".4" fill="currentColor"/></svg>
+      <span><b>2 tickets awaiting disposition:</b> 1 late availability review · 1 job-rejection ticket. A late change is pending manager acknowledgement before the roster locks.</span>
+      <a href="exceptions.html">Open Exception Queue
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8h11M9 3.5 13.5 8 9 12.5"/></svg></a>
+    </div>
 
     <div class="state-strip">
       <div class="cell"><span class="k">Faculty</span><span class="v">9 <small>teachers</small></span></div>
       <div class="cell"><span class="k">Teacher-hours booked</span><span class="v num">283.0<small> / 396.0 h cap</small></span></div>
       <div class="cell"><span class="k">Studio utilisation</span><span class="v num">62.6<small>% of 430.0 h</small></span></div>
-      <div class="cell"><span class="k">Overtime flags</span><span class="v" style="color:var(--apparatus)">2 <small>review required</small></span></div>
+      <div class="cell"><span class="k">Overtime confirmations</span><span class="v" style="color:var(--tier-warn)">2 <small>warning tier</small></span></div>
       <div class="cell"><span class="k">Unassigned slots</span><span class="v num">12 <small>this week</small></span></div>
+      <div class="cell"><span class="k">Exception queue</span><span class="v num" style="color:var(--apparatus)">2 <small>tickets open</small></span></div>
     </div>
 
-    <section class="plate" style="margin-bottom:24px" aria-label="Top three lowest workload teachers (FR-02)">
+    <section class="plate" style="margin-bottom:24px" aria-label="Top three lowest workload teachers">
       <div class="plate-head">
-        <h3>Priority balancing queue — lowest allocated hours</h3>
-        <span class="aux">Ranked by remaining weekly capacity below the 40.0 h threshold (FR-05)</span>
+        <h3>Priority balancing queue · lowest allocated hours</h3>
+        <span class="aux">Ranked by remaining weekly capacity below the 40.0 h threshold</span>
       </div>
       <div class="plate-body" style="padding-top:6px">
         <ul class="queue">
@@ -93,10 +118,10 @@
       </div>
     </section>
 
-    <section class="plate" style="margin-bottom:24px" aria-label="Weekly roster as engraved score (FR-01, FR-03)">
+    <section class="plate" style="margin-bottom:24px" aria-label="Weekly roster as engraved score">
       <div class="plate-head">
-        <h3>The week at the staves — Monday 16 Nov</h3>
-        <span class="aux">Each studio a staff · lessons seated at their hour · <b style="color:var(--apparatus)">cross-hatch = double-booking</b><sup class="ref"><a href="#fn3">3</a></sup></span>
+        <h3>The week at the staves · Monday 16 Nov</h3>
+        <span class="aux">Each studio a staff · lessons seated at their hour · <b style="color:var(--apparatus)">cross-hatch = double-booking</b></span>
       </div>
       <div class="plate-body" style="padding-top:10px">
         <nav class="day-tabs" aria-label="Day of week">
@@ -143,7 +168,7 @@
           <div class="staff">
             <span class="blk blk-violin"  style="left:11.54%; width:15.38%">Elena L. ×4</span>
             <span class="blk blk-violin"  style="left:30.77%; width:7.69%">Priya N. ×2</span>
-            <span class="conflict" style="left:53.85%; width:5.77%">Clash ×2<sup class="ref"><a href="#fn3">3</a></sup></span>
+            <span class="conflict" style="left:53.85%; width:5.77%">Clash ×2</span>
             <span class="blk blk-violin"  style="left:61.54%; width:15.38%">Priya N. ×4</span>
           </div>
 
@@ -156,21 +181,22 @@
             <span class="blk blk-piano"   style="left:84.62%; width:7.69%">David K. ×2</span>
           </div>
 
-          <div class="stlabel"><b>Studio 5</b><span>Drum kit · grand piano</span><span class="fill">S-05 · 58.0 h booked</span></div>
+          <div class="stlabel"><b>Studio 5</b><span>Drum kit · upright piano</span><span class="fill">S-05 · 58.0 h booked</span></div>
           <div class="staff">
             <span class="blk blk-drums"   style="left:15.38%; width:15.38%">Michael C. ×4</span>
             <span class="blk blk-drums"   style="left:38.46%; width:11.54%">Michael C. ×3</span>
             <span class="blk blk-drums"   style="left:53.85%; width:15.38%">Michael C. ×4</span>
             <span class="blk blk-drums"   style="left:76.92%; width:15.38%">Michael C. ×4</span>
+            <span class="blk blk-trumpet" style="left:92.31%; width:7.69%">Chloe T. ×2</span>
           </div>
         </div>
       </div>
     </section>
 
-    <section class="plate" style="margin-bottom:24px" aria-label="Studio utilisation (FR-16)">
+    <section class="plate" style="margin-bottom:24px" aria-label="Studio utilisation, weekly summary">
       <div class="plate-head">
-        <h3>Studio utilisation — booked against the 86-hour operating week</h3>
-        <span class="aux">Mon–Fri 09:00–21:00 · Sat–Sun 08:00–21:00 · 430.0 studio-hours weekly</span>
+        <h3>Studio utilisation · booked against the 86-hour operating week</h3>
+        <span class="aux">Mon–Fri 09:00–21:00 · Sat–Sun 08:00–21:00 · 430.0 studio-hours weekly · full monthly dashboard on the Studio Utilisation tab</span>
       </div>
       <div class="plate-body">
         <div class="util">
@@ -194,13 +220,17 @@
           <span class="bar"><i style="width:67%"></i></span>
           <span class="cap num"><b>58.0 h</b> / 86.0 h · 67%</span>
         </div>
+        <div style="margin-top:14px;display:flex;justify-content:flex-end">
+          <a class="btn btn-quiet btn-sm" href="utilisation.html">Monthly utilisation dashboard, peak heatmap &amp; exports
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8h11M9 3.5 13.5 8 9 12.5"/></svg></a>
+        </div>
       </div>
     </section>
 
-    <section class="plate" aria-label="Workload ledger (FR-01, FR-02, FR-17)">
+    <section class="plate" aria-label="Workload ledger, three-tier statutory classification">
       <div class="plate-head">
-        <h3>Workload ledger — three-tier statutory classification</h3>
-        <span class="aux">OK &lt; 40.0 h · Warning 40.0–44.0 h · Overworked &gt; 44.0 h (Employment Act Part IV)</span>
+        <h3>Workload ledger · three-tier statutory classification</h3>
+        <span class="aux">OK &lt; 40.0 h · Warning 40.0–44.0 h · Overworked &gt; 44.0 h (Employment Act Part IV) · weekly compliance sign-off on the Audit Log tab</span>
       </div>
       <div class="plate-body" style="padding-top:6px">
         <div class="table-wrap">
@@ -231,21 +261,21 @@
               <td class="num">41.5 h</td><td class="num">166.0 h</td>
               <td><span class="meter g3 t-warn" style="width:120px"><i style="width:94%"></i></span></td>
               <td><span class="badge badge-warn"><span class="sw"></span>Warning</span></td>
-              <td><button class="btn btn-sm" type="button">Confirm overtime<sup class="ref"><a href="#fn2">2</a></sup></button></td>
+              <td><button class="btn btn-sm" type="button">Confirm overtime</button></td>
             </tr>
             <tr>
               <td class="who"><b>Michael Chen</b><span>T-04</span></td><td>Drums</td><td>S-05</td>
               <td class="num">44.0 h</td><td class="num">176.0 h</td>
               <td><span class="meter g3 t-warn" style="width:120px"><i style="width:100%"></i></span></td>
               <td><span class="badge badge-warn"><span class="sw"></span>Warning</span></td>
-              <td><span class="chip chip-on">At cap — no further slots</span></td>
+              <td><span class="chip chip-on">At cap · no further slots</span></td>
             </tr>
             <tr class="rowflag">
-              <td class="who"><b>Chloe Teo</b><span>T-05</span></td><td>Violin</td><td>S-03</td>
+              <td class="who"><b>Chloe Teo</b><span>T-05</span></td><td>Trumpet</td><td>S-05</td>
               <td class="num" style="color:var(--tier-over)"><b>45.5 h</b></td><td class="num">182.0 h</td>
               <td><span class="meter g4 t-over" style="width:120px"><i style="width:100%"></i></span></td>
               <td><span class="badge badge-over"><span class="sw"></span>Overworked</span></td>
-              <td><a class="btn btn-sm btn-danger" href="allocation.html">Review flagged slots</a></td>
+              <td><a class="btn btn-sm btn-danger" href="audit.html">Review compliance</a></td>
             </tr>
             <tr>
               <td class="who"><b>Wei Lin Ong</b><span>T-06</span></td><td>Piano</td><td>S-01</td>
@@ -261,12 +291,12 @@
               <td><span class="badge badge-ok"><span class="sw"></span>OK</span></td>
               <td><a class="btn btn-sm btn-quiet" href="teacher.html">Inspect schedule</a></td>
             </tr>
-            <tr>
+            <tr class="rowflag">
               <td class="who"><b>James Lee</b><span>T-08</span></td><td>Piano</td><td>S-02</td>
-              <td class="num">31.0 h</td><td class="num">124.0 h</td>
-              <td><span class="meter g2 t-ok" style="width:120px"><i style="width:70%"></i></span></td>
-              <td><span class="badge badge-ok"><span class="sw"></span>OK</span></td>
-              <td><a class="btn btn-sm btn-quiet" href="teacher.html">Inspect schedule</a></td>
+              <td class="num">40.5 h</td><td class="num">162.0 h</td>
+              <td><span class="meter g3 t-warn" style="width:120px"><i style="width:92%"></i></span></td>
+              <td><span class="badge badge-warn"><span class="sw"></span>Warning</span></td>
+              <td><button class="btn btn-sm" type="button">Confirm overtime</button></td>
             </tr>
             <tr>
               <td class="who"><b>Brandon Wong</b><span>T-09</span></td><td>Piano</td><td>S-01 · S-04</td>
@@ -280,15 +310,6 @@
         </div>
       </div>
     </section>
-
-    <footer class="apparatus" id="footnotes">
-      <b>Apparatus.</b>
-      <ol>
-        <li id="fn1">Publishing the draft roster notifies every assigned teacher of their confirmed lessons, studio locations and students (FR-15); the publication event is recorded to the audit ledger (FR-18).</li>
-        <li id="fn2">Allocations in the warning tier (40.0–44.0 h) require explicit manager confirmation; the justification is appended to the immutable ledger (FR-17, NFR-COM-02).</li>
-        <li id="fn3">Studio 3, Monday 15:00 — two lessons booked into one slot; resolved by the manager via the allocation matrix (FR-03).</li>
-      </ol>
-    </footer>
 
   </main>
 </div>
