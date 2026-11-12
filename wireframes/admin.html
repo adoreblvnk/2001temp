@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Console — Harmony Academy</title>
+<link rel="stylesheet" href="shared.css">
+<style>.app { --hue: var(--hue-admin); }</style>
+</head>
+<body>
+<div class="app">
+
+  <aside class="rail">
+    <div class="wordmark">
+      <h1>Harmony Academy</h1>
+      <p>Resource Scheduling</p>
+    </div>
+    <hr class="rule-double">
+    <nav class="nav" aria-label="Sections">
+      <a class="tab" style="--step:0" href="cockpit.html"><span class="dot"></span>Workload Cockpit</a>
+      <a class="tab" style="--step:1" href="allocation.html"><span class="dot"></span>Allocation Matrix</a>
+      <a class="tab" style="--step:2" href="teacher.html"><span class="dot"></span>Teacher Portal</a>
+      <a class="tab" style="--step:3" href="admin.html" aria-current="page"><span class="dot"></span>Admin Console</a>
+      <a class="tab" style="--step:4" href="audit.html"><span class="dot"></span>Audit Log</a>
+      <a class="tab" style="--step:5" href="design-system.html"><span class="dot" style="background:var(--rule-strong)"></span>Design System</a>
+    </nav>
+    <div class="rail-foot">
+      <div class="role-chip">
+        <span class="avatar" style="background:var(--hue-admin)">A</span>
+        <span><b>Alex Wong</b><span>IT-01 · IT Administrator</span></span>
+      </div>
+      <div class="cutoff">
+        <b>Availability cutoff</b>
+        <span class="clock num">7 d 11 h</span>
+        <small>19 Nov 23:59 · December roster</small>
+      </div>
+    </div>
+  </aside>
+
+  <main class="sheet">
+
+    <header class="masthead">
+      <div class="titles">
+        <h2>Admin Console</h2>
+        <p>Accounts, studio equipment and maintenance · configuration restricted to IT Administrators (NFR-SEC-01) · every change is deactivation-only and appended to the ledger<sup class="ref"><a href="#fn1">1</a></sup></p>
+      </div>
+      <div class="actions">
+        <span class="chip">12 accounts · 11 active</span>
+      </div>
+    </header>
+
+    <section class="plate" style="margin-bottom:24px" aria-label="User accounts (FR-13)">
+      <div class="plate-head">
+        <h3>User accounts</h3>
+        <span class="aux">Provisioning, role assignment and logical deactivation (FR-13) · removals are status flags only, no physical deletion (NFR-REL-02)</span>
+      </div>
+      <div class="plate-body" style="padding-top:6px">
+        <div class="table-wrap">
+          <table class="ledger">
+            <thead>
+              <tr><th>Account</th><th>Role</th><th>Status</th><th>Last active</th><th>Action</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="who"><b>Grace Tan</b><span>M-01</span></td><td>Manager</td>
+                <td><span class="badge badge-ok"><span class="sw"></span>Active</span></td>
+                <td class="num">Today 08:52</td>
+                <td><button class="btn btn-sm btn-quiet" type="button">Manage</button></td>
+              </tr>
+              <tr>
+                <td class="who"><b>Daniel Ong</b><span>M-02</span></td><td>Manager</td>
+                <td><span class="badge badge-ok"><span class="sw"></span>Active</span></td>
+                <td class="num">Today 14:05</td>
+                <td><button class="btn btn-sm btn-quiet" type="button">Manage</button></td>
+              </tr>
+              <tr>
+                <td class="who"><b>Sarah Jenkins</b><span>T-01</span></td><td>Teacher · Piano</td>
+                <td><span class="badge badge-ok"><span class="sw"></span>Active</span></td>
+                <td class="num">Today 16:41</td>
+                <td><button class="btn btn-sm btn-quiet" type="button">Manage</button></td>
+              </tr>
+              <tr>
+                <td class="who"><b>Michael Chen</b><span>T-04</span></td><td>Teacher · Drums</td>
+                <td><span class="badge badge-ok"><span class="sw"></span>Active</span></td>
+                <td class="num">11 Nov 19:12</td>
+                <td><button class="btn btn-sm btn-quiet" type="button">Manage</button></td>
+              </tr>
+              <tr class="is-off">
+                <td class="who"><b>Ruth Gomez</b><span>T-10</span></td><td>Teacher · Violin</td>
+                <td><span class="badge badge-ok"><span class="sw"></span>Deactivated</span></td>
+                <td class="num">31 Oct 2026</td>
+                <td><button class="btn btn-sm btn-quiet" type="button">Reactivate</button></td>
+              </tr>
+              <tr>
+                <td class="who"><b>Alex Wong</b><span>IT-01</span></td><td>IT Administrator</td>
+                <td><span class="badge badge-ok"><span class="sw"></span>Active</span></td>
+                <td class="num">Today 15:30</td>
+                <td><button class="btn btn-sm btn-quiet" type="button">Manage</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="margin:12px 0 0;font-size:12px;color:var(--ink-soft)">Showing 6 of 12 accounts · deactivated records persist for audit and utilisation history (NFR-REL-02).</p>
+        <div class="isolated">
+          <button class="btn btn-danger" type="button">Deactivate selected account<sup class="ref"><a href="#fn1">1</a></sup></button>
+        </div>
+      </div>
+    </section>
+
+    <div class="ds-grid">
+      <section class="plate" aria-label="Provision a new account (FR-13)">
+        <div class="plate-head">
+          <h3>Provision a new account</h3>
+          <span class="aux">Role gates the screens the user may reach (NFR-SEC-01)</span>
+        </div>
+        <div class="plate-body">
+          <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px">
+            <div class="field"><label for="pn">Full name</label><input id="pn" value="Mei Ling Chan"></div>
+            <div class="field"><label for="pr">Role</label>
+              <select id="pr"><option selected>Teacher</option><option>Manager</option><option>IT Administrator</option></select>
+            </div>
+            <div class="field"><label for="pi">Instrument (teachers)</label>
+              <select id="pi"><option selected>Piano</option><option>Drums</option><option>Violin</option><option>Trumpet</option></select>
+            </div>
+            <div class="field"><label for="ph">Home studio</label>
+              <select id="ph"><option selected>S-01</option><option>S-02</option><option>S-03</option><option>S-04</option><option>S-05</option></select>
+            </div>
+          </div>
+          <div style="margin-top:14px;display:flex;justify-content:flex-end">
+            <button class="btn btn-primary" type="button">Create account &amp; commit audit log</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="plate" aria-label="Studio equipment (FR-14)">
+        <div class="plate-head">
+          <h3>Studio equipment — Studios 1 to 5</h3>
+          <span class="aux">Lessons are allocated only to studios equipped with the required instrument (FR-14)</span>
+        </div>
+        <div class="plate-body" style="padding-top:6px">
+          <div class="table-wrap">
+            <table class="ledger">
+              <thead><tr><th>Studio</th><th>Name</th><th>Piano</th><th>Drum kit</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td class="num"><b>S-01</b></td><td>Grand piano room</td><td>✓ Grand</td><td>—</td><td>Preferred for recital prep</td></tr>
+                <tr><td class="num"><b>S-02</b></td><td>Upright piano room</td><td>✓ Upright</td><td>—</td><td></td></tr>
+                <tr><td class="num"><b>S-03</b></td><td>Upright piano room</td><td>✓ Upright</td><td>—</td><td>Violin-friendly acoustics</td></tr>
+                <tr><td class="num"><b>S-04</b></td><td>Upright piano room</td><td>✓ Upright</td><td>—</td><td>Under maintenance Wed 14:00–16:00</td></tr>
+                <tr><td class="num"><b>S-05</b></td><td>Drum studio</td><td>✓ Upright</td><td>✓ Acoustic kit</td><td>Only drum-equipped studio</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div style="margin-top:12px;display:flex;justify-content:flex-end;gap:10px">
+            <button class="btn" type="button">Save equipment configuration</button>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <section class="plate" style="margin-top:24px" aria-label="Studio maintenance (FR-11)">
+      <div class="plate-head">
+        <h3>Studio maintenance windows</h3>
+        <span class="aux">Studios under maintenance are excluded from lesson allocation (FR-11)</span>
+      </div>
+      <div class="plate-body" style="padding-top:6px">
+        <div class="ds-grid" style="gap:22px">
+          <div>
+            <div class="table-wrap">
+              <table class="ledger">
+                <thead><tr><th>Studio</th><th>Window</th><th>Reason</th><th>Status</th></tr></thead>
+                <tbody>
+                  <tr><td class="num"><b>S-04</b></td><td class="num">Wed 18 Nov · 14:00–16:00</td><td>Piano tuning (external technician)</td><td><span class="chip chip-alert">Scheduled</span></td></tr>
+                  <tr><td class="num"><b>S-05</b></td><td class="num">Sat 28 Nov · 18:00–20:00</td><td>Drum kit head replacement</td><td><span class="chip chip-alert">Scheduled</span></td></tr>
+                  <tr><td class="num"><b>S-02</b></td><td class="num">Sat 7 Nov · 08:00–10:00</td><td>Bench repair</td><td><span class="chip">Completed</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="isolated">
+              <button class="btn btn-danger" type="button">Cancel selected window<sup class="ref"><a href="#fn1">1</a></sup></button>
+            </div>
+          </div>
+          <div>
+            <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px">
+              <div class="field"><label for="ms">Studio</label>
+                <select id="ms"><option selected>S-03</option><option>S-01</option><option>S-02</option><option>S-04</option><option>S-05</option></select>
+              </div>
+              <div class="field"><label for="md">Date</label><input id="md" value="Sat 21 Nov 2026"></div>
+              <div class="field"><label for="m1">Start</label><input id="m1" value="08:00"></div>
+              <div class="field"><label for="m2">End</label><input id="m2" value="11:00"></div>
+            </div>
+            <div class="field" style="margin-top:12px"><label for="mr">Reason</label><input id="mr" value="Violin-friendly acoustics — re-padding"></div>
+            <div style="margin-top:14px;display:flex;justify-content:flex-end">
+              <button class="btn btn-primary" type="button">Schedule maintenance</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="apparatus" id="footnotes">
+      <b>Apparatus.</b>
+      <ol>
+        <li id="fn1">Account and configuration changes deactivate logically and append an immutable ledger entry; no physical deletion ever occurs (FR-13, FR-18, NFR-REL-02).</li>
+      </ol>
+    </footer>
+
+  </main>
+</div>
+</body>
+</html>

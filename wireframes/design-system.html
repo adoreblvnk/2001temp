@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System — Harmony Academy</title>
+<link rel="stylesheet" href="shared.css">
+<style>.app { --hue: var(--hue-manager); }</style>
+</head>
+<body>
+<div class="app">
+
+  <aside class="rail">
+    <div class="wordmark">
+      <h1>Harmony Academy</h1>
+      <p>Resource Scheduling</p>
+    </div>
+    <hr class="rule-double">
+    <nav class="nav" aria-label="Sections">
+      <a class="tab" style="--step:0" href="cockpit.html"><span class="dot"></span>Workload Cockpit</a>
+      <a class="tab" style="--step:1" href="allocation.html"><span class="dot"></span>Allocation Matrix</a>
+      <a class="tab" style="--step:2" href="teacher.html"><span class="dot"></span>Teacher Portal</a>
+      <a class="tab" style="--step:3" href="admin.html"><span class="dot"></span>Admin Console</a>
+      <a class="tab" style="--step:4" href="audit.html"><span class="dot"></span>Audit Log</a>
+      <a class="tab" style="--step:5" href="design-system.html" aria-current="page"><span class="dot" style="background:var(--rule-strong)"></span>Design System</a>
+    </nav>
+    <div class="rail-foot">
+      <div class="role-chip">
+        <span class="avatar" style="background:var(--hue-admin)">A</span>
+        <span><b>Alex Wong</b><span>IT-01 · IT Administrator</span></span>
+      </div>
+    </div>
+  </aside>
+
+  <main class="sheet">
+
+    <header class="masthead">
+      <div class="titles">
+        <h2>Design System — Monochrome Edition</h2>
+        <p>The shared vocabulary of this wireframe: monochrome paper ground, single teal-accent tab rail, three-tier status language with hatch encoding, and apparatus footnotes</p>
+      </div>
+    </header>
+
+    <div class="ds-grid" style="margin-bottom:24px">
+      <section class="plate" aria-label="Colour tokens">
+        <div class="plate-head"><h3>Colour</h3><span class="aux">paper &amp; ink · accent · state (NFR-USE-02)</span></div>
+        <div class="plate-body">
+          <div class="tokens">
+            <div class="swatch"><span class="c" style="background:#ffffff"></span><span class="t"><b>Paper</b><code>#FFFFFF</code></span></div>
+            <div class="swatch"><span class="c" style="background:#f7f7f7"></span><span class="t"><b>Paper raised</b><code>#F7F7F7</code></span></div>
+            <div class="swatch"><span class="c" style="background:#ededed"></span><span class="t"><b>Paper sunken</b><code>#EDEDED</code></span></div>
+            <div class="swatch"><span class="c" style="background:#1a1a1a"></span><span class="t"><b>Ink</b><code>#1A1A1A</code></span></div>
+            <div class="swatch"><span class="c" style="background:#17594f"></span><span class="t"><b>Accent teal</b><code>#17594F</code></span></div>
+            <div class="swatch"><span class="c" style="background:#276b31"></span><span class="t"><b>OK tier</b><code>#276B31</code></span></div>
+            <div class="swatch"><span class="c" style="background:#8f6400"></span><span class="t"><b>Warning tier</b><code>#8F6400</code></span></div>
+            <div class="swatch"><span class="c" style="background:#a62f2f"></span><span class="t"><b>Overworked tier</b><code>#A62F2F</code></span></div>
+            <div class="swatch"><span class="c" style="background:#9c3f2e"></span><span class="t"><b>Apparatus red</b><code>#9C3F2E</code></span></div>
+            <div class="swatch"><span class="c" style="background:#cfcfcf"></span><span class="t"><b>Rule hairline</b><code>#CFCFCF</code></span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="plate" aria-label="Type scale">
+        <div class="plate-head"><h3>Type</h3><span class="aux">EB Garamond (self-hosted) for edition text · system sans for controls · tabular figures for quantities</span></div>
+        <div class="plate-body type-specimen" style="padding-top:4px">
+          <div class="row"><span class="spec num">Display · 34px / 700</span><span style="font-family:var(--serif);font-size:34px;font-weight:700;line-height:1.1">Workload Cockpit</span></div>
+          <div class="row"><span class="spec num">Title · 20px / 700</span><span style="font-family:var(--serif);font-size:20px;font-weight:700">Workload ledger — three tiers</span></div>
+          <div class="row"><span class="spec num">Running · 14px / 400</span><span style="font-family:var(--serif);font-size:14.5px">A rejection is a request for discussion, not an automatic release.</span></div>
+          <div class="row"><span class="spec num">Apparatus · 12px italic</span><span style="font-family:var(--serif);font-style:italic;font-size:13px;color:var(--ink-soft)">Publishing the draft roster notifies every assigned teacher.<sup class="ref"><a href="#">1</a></sup></span></div>
+          <div class="row"><span class="spec num">UI · 13px sans</span><span style="font-size:13px">Buttons, labels and table cells set in the system sans.</span></div>
+          <div class="row"><span class="spec num">Figures · tabular</span><span class="num" style="font-size:13px">283.0 h · 62.6% · 19 Nov 23:59 · 1,284 records</span></div>
+        </div>
+      </section>
+    </div>
+
+    <section class="plate" style="margin-bottom:24px" aria-label="Status language (NFR-USE-02)">
+      <div class="plate-head">
+        <h3>Three-tier status language</h3>
+        <span class="aux">Colour is always paired with a text badge and a hatch density — readable with colour off (WCAG 2.2 · 1.4.1)</span>
+      </div>
+      <div class="plate-body" style="padding-top:6px">
+        <div class="table-wrap">
+          <table class="ledger">
+            <thead><tr><th>Tier</th><th>Weekly hours</th><th>Badge</th><th>Hatch meter</th><th>Meaning</th></tr></thead>
+            <tbody>
+              <tr><td><b style="color:var(--tier-ok)">OK</b></td><td class="num">&lt; 40.0 h</td>
+                <td><span class="badge badge-ok"><span class="sw"></span>OK</span></td>
+                <td style="width:160px"><span class="meter g2 t-ok"><i style="width:64%"></i></span></td>
+                <td>Within the standard working week</td></tr>
+              <tr><td><b style="color:var(--tier-warn)">Warning</b></td><td class="num">40.0 – 44.0 h</td>
+                <td><span class="badge badge-warn"><span class="sw"></span>Warning</span></td>
+                <td style="width:160px"><span class="meter g3 t-warn"><i style="width:94%"></i></span></td>
+                <td>Authorised overtime: manager confirmation + ledger record (FR-17)</td></tr>
+              <tr><td><b style="color:var(--tier-over)">Overworked</b></td><td class="num">&gt; 44.0 h</td>
+                <td><span class="badge badge-over"><span class="sw"></span>Overworked</span></td>
+                <td style="width:160px"><span class="meter g4 t-over"><i style="width:100%"></i></span></td>
+                <td>Statutory breach; cross-hatched and flagged for reassignment</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <hr class="hr">
+        <div style="display:flex;flex-wrap:wrap;gap:18px;align-items:center">
+          <span style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft)">Non-tier marks</span>
+          <span class="chip chip-on">Selected</span>
+          <span class="chip chip-alert">Maintenance excluded</span>
+          <span class="chip">Completed</span>
+          <span class="flagchip">Flagged after cutoff</span>
+          <span style="display:inline-flex;align-items:center;gap:8px;font-size:12px"><span style="width:26px;height:14px;border:1px solid var(--apparatus);border-radius:3px;background:repeating-linear-gradient(45deg,rgba(156,63,46,.4) 0 1px,transparent 1px 4px),repeating-linear-gradient(-45deg,rgba(156,63,46,.4) 0 1px,transparent 1px 4px)"></span>Double-booking conflict (90° cross-hatch)</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="ds-grid" style="margin-bottom:24px">
+      <section class="plate" aria-label="Components">
+        <div class="plate-head"><h3>Components</h3><span class="aux">standard web controls, engraved plating</span></div>
+        <div class="plate-body" style="display:flex;flex-wrap:wrap;gap:10px;align-items:center">
+          <button class="btn btn-primary" type="button">Primary action</button>
+          <button class="btn" type="button">Secondary</button>
+          <button class="btn btn-quiet" type="button">Quiet</button>
+          <button class="btn btn-danger" type="button">Destructive</button>
+          <button class="btn" type="button" disabled>Disabled</button>
+          <span class="seg" role="group" aria-label="Segmented example">
+            <button type="button" aria-pressed="true">Workload Deficit</button>
+            <button type="button" aria-pressed="false">Preference Match</button>
+          </span>
+          <span class="btn" style="cursor:default">Focused: <u style="text-underline-offset:3px">tab</u> reach</span>
+        </div>
+      </section>
+
+      <section class="plate" aria-label="Structure and spacing">
+        <div class="plate-head"><h3>Structure</h3><span class="aux">rules, plates, apparatus</span></div>
+        <div class="plate-body">
+          <hr class="rule-double" style="margin:0 0 14px">
+          <p style="margin:0 0 12px;font-family:var(--serif);font-size:14px">Double rule: the edition's masthead divider.</p>
+          <hr class="hr" style="margin:0 0 14px">
+          <p style="margin:0 0 12px;font-family:var(--serif);font-size:14px">Hairline: separates rows inside a plate.</p>
+          <p style="margin:0;font-family:var(--serif);font-size:13px;font-style:italic;color:var(--ink-soft)">Apparatus: footnotes close every page, cross-referenced by superscript numerals set in apparatus red.</p>
+        </div>
+      </section>
+    </div>
+
+    <div class="notice">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="var(--ink-soft)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex:none;margin-top:2px"><circle cx="8" cy="8" r="6.2"/><path d="M8 7.4v3.4"/><circle cx="8" cy="5.2" r=".4" fill="var(--ink-soft)"/></svg>
+      <span><b>Synthetic data.</b> Every teacher, student, roster and ledger figure in this wireframe is illustrative demonstration data authored for static review. It does not describe real persons or real school records.</span>
+    </div>
+
+  </main>
+</div>
+</body>
+</html>

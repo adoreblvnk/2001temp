@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Allocation Matrix — Harmony Academy</title>
+<link rel="stylesheet" href="shared.css">
+<style>.app { --hue: var(--hue-allocation); }</style>
+</head>
+<body>
+<div class="app">
+
+  <aside class="rail">
+    <div class="wordmark">
+      <h1>Harmony Academy</h1>
+      <p>Resource Scheduling</p>
+    </div>
+    <hr class="rule-double">
+    <nav class="nav" aria-label="Sections">
+      <a class="tab" style="--step:0" href="cockpit.html"><span class="dot"></span>Workload Cockpit</a>
+      <a class="tab" style="--step:1" href="allocation.html" aria-current="page"><span class="dot"></span>Allocation Matrix</a>
+      <a class="tab" style="--step:2" href="teacher.html"><span class="dot"></span>Teacher Portal</a>
+      <a class="tab" style="--step:3" href="admin.html"><span class="dot"></span>Admin Console</a>
+      <a class="tab" style="--step:4" href="audit.html"><span class="dot"></span>Audit Log</a>
+      <a class="tab" style="--step:5" href="design-system.html"><span class="dot" style="background:var(--rule-strong)"></span>Design System</a>
+    </nav>
+    <div class="rail-foot">
+      <div class="role-chip">
+        <span class="avatar" style="background:var(--hue-allocation)">G</span>
+        <span><b>Grace Tan</b><span>M-01 · Manager on shift</span></span>
+      </div>
+      <div class="cutoff">
+        <b>Availability cutoff</b>
+        <span class="clock num">7 d 11 h</span>
+        <small>19 Nov 23:59 · December roster</small>
+      </div>
+    </div>
+  </aside>
+
+  <main class="sheet">
+
+    <header class="masthead">
+      <div class="titles">
+        <h2>Allocation Matrix</h2>
+        <p>Slot placement &amp; conflict engine · candidates ranked by <em>Workload Deficit</em> strategy (FR-04, FR-05) · eligibility evaluated in &lt; 300 ms (NFR-PER-02)</p>
+      </div>
+      <div class="actions">
+        <div class="seg" role="group" aria-label="Tie-breaker strategy">
+          <button type="button" aria-pressed="true">Workload Deficit</button>
+          <button type="button" aria-pressed="false">Preference Match</button>
+        </div>
+      </div>
+    </header>
+
+    <div class="banner" style="margin-bottom:24px">
+      <span>Lesson L-409</span><span class="sep">·</span>
+      <span>Wed 18 Nov, 15:00–15:30</span><span class="sep">·</span>
+      <span>Jeremy Tan · Piano, Grade 4</span><span class="sep">·</span>
+      <span>30-minute individual session</span>
+      <small style="margin-left:auto">Eligibility check: 18 ms &lt; 300 ms SLA</small>
+    </div>
+
+    <section class="plate" style="margin-bottom:24px" aria-label="Candidate comparison (FR-04, FR-05)">
+      <div class="plate-head">
+        <h3>Candidate comparison — ranked by remaining capacity below 40.0 h</h3>
+        <span class="aux">Filtered via findEligibleCandidates(Piano, Wed 15:00, W47) · 3 of 9 shown side by side (FR-04)</span>
+      </div>
+      <div class="plate-body" style="padding-top:14px">
+        <div class="candidates">
+
+          <article class="cand recommended">
+            <div class="cand-head">
+              <span class="rankno num">1</span>
+              <span><b>Elena Lim</b><span>T-07 · Violin &amp; Piano</span></span>
+              <span class="reco">Recommended</span>
+            </div>
+            <span class="meter g1 t-ok"><i style="width:35%"></i><b class="num">15.5 / 40.0 h · OK</b></span>
+            <dl>
+              <dt>Remaining capacity</dt><dd>24.5 h below threshold</dd>
+              <dt>Continuous block</dt><dd class="num">1.0 h / 4.0 h limit — fresh</dd>
+              <dt>Preference match</dt><dd>Day ✗ &nbsp; Studio ✗ (prefers S-03 mornings)</dd>
+              <dt>Location this date</dt><dd>In-studio · S-03 (violin, 09:30–13:00)</dd>
+              <dt>Student load</dt><dd>18 enrolled · 3 new unassigned</dd>
+            </dl>
+            <p class="rule ok">Rule R7 — all constraints met. Confirm without approval.</p>
+            <button class="btn btn-primary" type="button">Select instructor</button>
+          </article>
+
+          <article class="cand">
+            <div class="cand-head">
+              <span class="rankno num">2</span>
+              <span><b>James Lee</b><span>T-08 · Piano</span></span>
+            </div>
+            <span class="meter g2 t-warn"><i style="width:70%"></i><b class="num">31.0 h → 31.5 h · Warning</b></span>
+            <dl>
+              <dt>Remaining capacity</dt><dd>9.0 h below threshold</dd>
+              <dt>Continuous block</dt><dd class="num">3.5 h / 4.0 h limit — near limit</dd>
+              <dt>Preference match</dt><dd>Day ✓ Wed &nbsp; Studio ✓ S-02</dd>
+              <dt>Location this date</dt><dd>In-studio · S-02 (10:00–18:00)</dd>
+              <dt>Student load</dt><dd>41 enrolled · 4 new unassigned</dd>
+            </dl>
+            <p class="rule warn">Rule R6 — allocation enters the 40.0–44.0 h warning tier. Manager justification required.</p>
+            <button class="btn" type="button">Select with overtime justification<sup class="ref"><a href="#fn2">2</a></sup></button>
+          </article>
+
+          <article class="cand unavailable">
+            <div class="cand-head">
+              <span class="rankno num">3</span>
+              <span><b>David Koh</b><span>T-02 · Piano</span></span>
+            </div>
+            <span class="meter g3 t-ok" style="opacity:.55"><i style="width:85%"></i><b class="num">37.5 / 40.0 h · OK</b></span>
+            <dl>
+              <dt>Availability</dt><dd style="color:var(--apparatus);font-weight:600">Not declared for Wed 15:00–15:30</dd>
+              <dt>Continuous block</dt><dd class="num">2.0 h / 4.0 h limit</dd>
+              <dt>Preference match</dt><dd>Day ✓ Wed · Studio ✓ S-02</dd>
+              <dt>Location this date</dt><dd>Commuting · off-site after 14:00</dd>
+              <dt>Student load</dt><dd>33 enrolled · 2 new unassigned</dd>
+            </dl>
+            <p class="rule no">Rule R2 — teacher not available for the selected slot (FR-03). Excluded from allocation.</p>
+            <button class="btn" type="button" disabled>Select instructor</button>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <div class="ds-grid" style="margin-bottom:8px">
+      <section class="plate" aria-label="Studio selection (FR-11, FR-14)">
+        <div class="plate-head">
+          <h3>Studio selection</h3>
+          <span class="aux">Instrument matched to studio equipment (FR-14) · maintenance excluded (FR-11)</span>
+        </div>
+        <div class="plate-body">
+          <ul class="studio-list">
+            <li><span class="s-id">S-01</span>
+              <span class="s-name">Grand piano · <span class="chip">Piano ✓</span> <span class="chip">Drums ✗</span></span>
+              <span class="chip">Not drum-equipped</span></li>
+            <li class="disabled"><span class="s-id">S-04</span>
+              <span class="s-name">Upright piano · <span class="chip">Piano ✓</span></span>
+              <span class="chip chip-alert">Maintenance 14:00–16:00 — excluded</span></li>
+            <li class="selected"><span class="s-id">S-02</span>
+              <span class="s-name">Upright piano · <span class="chip">Piano ✓</span></span>
+              <span class="chip chip-on">Selected &amp; free 15:00–15:30</span></li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="gate" aria-label="Overtime justification (FR-17, FR-18)">
+        <h4>Overtime justification gate — warning tier (40.0–44.0 h)</h4>
+        <p>Assigning James Lee places him at 31.5 h… <em>if the selected candidate exceeds 40.0 h</em>, this gate requires a recorded justification before the allocation commits. The entry is appended to the immutable ledger<sup class="ref"><a href="#fn2">2</a></sup> and retained 24 months (NFR-COM-01).</p>
+        <div class="field">
+          <label for="just">Justification (mandatory)</label>
+          <textarea id="just">Coverage for Elena Lim's approved leave (UC-06); projected 31.5 h remains inside the 40.0–44.0 h authorised band; rest break intact.</textarea>
+        </div>
+        <div class="isolated">
+          <button class="btn btn-danger" type="button">Confirm allocation &amp; commit audit log</button>
+        </div>
+      </section>
+    </div>
+
+    <div class="actionbar">
+      <span class="sel">Selected: <b>L-409 → Elena Lim (T-07) + Studio 2</b> · Status: <b style="color:var(--tier-ok)">Confirmed — Rule R7</b> · notification queued for 18 Nov 08:00<sup class="ref"><a href="#fn1">1</a></sup></span>
+      <span style="display:flex;gap:10px">
+        <a class="btn btn-quiet" href="cockpit.html">Back to cockpit</a>
+        <button class="btn btn-primary" type="button">Confirm allocation &amp; commit audit log</button>
+      </span>
+    </div>
+
+    <footer class="apparatus" id="footnotes">
+      <b>Apparatus.</b>
+      <ol>
+        <li id="fn1">Confirmation triggers teacher notification of the weekly schedule (FR-15) and an audit entry (FR-18).</li>
+        <li id="fn2">Overtime justification recorded to the immutable ledger (FR-17, NFR-COM-02).</li>
+      </ol>
+    </footer>
+
+  </main>
+</div>
+</body>
+</html>
