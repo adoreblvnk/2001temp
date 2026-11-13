@@ -47,10 +47,28 @@
         <p>Week 46 · Mon 9 – Sun 15 Nov 2026 · timetable of record · your declared availability, teaching preferences and confirmed lessons</p>
       </div>
       <div class="actions">
-        <span class="chip chip-on">November assigned: <b class="num">&nbsp;108.0 h</b></span>
+        <div class="weeksel" role="group" aria-label="Target calendar week">
+          <span class="wk-label">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="3.5" width="11" height="10.5" rx="1.5"/><path d="M2.5 6.5h11M5.5 2v3M10.5 2v3"/></svg>
+            Target week
+          </span>
+          <button type="button" aria-label="Previous week"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3 5 8l5 5"/></svg></button>
+          <select aria-label="Select target week">
+            <option>Week 45 · 2–8 Nov 2026</option>
+            <option selected>Week 46 · 9–15 Nov 2026</option>
+            <option>Week 47 · 16–22 Nov 2026</option>
+          </select>
+          <button type="button" aria-label="Next week"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3l5 5-5 5"/></svg></button>
+        </div>
+        <span class="chip chip-on">November assigned: <b class="num">&nbsp;112.0 h</b></span>
         <span class="badge badge-ok"><span class="sw"></span>OK · 28.0 h this week</span>
       </div>
     </header>
+
+    <div class="doneline" style="margin-bottom:20px">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M8 2a4 4 0 0 0-4 4v2.6c0 .9-.4 1.7-1.1 2.4h10.2C12.4 10.3 12 9.5 12 8.6V6a4 4 0 0 0-4-4Z"/><path d="M6.5 13.3a1.5 1.5 0 0 0 3 0"/></svg>
+      <span><b>Schedule notification · Week 46 published 9 Nov 08:02 by M-02 Daniel Ong.</b> 56 confirmed lessons (28.0 h) assigned in Studio 1 · reminder sent to <code class="num">sarah.jenkins@harmony.edu.sg</code>.</span>
+    </div>
 
     <section class="plate" style="margin-bottom:24px" aria-label="Monthly availability declaration">
       <div class="plate-head">
@@ -75,18 +93,18 @@
         </div>
 
         <p style="margin:0 0 12px;display:flex;gap:14px;align-items:center;flex-wrap:wrap">
-          <b class="num" style="font-family:var(--serif);font-size:21px">214.0 h declared</b>
+          <b class="num" style="font-family:var(--serif);font-size:21px">222.0 h declared</b>
           <span class="num" style="color:var(--ink-soft)">/ 60.0 h minimum</span>
           <span class="badge badge-ok"><span class="sw"></span>Valid · above minimum</span>
-          <span style="color:var(--ink-soft);font-size:12px">dark fill = preferred teaching days · hatched = outside published hours</span>
+          <span style="color:var(--ink-soft);font-size:12px">submissions below 60.0 h are blocked · dark fill = preferred teaching days · hatched = outside published hours</span>
         </p>
 
         <div class="avail-grid" role="img" aria-label="Availability template: available 30-minute slots marked across Monday to Sunday from 08:00 to 20:30, with preferred days in dark fill and a flagged change on Wednesday 14:00">
           <span class="hd"></span>
           <span class="hd">Mon</span><span class="hd">Tue</span><span class="hd">Wed</span><span class="hd">Thu</span><span class="hd">Fri</span><span class="hd">Sat</span><span class="hd">Sun</span>
 
-          <span class="tm num">08:00</span><span class="cell closed"></span><span class="cell off"></span><span class="cell off"></span><span class="cell off"></span><span class="cell off"></span><span class="cell on pref"></span><span class="cell off"></span>
-          <span class="tm num">08:30</span><span class="cell closed"></span><span class="cell off"></span><span class="cell off"></span><span class="cell off"></span><span class="cell off"></span><span class="cell on pref"></span><span class="cell off"></span>
+          <span class="tm num">08:00</span><span class="cell closed"></span><span class="cell closed"></span><span class="cell closed"></span><span class="cell closed"></span><span class="cell closed"></span><span class="cell on pref"></span><span class="cell off"></span>
+          <span class="tm num">08:30</span><span class="cell closed"></span><span class="cell closed"></span><span class="cell closed"></span><span class="cell closed"></span><span class="cell closed"></span><span class="cell on pref"></span><span class="cell off"></span>
           <span class="tm num">09:00</span><span class="cell on pref"></span><span class="cell off"></span><span class="cell off"></span><span class="cell on pref"></span><span class="cell on pref"></span><span class="cell on pref"></span><span class="cell off"></span>
           <span class="tm num">09:30</span><span class="cell on pref"></span><span class="cell off"></span><span class="cell off"></span><span class="cell on pref"></span><span class="cell on pref"></span><span class="cell on pref"></span><span class="cell off"></span>
           <span class="tm num">10:00</span><span class="cell on pref"></span><span class="cell on pref"></span><span class="cell off"></span><span class="cell on pref"></span><span class="cell on pref"></span><span class="cell on pref"></span><span class="cell on"></span>
@@ -121,15 +139,29 @@
         </div>
         <div class="doneline" style="margin-top:12px">
           <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="m3 8.5 3.5 3.5L13 5"/></svg>
-          <span><b>Availability submitted 12 Nov 16:41.</b> Status: <span class="chip chip-ok">Auto-Approved</span> · 214.0 h declared, above the 60.0 h minimum · submission recorded in the compliance audit ledger.</span>
+          <span><b>Availability submitted 12 Nov 16:41.</b> Status: <span class="chip chip-ok">Auto-Approved</span> · 222.0 h declared, above the 60.0 h minimum · submission recorded in the compliance audit ledger.</span>
         </div>
 
         <hr class="hr">
-        <div style="display:flex;flex-wrap:wrap;gap:10px 22px;align-items:center">
+        <div style="display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center">
           <span style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft)">Preferences · requires a submitted availability declaration</span>
-          <label class="checkline"><input type="checkbox" checked><span>Cluster consecutive 30-min blocks up to <b class="num">4.0 h</b></span></label>
+          <label class="checkline"><span>Max consecutive block:</span>
+            <select aria-label="Max consecutive block" style="font:inherit;font-size:12px;padding:4px 8px;border:1px solid var(--rule-strong);border-radius:4px;background:var(--paper-raised)">
+              <option selected>Up to 4.0 h (max)</option>
+              <option>Up to 3.0 h</option>
+              <option>Up to 2.0 h</option>
+            </select>
+          </label>
           <label class="checkline"><input type="checkbox" checked><span>Minimum <b class="num">1.0 h</b> rest between blocks</span></label>
-          <label class="checkline"><input type="checkbox" checked><span>Preferred studio: <b>Studio 1</b></span></label>
+          <label class="checkline"><span>Preferred studio:</span>
+            <select aria-label="Preferred studio" style="font:inherit;font-size:12px;padding:4px 8px;border:1px solid var(--rule-strong);border-radius:4px;background:var(--paper-raised)">
+              <option selected>Studio 1 (S-01)</option>
+              <option>Studio 2 (S-02)</option>
+              <option>Studio 3 (S-03)</option>
+              <option>Studio 4 (S-04)</option>
+              <option>Studio 5 (S-05)</option>
+            </select>
+          </label>
           <span style="display:flex;flex-wrap:wrap;gap:6px">
             <span class="chip chip-on">Mon ✓</span><span class="chip chip-on">Tue ✓</span><span class="chip">Wed</span><span class="chip chip-on">Thu ✓</span><span class="chip">Fri</span><span class="chip chip-on">Sat ✓</span><span class="chip">Sun</span>
           </span>
@@ -164,35 +196,38 @@
           </div>
         </div>
         <div class="score">
-          <div class="stlabel"><b>Mon 9</b><span class="fill num">9 lessons · 4.5 h</span></div>
+          <div class="stlabel"><b>Mon 9</b><span class="fill num">15 lessons · 7.5 h</span></div>
           <div class="staff">
-            <span class="blk blk-piano" style="left:45.45%;width:27.27%">14:00–17:00 ×6</span>
+            <span class="blk blk-piano" style="left:0.00%;width:27.27%">09:00–12:00 ×6 · S-01</span>
+            <span class="blk blk-piano" style="left:45.45%;width:27.27%">14:00–17:00 ×6 · S-01</span>
             <span class="rest" style="position:absolute;left:72.73%;width:9.09%;top:7px;bottom:7px;border:1px dashed var(--rule-strong);border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:8.5px;color:var(--ink-soft)">REST 1.0 h</span>
-            <span class="blk blk-piano" style="left:81.82%;width:13.64%">18:00–19:30 ×3</span>
+            <span class="blk blk-piano" style="left:81.82%;width:13.64%">18:00–19:30 ×3 · S-01</span>
           </div>
           <div class="stlabel"><b>Tue 10</b><span class="fill num">9 lessons · 4.5 h</span></div>
           <div class="staff">
-            <span class="blk blk-piano" style="left:9.09%;width:22.73%">10:00–12:30 ×5</span>
-            <span class="blk blk-piano" style="left:40.91%;width:18.18%">13:30–15:30 ×4</span>
+            <span class="blk blk-piano" style="left:9.09%;width:22.73%">10:00–12:30 ×5 · S-01</span>
+            <span class="blk blk-piano" style="left:40.91%;width:18.18%">13:30–15:30 ×4 · S-01</span>
           </div>
           <div class="stlabel"><b>Wed 11</b><span class="fill num">5 lessons · 2.5 h</span></div>
           <div class="staff">
-            <span class="blk blk-piano" style="left:18.18%;width:18.18%">11:00–13:00 ×4</span>
-            <span class="blk blk-piano rejectedblk" style="left:54.55%;width:4.55%;background:var(--tier-over-bg);border-color:var(--tier-over);color:var(--tier-over);text-decoration:line-through">L-352</span>
+            <span class="blk blk-piano" style="left:18.18%;width:18.18%">11:00–13:00 ×4 · S-01</span>
+            <span class="blk blk-piano rejectedblk" style="left:54.55%;width:4.55%;background:var(--tier-over-bg);border-color:var(--tier-over);color:var(--tier-over);text-decoration:line-through">L-352 · S-01</span>
           </div>
           <div class="stlabel"><b>Thu 12</b><span class="fill num" style="color:var(--hue-manager)">today · 11 lessons · 5.5 h</span></div>
           <div class="staff">
-            <span class="blk blk-piano" style="left:0%;width:27.27%">09:00–12:00 ×6</span>
-            <span class="blk blk-piano" style="left:45.45%;width:22.73%">14:00–16:30 ×5</span>
+            <span class="blk blk-piano" style="left:0%;width:27.27%">09:00–12:00 ×6 · S-01</span>
+            <span class="blk blk-piano" style="left:45.45%;width:22.73%">14:00–16:30 ×5 · S-01</span>
             <span style="position:absolute;left:72.73%;top:-6px;bottom:-6px;width:2px;background:var(--hue-manager)" aria-hidden="true"></span>
           </div>
-          <div class="stlabel"><b>Fri 13</b><span class="fill num">6 lessons · 3.0 h</span></div>
+          <div class="stlabel"><b>Fri 13</b><span class="fill num">10 lessons · 5.0 h</span></div>
           <div class="staff">
-            <span class="blk blk-piano" style="left:9.09%;width:27.27%">10:00–13:00 ×6</span>
+            <span class="blk blk-piano" style="left:9.09%;width:27.27%">10:00–13:00 ×6 · S-01</span>
+            <span class="rest" style="position:absolute;left:36.36%;width:9.09%;top:7px;bottom:7px;border:1px dashed var(--rule-strong);border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:8.5px;color:var(--ink-soft)">REST 1.0 h</span>
+            <span class="blk blk-piano" style="left:45.45%;width:18.18%">14:00–16:00 ×4 · S-01</span>
           </div>
           <div class="stlabel"><b>Sat 14</b><span class="fill num">6 lessons · 3.0 h</span></div>
           <div class="staff">
-            <span class="blk blk-piano" style="left:0%;width:27.27%">09:00–12:00 ×6</span>
+            <span class="blk blk-piano" style="left:0%;width:27.27%">09:00–12:00 ×6 · S-01</span>
           </div>
         </div>
         <hr class="hr">
