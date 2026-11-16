@@ -1,0 +1,84 @@
+@import "@fontsource-variable/geist";
+@import "@fontsource-variable/geist-mono";
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Geist Variable", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: "Geist Mono Variable", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* GitHub Primer Light Default — Monochrome Structural Palette */
+  --color-canvas-default: #ffffff;
+  --color-canvas-subtle: #f6f8fa;
+  --color-canvas-inset: #eff2f5;
+  --color-border-default: #d0d7de;
+  --color-border-muted: #d8dee4;
+  --color-border-strong: #8c959f;
+  --color-fg-default: #1f2328;
+  --color-fg-muted: #59636e;
+  --color-fg-subtle: #6e7781;
+
+  /* NFR-USE-02 Mandatory 3-Tier Semantic Tokens (GitHub Primer Light) */
+  --color-tier-ok-fg: #1a7f37;
+  --color-tier-ok-bg: #dafbe1;
+  --color-tier-ok-border: #4ac26b;
+
+  --color-tier-warn-fg: #9a6700;
+  --color-tier-warn-bg: #fff8c5;
+  --color-tier-warn-border: #d4a72c;
+
+  --color-tier-over-fg: #cf222e;
+  --color-tier-over-bg: #ffebe9;
+  --color-tier-over-border: #ff8182;
+}
+
+@layer base {
+  html {
+    font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--color-fg-default);
+    background-color: var(--color-canvas-default);
+    color-scheme: light;
+  }
+
+  ::selection {
+    background-color: #dde2e7;
+    color: #1f2328;
+  }
+
+  :focus-visible {
+    outline: 2px solid #1f2328;
+    outline-offset: 2px;
+  }
+
+  input,
+  select,
+  textarea,
+  button {
+    font-family: inherit;
+  }
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+.hatch-closed {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    #f6f8fa,
+    #f6f8fa 5px,
+    #eaeef2 5px,
+    #eaeef2 6px
+  );
+}
+
+.hatch-maint {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    #eff2f5,
+    #eff2f5 4px,
+    #d0d7de 4px,
+    #d0d7de 5px
+  );
+}
