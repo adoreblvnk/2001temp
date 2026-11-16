@@ -1,59 +1,84 @@
 @startuml architecture_diagram
 top to bottom direction
+skinparam componentStyle uml2
 skinparam shadowing false
 skinparam defaultFontName "Helvetica", "Arial", sans-serif
 skinparam defaultFontSize 11
+skinparam nodesep 24
+skinparam ranksep 36
 
 skinparam package {
     BackgroundColor #F8FAFC
     BorderColor #1E3A8A
-    BorderThickness 1.5
+    BorderThickness 1.6
     FontSize 12
     FontStyle bold
 }
 
-skinparam class {
+skinparam component {
     BackgroundColor #FFFFFF
     BorderColor #2563EB
-    BorderThickness 1.2
+    BorderThickness 1.3
+    FontSize 11
+}
+
+skinparam database {
+    BackgroundColor #FFFFFF
+    BorderColor #2563EB
+    BorderThickness 1.3
     FontSize 11
 }
 
 skinparam arrow {
     Color #1E3A8A
+    Thickness 1.4
     FontSize 10
 }
 
-package "Presentation Layer (Web Boundary)" as Layer1 {
-    class "AllocationUI" as UI1
-    class "ManagerDashboardUI" as UI2
-    class "TeacherUI" as UI3
-    class "AdminUI" as UI4
+package "1. Presentation Layer (Closed — Web Boundary)" as Layer1 {
+    together {
+        component "ManagerDashboardUI" as UI1
+        component "AllocationUI" as UI2
+        component "TeacherUI" as UI3
+    }
+    together {
+        component "AdminUI" as UI4
+        component "AuditLogUI" as UI5
+    }
+    UI1 -[hidden]right-> UI2
+    UI2 -[hidden]right-> UI3
+    UI4 -[hidden]right-> UI5
+    UI1 -[hidden]down-> UI4
+    UI2 -[hidden]down-> UI5
 }
 
-package "Business & Application Layer (Core & Faculty Services)" as Layer2A {
-    class "SchedulingService" as S1
-    class "ConflictValidationService" as S2
-    class "TieBreakerStrategy" as S6
+package "2. Business & Application Layer (Closed — Domain Services & Strategies)" as Layer2 {
+    together {
+        component "SchedulingService" as S1
+        component "ConflictValidationService" as S2
+        component "TieBreakerStrategy" as S3
+    }
+    together {
+        component "FacultyService" as S4
+        component "FacilityService" as S5
+        component "AuditLoggingService" as S6
+    }
+    S1 -[hidden]right-> S2
+    S2 -[hidden]right-> S3
+    S4 -[hidden]right-> S5
+    S5 -[hidden]right-> S6
+    S1 -[hidden]down-> S4
+    S2 -[hidden]down-> S5
+    S3 -[hidden]down-> S6
 }
 
-package "Business & Application Layer (Facility & Governance Services)" as Layer2B {
-    class "FacultyService" as S3
-    class "FacilityService" as S4
-    class "AuditLoggingService" as S5
+package "3. Data & Infrastructure Layer (Closed — Persistence & Gateways)" as Layer3 {
+    database "PostgreSQL Database\n(PersistenceService)" as DB
+    component "ExternalNotificationGateway\n(SMTP / SMS Adapter)" as GW
+    DB -[hidden]right-> GW
 }
-
-package "Data & Infrastructure Layer (Closed)" as Layer3 {
-    class "Database Persistence (PostgreSQL)" as DB
-    class "External Notification Gateway (SMTP/SMS)" as GW
-}
-
-Layer1 --> Layer2A : Invocations via Service Interfaces
-Layer2A --> Layer2B : Internal Domain Collaboration
-Layer2B --> Layer3 : Persistence & Gateway Contracts
-
-Layer1 -[hidden]down-> Layer2A
-Layer2A -[hidden]down-> Layer2B
-Layer2B -[hidden]down-> Layer3
-
+Layer1 -down-> Layer2 : "  Service Interface Invocations\n  (IScheduleService, IFacultyService, IFacilityService, IAuditLogService)"
+Layer2 -down-> Layer3 : "  Persistence & Gateway Contracts\n  (IPersistenceGateway, INotificationGateway)"
+UI4 -[hidden]down-> S1
+S5 -[hidden]down-> DB
 @enduml

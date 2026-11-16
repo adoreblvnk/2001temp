@@ -4,13 +4,13 @@ skinparam componentStyle uml2
 skinparam shadowing false
 skinparam defaultFontName "Helvetica", "Arial", sans-serif
 skinparam defaultFontSize 10
-skinparam linetype ortho
+skinparam nodesep 105
+skinparam ranksep 46
 
 skinparam component {
     BackgroundColor #FFFFFF
     BorderColor #1E3A8A
     BorderThickness 1.5
-    HeaderBackgroundColor #EFF6FF
     FontSize 10
     FontStyle bold
 }
@@ -26,7 +26,7 @@ skinparam interface {
 skinparam package {
     BackgroundColor #F8FAFC
     BorderColor #94A3B8
-    BorderThickness 1.2
+    BorderThickness 1.3
     FontSize 11
     FontStyle bold
 }
@@ -39,83 +39,103 @@ skinparam frame {
     FontStyle bold
 }
 
-frame "System Boundary: Music School Scheduling System" {
+skinparam arrow {
+    Color #1E293B
+    Thickness 1.2
+    FontSize 9
+}
 
-    package "Presentation Layer" {
+frame "System Boundary: Music School Scheduling System" as SysBoundary {
+
+    package "Presentation Layer" as PkgUI {
         component [WebClientUI] as UI <<subsystem>>
     }
 
-    ' Service Interfaces
+    ' Provided Service Interfaces exposed to Presentation Layer
+    () "IAuditLogService" as IAudit
     () "IScheduleService" as ISchedule
     () "IFacultyService" as IFaculty
     () "IFacilityService" as IFacility
-    () "IAuditLogService" as IAudit
 
-    package "Business & Application Layer (Core Scheduling Services)" {
+    package "Business & Application Layer" as PkgBiz {
+        ' Row 1: Domain & Application Services
+        component [AuditLoggingService] as AuditComp <<component>>
         component [SchedulingService] as SchedComp <<component>>
-        component [ConflictValidationService] as ValComp <<component>>
-        component [TieBreakerStrategy] as RankComp <<component>>
-    }
-
-    ' Internal Business Interfaces
-    () "IConflictValidator" as IVal
-    () "ITieBreakerStrategy" as IRank
-
-    package "Business & Application Layer (Faculty, Facilities & Audit)" {
         component [FacultyService] as FacComp <<component>>
         component [FacilityService] as FacilComp <<component>>
-        component [AuditLoggingService] as AuditComp <<component>>
+
+        ' Internal Business Interfaces
+        () "ITieBreakerStrategy" as IRank
+        () "IConflictValidator" as IVal
+
+        ' Row 2: Ranking & Multi-Constraint Validation Components
+        component [TieBreakerStrategy] as RankComp <<component>>
+        component [ConflictValidationService] as ValComp <<component>>
     }
 
-    ' Persistence Interface
     () "IPersistenceGateway" as IData
 
-    package "Data & Infrastructure Layer" {
+    package "Data & Infrastructure Layer" as PkgData {
         component [PersistenceService] as DataComp <<component>>
     }
 
-    port "pExtNotify" as pExtNotify
+    portout "pExtNotify" as pExtNotify
 }
 
-' External System
+' External System outside System Boundary
+() "INotificationGateway" as INotify
 component [ExternalNotificationGateway] as ExtNotify <<external system>>
 
-' Presentation to Service Interfaces
-UI -( ISchedule
-UI -( IFaculty
-UI -( IFacility
-UI -( IAudit
+' Presentation to Provided Business Interfaces (Solid Required Sockets)
+UI -down-( IAudit
+UI -down-( ISchedule
+UI -down-( IFaculty
+UI -down-( IFacility
 
-' Service Realizations
+' Service Interface Realizations (Provided Lollipops)
+AuditComp -up- IAudit
 SchedComp -up- ISchedule
 FacComp -up- IFaculty
 FacilComp -up- IFacility
-AuditComp -up- IAudit
 
-' Internal Business Wiring
-SchedComp -( IVal
-SchedComp -( IRank
-ValComp -up- IVal
+' Intra-Layer Business Collaborations (Solid UML 2.5 Assembly Sockets)
+SchedComp -up-( IAudit
+SchedComp -up-( IFaculty
+SchedComp -down-( IRank
+SchedComp -down-( IVal
 RankComp -up- IRank
+ValComp -up- IVal
+ValComp -up-( IFaculty
+ValComp -up-( IFacility
 
-' Data Tier Realization and Requirements
-SchedComp -( IData
-FacComp -( IData
-FacilComp -( IData
-AuditComp -( IData
+' Data Layer Persistence Realization & Consumers
 DataComp -up- IData
+AuditComp -down-( IData
+SchedComp -down-( IData
+FacComp -down-( IData
+FacilComp -down-( IData
 
-' External Notification Port Connection
-() "INotificationGateway" as INotify
-AuditComp -down- INotify
-pExtNotify -up-( INotify
-pExtNotify -down- ExtNotify
+' UML 2.5.1 Boundary Delegation (solid line, no arrowhead) & External Socket/Lollipop
+SchedComp -- pExtNotify : <<delegate>>
+pExtNotify -down-( INotify
+ExtNotify -up- INotify
 
-' Vertical Alignment Constraints
-UI -[hidden]down-> ISchedule
-ISchedule -[hidden]down-> SchedComp
-SchedComp -[hidden]down-> FacComp
-FacComp -[hidden]down-> IData
+' Strict Horizontal & Vertical Layout Ordering
+IAudit -[hidden]right-> ISchedule
+ISchedule -[hidden]right-> IFaculty
+IFaculty -[hidden]right-> IFacility
+
+AuditComp -[hidden]right-> SchedComp
+SchedComp -[hidden]right-> FacComp
+FacComp -[hidden]right-> FacilComp
+
+SchedComp -[hidden]down-> IRank
+FacComp -[hidden]down-> IVal
+IRank -[hidden]right-> IVal
+RankComp -[hidden]right-> ValComp
+
+RankComp -[hidden]down-> IData
+ValComp -[hidden]down-> IData
 IData -[hidden]down-> DataComp
 
 @enduml

@@ -26,13 +26,13 @@ skinparam package {
 
 ' Group 1: Presentation Layer (Boundaries)
 package "Presentation Layer (Boundaries)" {
-    class AllocationUI <<Boundary>> {
-        +renderCandidateComparison() : void
-        +showValidationError(error : String) : void
-    }
     class ManagerDashboardUI <<Boundary>> {
         +displayWorkloadMetrics() : void
         +highlightOutliers() : void
+    }
+    class AllocationUI <<Boundary>> {
+        +renderCandidateComparison() : void
+        +showValidationError(error : String) : void
     }
     class TeacherUI <<Boundary>> {
         +renderSchedule() : void
@@ -42,13 +42,17 @@ package "Presentation Layer (Boundaries)" {
         +renderUserManagementConsole() : void
         +renderStudioConfigPanel() : void
     }
+    class AuditLogUI <<Boundary>> {
+        +renderAuditTrail() : void
+        +filterLogs(actorId : String, action : String) : void
+    }
 }
 
 ' Group 2: Service Interfaces
 package "Service Interfaces" {
     interface IScheduleService <<interface>> {
         +allocateLessonSlot(lessonId, teacherId, studioId, slot) : Boolean
-        +reallocateLesson(lessonId, substituteTeacherId) : Boolean
+        +requestJobRejection(lessonId, reason) : Boolean
         +notifyAssignedTeachers(weekId) : Boolean
     }
     interface IConflictValidator <<interface>> {
@@ -59,6 +63,12 @@ package "Service Interfaces" {
     interface IFacultyService <<interface>> {
         +submitAvailability(teacherId, month, slots) : Boolean
         +getLowestWorkloadStaff() : List<Teacher>
+        +getTeacher(teacherId) : Teacher
+    }
+    interface IFacilityService <<interface>> {
+        +configureStudio(studioId, name, equippedInstruments) : Boolean
+        +flagMaintenanceWindow(studioId, start, end, reason) : Boolean
+        +getStudio(studioId) : Studio
     }
     interface IAuditLogService <<interface>> {
         +recordAuditEntry(actorId, action, details) : Boolean
@@ -67,21 +77,35 @@ package "Service Interfaces" {
 }
 
 ' Group 3: Application Controllers
-package "Application & Control Layer" {
+package "Business & Application Layer (Controllers)" {
     class AllocationController <<Control>> {
         -validator : IConflictValidator
         -tieBreaker : ITieBreakerStrategy
         -auditService : IAuditLogService
+        -observers : List<IScheduleObserver>
         +allocateLessonSlot(lessonId, teacherId, studioId, slot) : Boolean
-        +reallocateLesson(lessonId, substituteTeacherId) : Boolean
+        +requestJobRejection(lessonId, reason) : Boolean
+        +notifyAssignedTeachers(weekId) : Boolean
+        +attach(observer : IScheduleObserver) : void
+        +detach(observer : IScheduleObserver) : void
+        +notifyObservers(event : ScheduleEvent) : void
     }
     class ConflictValidator <<Control>> {
+        -facultyService : IFacultyService
+        -facilityService : IFacilityService
         +validateAllocationRules(teacher, studio, slot) : ValidationResult
         +findEligibleCandidates(instrument, slot, weekId) : List<Teacher>
+        +checkContinuousTeachingLimit(teacher, slot) : Boolean
     }
     class FacultyController <<Control>> {
         +submitAvailability(teacherId, month, slots) : Boolean
         +getLowestWorkloadStaff() : List<Teacher>
+        +getTeacher(teacherId) : Teacher
+    }
+    class FacilityController <<Control>> {
+        +configureStudio(studioId, name, equippedInstruments) : Boolean
+        +flagMaintenanceWindow(studioId, start, end, reason) : Boolean
+        +getStudio(studioId) : Studio
     }
     class AuditLogController <<Control>> {
         +recordAuditEntry(actorId, action, details) : Boolean
@@ -89,7 +113,7 @@ package "Application & Control Layer" {
     }
 }
 
-' Group 4: Design Patterns (Strategy)
+' Group 4: Design Patterns (Strategy & Observer)
 package "Design Pattern Realizations" {
     interface ITieBreakerStrategy <<interface>> {
         +rankCandidates(candidates : List<Teacher>, slot : TimeSlot) : List<Teacher>
@@ -99,6 +123,18 @@ package "Design Pattern Realizations" {
     }
     class PreferenceMatchStrategy {
         +rankCandidates(candidates : List<Teacher>, slot : TimeSlot) : List<Teacher>
+    }
+    interface IScheduleObserver <<interface>> {
+        +onScheduleEvent(event : ScheduleEvent) : void
+    }
+    class EmailNotificationObserver {
+        +onScheduleEvent(event : ScheduleEvent) : void
+    }
+    class DashboardAlertObserver {
+        +onScheduleEvent(event : ScheduleEvent) : void
+    }
+    class AuditNotificationObserver {
+        +onScheduleEvent(event : ScheduleEvent) : void
     }
 }
 
@@ -124,7 +160,8 @@ package "Domain Entities (Data Tier)" {
     }
     class Studio <<Entity>> {
         - studioId : String
-        - hasDrumKit : Boolean
+        - name : String
+        - equippedInstruments : Set<InstrumentType>
     }
     class AuditLog <<Entity>> {
         - logId : String
@@ -137,20 +174,29 @@ package "Domain Entities (Data Tier)" {
 AllocationController .up.|> IScheduleService
 ConflictValidator .up.|> IConflictValidator
 FacultyController .up.|> IFacultyService
+FacilityController .up.|> IFacilityService
 AuditLogController .up.|> IAuditLogService
 WorkloadDeficitStrategy .up.|> ITieBreakerStrategy
 PreferenceMatchStrategy .up.|> ITieBreakerStrategy
+EmailNotificationObserver .up.|> IScheduleObserver
+DashboardAlertObserver .up.|> IScheduleObserver
+AuditNotificationObserver .up.|> IScheduleObserver
 
 ' Boundary Invocations
 AllocationUI ..> IScheduleService : invokes
 ManagerDashboardUI ..> IFacultyService : invokes
 TeacherUI ..> IFacultyService : invokes
-AdminUI ..> IAuditLogService : invokes
+AdminUI ..> IFacilityService : invokes
+AdminUI ..> IFacultyService : invokes
+AuditLogUI ..> IAuditLogService : invokes
 
-' Delegations
+' Intra-Layer Delegations
 AllocationController --> IConflictValidator : validates via
-AllocationController --> ITieBreakerStrategy : ranks via
+AllocationController o--> ITieBreakerStrategy : ranks via >
+AllocationController o--> "0..*" IScheduleObserver : notifies >
 AllocationController --> IAuditLogService : audits via
+ConflictValidator --> IFacultyService : queries
+ConflictValidator --> IFacilityService : queries
 
 ' Entity relationships
 User <|-- Teacher
