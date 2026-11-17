@@ -1,0 +1,21 @@
+{
+  "name": "harmony-academy-slides",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "slidev --open",
+    "build": "slidev build",
+    "export": "slidev export --output ../report/INF2001-M2-P5-5-Presentation.pdf",
+    "export:pptx": "slidev export --format pptx --output ../report/INF2001-M2-P5-5-Presentation.pptx",
+    "lint": "tahta-lint slides.md"
+  },
+  "dependencies": {
+    "@slidev/cli": "^51.4.0",
+    "echarts": "^5.6.0",
+    "slidev-theme-tahta": "^0.13.4"
+  },
+  "devDependencies": {
+    "playwright-chromium": "^1.51.1"
+  }
+}

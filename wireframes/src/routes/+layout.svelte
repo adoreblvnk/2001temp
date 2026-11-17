@@ -66,7 +66,7 @@
 
 <div class="min-h-screen flex flex-col bg-white text-[var(--color-fg-default)]">
 	<header class="border-b border-[var(--color-border-default)] bg-[var(--color-canvas-subtle)]">
-		<div class="mx-auto max-w-[1180px] px-4 sm:px-6">
+		<div class="w-full px-2.5">
 			<div class="flex flex-wrap items-center justify-between gap-3 py-3">
 				<div class="flex items-center gap-2.5">
 					<a
@@ -160,7 +160,7 @@
 	{#if store.toastMessage}
 		<div class="border-b border-[var(--color-border-default)] bg-[var(--color-canvas-subtle)]">
 			<div
-				class="mx-auto flex max-w-[1180px] items-center justify-between gap-3 px-4 py-2.5 text-sm sm:px-6"
+				class="flex w-full items-center justify-between gap-3 px-2.5 py-2.5 text-sm"
 			>
 				<span class="flex items-center gap-2 font-medium text-[var(--color-fg-default)]">
 					<CheckCircle2 class="h-4 w-4 shrink-0" />
@@ -177,7 +177,7 @@
 		</div>
 	{/if}
 
-	<main class="mx-auto w-full max-w-[1180px] flex-1 px-4 py-6 sm:px-6">
+	<main class="w-full flex-1 px-2.5 py-4">
 		{#if isAuthorizedRoute}
 			{@render children()}
 		{:else}
