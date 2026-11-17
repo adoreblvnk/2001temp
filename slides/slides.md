@@ -14,7 +14,6 @@ subtitle: Joseph Poon · Ryan Ke · Wei Xiang · Tan Yan Qi · Zayne Lee
 
 ---
 layout: default
-kicker: Academic Integrity
 title: Non-Plagiarism Declaration
 ---
 
@@ -24,291 +23,136 @@ We hereby declare that we fully understand and agree to the SIT assessment polic
 - We kept all team project materials private and inaccessible to other parties.
 - We acknowledge that any policy misalignment results in zero marks.
 
-<Tags :items="['Group P5-5', 'Joseph Poon (2501079)', 'Ryan Ke (2501911)', 'Wei Xiang (2500686)', 'Tan Yan Qi (2500030)', 'Zayne Lee (2503844)', '20 Nov 2026']" />
+**Declared by Group P5-5:** Joseph Poon (2501079) · Ryan Ke (2501911) · Wei Xiang (2500686) · Tan Yan Qi (2500030) · Zayne Lee (2503844) · 20 Nov 2026
 
 <!--
 [0:00 - 0:05] Flash the mandatory SIT Non-Plagiarism Declaration briefly and advance immediately to Problem Context.
 -->
 
 ---
-layout: stats
-kicker: 01 · Problem Context
-title: Replacing spreadsheet collisions
-ghost: "P5"
-stats:
-  - { value: 9, label: "certified teachers (5 Piano, 1 Drums, 2 Violin, 1 Trumpet)", icon: "lucide:users" }
-  - { value: 5, label: "studios (86.0 h/wk each · Studio 5 sole drum room)", icon: "lucide:building-2" }
-  - { value: 282, label: "individual 30-min student lessons (251 enrolled + 31 new)", icon: "lucide:calendar-clock" }
----
-
----
-layout: feature
-kicker: 01 · Scope & M1 Remediation
-title: Core M2 guardrails
-columns: 2
-features:
-  - { icon: "lucide:scale", title: "3-Tier Statutory Hours (FR-02, FR-16)", desc: "Top-3 lowest-workload queue + <40h OK, 40–44h Warning, >44h MOM Cap" }
-  - { icon: "lucide:shield-check", title: "Pre-Verified Matrix (FR-03–05)", desc: "Up to 3 eligible teachers side-by-side (<300ms) with Strategy ranking" }
-  - { icon: "lucide:clock", title: "60h Floor & 4h Block (FR-06, FR-11)", desc: "60.0h monthly availability by 19th 23:59 + max 4.0h block / 1.0h rest" }
-  - { icon: "lucide:file-lock-2", title: "Manager Governance & Audit (FR-09, FR-17)", desc: "Rejection warning dialog + 24-month audit trail; M1 peer-swap retired" }
+layout: columns
+kicker: Scope & Milestone 1 Remediation
+title: Problem Context & Core Guardrails
+columns:
+  - title: "Operational Bottleneck"
+    items:
+      - "9 certified teachers across Piano, Drums, Violin, and Trumpet"
+      - "5 studios open 86 hours/week; only Studio 5 holds a drum kit"
+      - "282 weekly 30-minute individual lessons managed on shared Excel"
+  - title: "Refined System Scope"
+    items:
+      - "Three workload tiers: under 40h OK, 40–44h Warning, over 44h Statutory Cap"
+      - "Minimum 60h monthly availability by the 19th; max 4h teaching block + 1h break"
+      - "24-month immutable audit log; retired unrequested peer lesson swaps"
 ---
 
 ---
 layout: diagram
-kicker: 02 · Subsystem Architecture
-title: UML 2.5 Component Architecture
-note: Unified Business & Application tier with lollipop/socket interfaces and solid <strong>&lt;&lt;delegate&gt;&gt;</strong> port <strong>pExtNotify</strong>.
 ---
 
 <Figure src="/component_diagram.png" alt="UML 2.5 Component Diagram" />
 
 <!--
-[0:50 - 1:45] Highlight our unified Business & Application Layer: WebClientUI invokes IScheduleService, IFacultyService, IFacilityService, and IAuditLogService with zero layer-skipping, while SchedulingService delegates to IConflictValidator and ITieBreakerStrategy.
+[0:50 - 1:40] Explain directly from the diagram: closed 3-tier Layered Architecture (Presentation -> unified Business & Application Layer -> Data & Infrastructure Layer) with strict UML 2.5 lollipop/socket interfaces and solid delegate port pExtNotify to the external notification gateway.
 -->
 
 ---
-layout: vs
-kicker: 02 · Detailed Design
-title: GoF Strategy Pattern
-label: OCP
-left:
-  title: "Before: Hardcoded Controller"
-  items:
-    - "AllocationController embeds branching sort logic directly"
-    - "New academy ranking rules modify core scheduling code"
-    - "Violates Single Responsibility & Open/Closed Principles"
-right:
-  title: "After: ITieBreakerStrategy"
-  items:
-    - "AllocationController (Context) delegates rankCandidates()"
-    - "Swaps WorkloadDeficit & PreferenceMatch at runtime"
-    - "New policies add one class while core scheduling stays untouched"
+layout: default
 ---
 
----
-layout: section
-index: "03"
-kicker: Prototype Walkthrough
-title: Requirement Traceability
-subtitle: Manager Allocation · Teacher Schedule & Availability · IT Admin & Audit Trail
----
-
----
-layout: showcase
-side: right
-fit: contain
-image: /wireframe_01_manager_workload.png
-kicker: Flow 1A · Manager Cockpit (UC-01, UC-05)
-title: 3-Tier Workload & Balancing Queue
-subtitle: Ranks top-3 lowest-allocated staff (FR-02), shows assigned studios (FR-01), flags statutory tiers (FR-16), and notifies teachers (FR-14).
----
+<Figure src="/pattern_after_excerpt.png" alt="Strategy Pattern Class Excerpt" />
 
 <!--
-[2:35 - 3:35] Point out the 9 active teachers matching the brief, Elena/Marcus/Hannah in the Top-3 lowest-hours queue (FR-02), David Koh at 37.5h correctly badged OK (<40h), James/Priya in Warning (40-44h), Chloe at 44.5h Overworked (>44h), and Confirm & Notify Teachers (FR-14).
+[1:40 - 2:20] Explain GoF Strategy Pattern directly from the diagram: AllocationController (Context) delegates candidate ordering to ITieBreakerStrategy, allowing managers to switch between WorkloadDeficitStrategy (lowest hours first) and PreferenceMatchStrategy (matching preferred day and studio) at runtime without altering core scheduling code.
 -->
 
 ---
-layout: image
-side: right
-fit: contain
-image: /wireframe_03_allocate_deficit.png
-kicker: Flow 1B · Allocation Matrix (UC-02)
-title: Pre-Verified Candidate Matrix
+layout: diagram
 ---
 
-- **Upfront Check (`14 ms`):** Pre-filters unqualified (`R1`) and unavailable (`R2`) staff (`NFR-PER-02`).
-- **3-Candidate Matrix (`FR-04`):** Compares weekly hours, `4.0h` blocks (`FR-11`), preferences & studios.
-- **Facility Guard (`FR-10, FR-13`):** Excludes `Studio 4` during scheduled maintenance (`R5`).
+<Figure src="/wireframe_01_manager_workload.png" alt="Manager Staff Workload Dashboard" />
 
 <!--
-[3:35 - 4:35] Emphasize Prof Eric's verify-before-allocate principle: before clicking confirm on Piano slot L-409, the manager sees 3 eligible candidates side-by-side while unqualified/unavailable staff and maintenance-locked Studio 4 are already filtered out.
+[2:20 - 3:40] Prototype Flow 1A (Manager Landing Page):
+- Shows all 9 active teachers, unassigned slots, pending rejections, and studio utilisation at a glance.
+- Top-3 Lowest Allocated Weekly Hours queue surfaces Elena Lim (16.5h), Marcus Lim (21.0h), and Hannah Koh (24.5h) upfront for fair balancing.
+- 3-tier statutory status: under 40h OK (including David Koh at 37.5h), 40–44h Warning, and over 44h Overworked, plus Confirm & Notify Teachers.
 -->
 
 ---
-layout: showcase
-side: right
-fit: contain
-image: /wireframe_04_allocate_preference.png
-kicker: Flow 1C · Strategy Toggle (FR-05)
-title: Runtime Strategy Re-Ranking
-subtitle: Switching to Preference Match promotes James Lee (Wed · S-02 match) to #1 Recommended and activates the Rule R6 overtime gate.
+layout: default
 ---
 
+<Figure src="/wireframe_03_allocate_deficit.png" alt="Lesson Allocation — Lowest Hours Ranking" />
+
 <!--
-[4:35 - 5:15] Show ITieBreakerStrategy live on screen: toggling from Workload Deficit to Preference Match immediately re-orders James Lee from #3 to #1 Recommended because he prefers Wednesday and Studio 2.
+[3:40 - 5:00] Prototype Flow 1B (Allocating a 30-Minute Lesson Slot):
+- Verify-before-allocate: unqualified and unavailable teachers are filtered out upfront (bottom collapsible list) in 14 ms.
+- Compares up to 3 eligible teachers side-by-side showing weekly hours, continuous teaching block (out of 4.0h max), stated preferences, and studio location on that date.
+- Studio 4 is automatically greyed out and disabled during its Wednesday 14:00–16:00 piano tuning maintenance window.
 -->
 
 ---
-layout: image
-side: right
-fit: contain
-image: /wireframe_05_overtime_modal.png
-kicker: Flow 1D · Statutory Guardrail (FR-16)
-title: Overtime Justification Gate
+layout: diagram
 ---
 
-- **Warning Band (`40.0–44.0 h`):** Moves James Lee from `40.5 h` to `41.0 h` (`Rule R6`).
-- **Manager Sign-Off (`FR-16`):** Logs mandatory justification under the `44.0 h` MOM ceiling (`NFR-COM-02`).
+<Figure src="/wireframe_05_overtime_modal.png" alt="Preference Ranking & Overtime Confirmation Dialog" />
 
 <!--
-[5:15 - 5:50] Selecting James Lee opens the mandatory overtime confirmation dialog: emergencies can proceed between 40.0h and 44.0h with logged justification, whereas >44.0h is hard-blocked under MOM Employment Act Part IV.
+[5:00 - 6:00] Prototype Flow 1C (Strategy Toggle & Statutory Overtime Prompt):
+- Toggling the Ranking Strategy from Workload Deficit to Preference Match promotes James Lee to #1 because he prefers Wednesday and Studio 2.
+- Because assigning this 30-minute lesson moves James Lee from 40.5h to 41.0h (inside the 40.0–44.0h Warning tier), the system requires explicit manager justification before confirming, while strictly blocking anything above the 44.0h Employment Act ceiling.
 -->
 
 ---
-layout: showcase
-side: right
-fit: contain
-image: /wireframe_07_teacher_schedule.png
-kicker: Flow 2A · Teacher Schedule (UC-09)
-title: Personal Weekly Timetable
-subtitle: Monthly hours (112.0 h), student grades (FR-08), studio IDs (FR-01), and 1.0h rest breaks (FR-11).
+layout: default
 ---
 
+<Figure src="/wireframe_07_teacher_schedule.png" alt="Teacher Weekly Schedule Grid" />
+
 <!--
-[5:50 - 6:40] Show the school-intranet style weekly timetable: every slot shows student grade and Studio S-01 (FR-01, FR-08), and Monday's 4.0h morning block (09:00-13:00) is automatically followed by a hatched 1.0h rest break (FR-11).
+[6:00 - 7:00] Prototype Flow 2A (Teacher Personal Weekly Timetable):
+- Role-restricted teacher view showing overall monthly allocation (112.0 h) and confirmed 30-minute lessons across Monday to Sunday.
+- Every lesson block displays the student's name, grade, and assigned studio (S-01).
+- Monday's 4.0-hour morning block (09:00–13:00) is automatically followed by a hatched 1.0-hour mandatory rest break (13:00–14:00).
 -->
 
 ---
-layout: image
-side: right
-fit: contain
-image: /wireframe_08_teacher_rejection_modal.png
-kicker: Flow 2B · Job Rejection & Availability (UC-07–10)
-title: Consultation Warning & 60h Floor
+layout: diagram
 ---
 
-- **Rejection Guard (`FR-09`):** Displays consultation warning; slot stays assigned pending Manager review.
-- **60h Floor (`FR-06, FR-07`):** Enforces `>= 60.0 h` monthly availability before 19th `23:59` cutoff.
+<Figure src="/wireframe_08_teacher_rejection_modal.png" alt="Job Rejection Consultation Warning Dialog" />
 
 <!--
-[6:40 - 7:35] Clicking any confirmed lesson displays the mandatory warning to consult the manager before submitting a rejection request, keeping all rescheduling authority strictly with Management.
+[7:00 - 7:45] Prototype Flow 2B (Job Rejection Warning & Availability Rules):
+- Clicking any assigned lesson displays student details and warns the teacher to discuss the assignment with their manager before submitting a rejection request.
+- Rejected lessons stay assigned as Pending Review until the manager either retains the teacher or reallocates the slot—teachers never reschedule lessons directly.
 -->
 
 ---
-layout: showcase
-side: right
-fit: contain
-image: /wireframe_13_audit_console.png
-kicker: Flow 3 · Governance & Audit Trail (UC-11–17)
-title: 24-Month Immutable Audit Ledger
-subtitle: Logs allocations, overtime approvals (AL-2216), rejections, availability, account flags, and studio edits.
+layout: default
 ---
 
+<Figure src="/wireframe_13_audit_console.png" alt="Immutable 24-Month Compliance Audit Log" />
+
 <!--
-[7:35 - 8:30] Close the walkthrough on our dedicated Audit Log Console (resolving our M1 consultation feedback): entry AL-2216 records the exact overtime confirmation we just authorized, retained append-only for 24 months under MOM guidelines.
+[7:45 - 8:40] Prototype Flow 3 (IT Admin Lifecycle & 24-Month Immutable Audit Log):
+- Directly addresses our Milestone 1 feedback: every allocation, overtime justification (AL-2216), rejection, 60h availability declaration (AL-2214), studio equipment/maintenance update (AL-2211/2212), and logical account deactivation (AL-2209 Ruth Gomez) is recorded in an append-only 24-month compliance ledger.
 -->
 
 ---
 layout: columns
-kicker: 04 · Verification Suite
-title: Black-Box & White-Box Coverage
+kicker: Quality Assurance
+title: Testing Verification & Q&A
 columns:
-  - title: "Black-Box: allocateLessonSlot()"
+  - title: "Black-Box: Lesson Allocation"
     items:
-      - "5 causes (C1–C5), with C4 across 3 tiers (<40h, 40–44h, >44h)"
-      - "48 combinations (2×2×2×3×2) collapsed to 7 rules (R1–R7)"
-      - "9 BVA test cases probing 39.5h, 40.0h, 44.0h & 44.5h edges"
-  - title: "White-Box: findEligibleCandidates()"
+      - "Evaluates 5 constraints across 48 total input combinations (2×2×2×3×2)"
+      - "Collapsed systematically via indifferent states into 7 decision rules"
+      - "9 boundary test cases verifying exact 39.5h, 40.0h, 44.0h, and 44.5h edges"
+  - title: "White-Box: Candidate Filtering"
     items:
-      - "24-line method mapped across 10 Control Flow Graph nodes"
+      - "24-line method mapped across a 10-node Control Flow Graph"
       - "Cyclomatic complexity M = E − N + 2P = 14 − 10 + 2(1) = 6"
-      - "6 independent basis paths for 100% statement & branch coverage"
+      - "6 independent basis paths achieving 100% statement and branch coverage"
 ---
-
----
-layout: end
-title: Thank You — Q&A
-subtitle: 17 Atomic FRs · 9 Verifiable NFRs · 6 UML 2.5 Interfaces · 15 Traceable Views
-contact: Team P5-5 · Music School Scheduling System
----
-
----
-layout: diagram
-aside: Appendix
-kicker: Appendix A1 · Object-Oriented Design
-title: Final Class Diagram
-note: 1:1 realization of all 6 component interfaces, boundary views, controllers, strategies, observers, and entities.
----
-
-<Figure src="/final_class_diagram.png" alt="Final Class Diagram" />
-
----
-layout: image
-side: right
-fit: contain
-image: /architecture_diagram.png
-aside: Appendix
-kicker: Appendix A2 · Architectural Pattern
-title: 3-Tier Layered Architecture
----
-
-- **1. Presentation:** Boundary UI views (`AllocationUI`, `TeacherUI`, `AdminUI`, `AuditLogUI`).
-- **2. Business:** Unified service tier enforcing statutory limits, 4h blocks & `ITieBreakerStrategy`.
-- **3. Data & Infra:** PostgreSQL (`IPersistenceGateway`) + external SMTP/SMS gateway port.
-
----
-layout: diagram
-aside: Appendix
-kicker: Appendix A3 · Secondary GoF Pattern
-title: Observer Pattern Realization
-note: Inbound IScheduleService.notifyAssignedTeachers() triggers Subject broadcast across Email, Dashboard, and Audit observers.
----
-
-<Figure src="/observer_pattern_after.png" alt="Observer Pattern Class Excerpt" />
-
----
-layout: showcase
-side: right
-fit: contain
-image: /whitebox_cfg.png
-aside: Appendix
-kicker: Appendix A4 · White-Box Control Flow
-title: Control Flow Graph (M = 6)
-subtitle: Node 5 branches across <40.0h (Node 6 OK), 40.0–44.0h (Node 7 Warning), and >44.0h (Node 8 Overworked).
----
-
----
-layout: default
-aside: Appendix
-kicker: Appendix A5 · Black-Box Reduction
-title: Reduced Decision Table (48 → 7 Rules)
----
-
-<Grid
-  head
-  highlight="col:6"
-  :data="[
-    ['Cause / Effect', 'R1 (1–24)', 'R2 (25–36)', 'R3 (37–42)', 'R4 (43–44)', 'R5 (45–46)', 'R6 (47)', 'R7 (48)'],
-    ['C1: Qualified', 'N', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y'],
-    ['C2: Available', '-', 'N', 'Y', 'Y', 'Y', 'Y', 'Y'],
-    ['C3: Block ≤ 4.0h', '-', '-', 'N', 'Y', 'Y', 'Y', 'Y'],
-    ['C4: Weekly Tier', '-', '-', '-', '> 44h', '< 40h, 40–44h', '40–44h', '< 40h'],
-    ['C5: Studio Valid', '-', '-', '-', '-', 'N', 'Y', 'Y'],
-    ['Outcome', 'E3: Unqualified', 'E4: Unavailable', 'E5: >4h Block', 'E6: >44h Cap', 'E7: Studio Clash', 'E2: Warning Gate', 'E1: Confirm OK']
-  ]"
-/>
-
----
-layout: showcase
-side: right
-fit: contain
-image: /wireframe_09_teacher_availability.png
-aside: Appendix
-kicker: Appendix A6 · Teacher Availability & Studio Utilization
-title: 60.0h Availability Grid (FR-06, FR-07)
-subtitle: Recurring 30-minute availability matrix enforcing the 60.0h floor before 19 Nov 23:59 alongside preferred days and studio.
----
-
----
-layout: image
-side: right
-fit: contain
-image: /wireframe_12_admin_studios.png
-aside: Appendix
-kicker: Appendix A7 · IT Admin & Rejected Slot Disposition
-title: Studio Config, Accounts & RBAC
----
-
-- **Studio Equipment (`FR-13`):** Live `equippedInstruments` toggles (`S-05` sole drum studio).
-- **Maintenance (`FR-10`):** Blackout windows automatically exclude studios from allocation.
-- **Logical Deactivation (`FR-12, NFR-REL-02`):** Soft-flags `T-10 Ruth Gomez` while retaining historical audit links.

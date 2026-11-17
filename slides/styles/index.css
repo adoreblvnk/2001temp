@@ -1,0 +1,67 @@
+/* Fix Slidev 51 #slidev-goto-dialog .autocomplete-list hanging onto right side of slide when closed */
+#slidev-goto-dialog.-top-20,
+#slidev-goto-dialog[class*='-top-'] {
+  display: none !important;
+  pointer-events: none !important;
+}
+
+/* Remove AI-signifier card, panel, tag, and figure borders across minimal theme */
+:root,
+:root[data-variant='minimal'] {
+  --surface-border: 0px solid transparent;
+  --card-tick: 0;
+  --mw-lead: 58ch;
+}
+
+.card,
+.panel,
+.vs-side,
+.tahta-figure img,
+.tags .tag,
+.grid-cell {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.card::before,
+.panel::before {
+  display: none !important;
+}
+
+/* Remove redundant repeated deck title from slide footers */
+.foot-left {
+  display: none !important;
+}
+
+.foot {
+  justify-content: flex-end !important;
+}
+
+/* Maximize full-canvas headerless diagram & prototype screenshot slides without clipping */
+.slidev-layout.l-topic:not(:has(.l-head)) {
+  padding: 1rem 2rem 2.2rem !important;
+}
+
+.slidev-layout.l-topic:not(:has(.l-head)) .l-body,
+.slidev-layout.l-topic:not(:has(.l-head)) .fit,
+.slidev-layout.l-topic:not(:has(.l-head)) .fit-inner,
+.slidev-layout.l-topic:not(:has(.l-head)) .diagram-stage,
+.slidev-layout.l-topic:not(:has(.l-head)) .tahta-figure {
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+  transform: none !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.slidev-layout.l-topic:not(:has(.l-head)) .tahta-figure img {
+  width: auto !important;
+  height: auto !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  object-fit: contain !important;
+}
