@@ -46,12 +46,24 @@
   width: 100% !important;
 }
 
+/* Top-align topic slides that have a header instead of floating everything vertically centered */
+.slidev-layout.l-topic:has(.l-head) .l-body,
+.slidev-layout.l-topic:has(.l-head) .fit {
+  justify-content: flex-start !important;
+}
+
+/* Keep end-slide accent bar centered despite .fit-inner full width */
+.l-end .accent-bar {
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .slidev-layout p {
   max-width: 100% !important;
 }
 
 .l-head {
-  margin-bottom: 0.65rem !important;
+  margin-bottom: 0.85rem !important;
 }
 
 /* Prevent split/showcase grid row from expanding past 552px Slidev canvas height */
@@ -64,7 +76,7 @@
 .showcase-media.contain {
   background-size: contain !important;
   background-position: center center !important;
-  margin: 1.2rem 1.4rem 1.2rem 0 !important;
+  margin: 1rem 1.4rem 1rem 0 !important;
 }
 
 /* Convert Shiki dark-mode syntax tokens into crisp high-contrast dark-on-light tokens */
@@ -72,37 +84,48 @@
   filter: invert(1) hue-rotate(180deg) saturate(1.2) contrast(1.25);
 }
 
-/* Full-width, large-font tables for Requirements & Black-Box Decision Table */
+/* Full-width, legible tables with unwrapped ID/header cells */
 .slidev-layout table {
   width: 100% !important;
   border-collapse: collapse;
-  font-size: 1rem;
+  font-size: 0.96rem;
   line-height: 1.32;
 }
 
 .slidev-layout thead th {
-  font-size: 0.78rem;
+  font-size: 0.76rem;
   color: #1f2328;
-  padding: 0.36rem 0.55rem;
+  padding: 0.34rem 0.48rem;
   border-bottom: 2px solid #1f2328;
+  white-space: nowrap;
 }
 
 .slidev-layout tbody td {
-  padding: 0.36rem 0.55rem;
+  padding: 0.34rem 0.48rem;
   border-bottom: 1px solid #e5e7eb;
   vertical-align: top;
 }
 
-/* Exact 980x552 canvas fit for headerless full-screen diagram & prototype slides (zero clipping) */
-.slidev-layout.l-topic:not(:has(.l-head)) {
+.slidev-layout tbody td:first-child {
+  white-space: nowrap;
+  width: 1%;
+}
+
+.slidev-layout tbody td[style*="center"],
+.slidev-layout tbody td[align="center"] {
+  white-space: nowrap;
+}
+
+/* Canvas fit for default/diagram slides carrying figures (never affect section dividers) */
+.slidev-layout.l-topic:not(:has(.l-head)):has(.tahta-figure) {
   padding: 16px 22px !important;
 }
 
-.slidev-layout.l-topic:not(:has(.l-head)) .l-body,
-.slidev-layout.l-topic:not(:has(.l-head)) .fit,
-.slidev-layout.l-topic:not(:has(.l-head)) .fit-inner,
-.slidev-layout.l-topic:not(:has(.l-head)) .diagram-stage,
-.slidev-layout.l-topic:not(:has(.l-head)) .tahta-figure {
+.slidev-layout.l-topic:not(:has(.l-head)):has(.tahta-figure) .l-body,
+.slidev-layout.l-topic:not(:has(.l-head)):has(.tahta-figure) .fit,
+.slidev-layout.l-topic:not(:has(.l-head)):has(.tahta-figure) .fit-inner,
+.slidev-layout.l-topic:not(:has(.l-head)):has(.tahta-figure) .diagram-stage,
+.slidev-layout.l-topic:not(:has(.l-head)):has(.tahta-figure) .tahta-figure {
   width: 100% !important;
   height: 520px !important;
   max-height: 520px !important;
@@ -112,10 +135,40 @@
   justify-content: center !important;
 }
 
-.slidev-layout.l-topic:not(:has(.l-head)) .tahta-figure img {
+.slidev-layout.l-topic:not(:has(.l-head)):has(.tahta-figure) .tahta-figure img {
   width: auto !important;
   height: auto !important;
   max-width: 936px !important;
   max-height: 516px !important;
+  object-fit: contain !important;
+}
+
+.slidev-layout.l-topic:has(.l-head) .l-body > .fit > .fit-inner > .tahta-figure {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.slidev-layout.l-topic:has(.l-head) .l-body > .fit > .fit-inner > .tahta-figure img {
+  width: auto !important;
+  height: auto !important;
+  max-width: 100% !important;
+  max-height: 432px !important;
+  object-fit: contain !important;
+}
+
+/* Constrain two-cols figure images so paired screenshots fit cleanly without overflow */
+.two-cols .tahta-figure {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.two-cols .tahta-figure img {
+  width: auto !important;
+  height: auto !important;
+  max-width: 100% !important;
+  max-height: 390px !important;
   object-fit: contain !important;
 }
