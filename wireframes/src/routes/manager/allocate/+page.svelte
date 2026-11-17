@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { store, DAYS, endTimeOf } from '$lib/store.svelte';
+	import { store, endTimeOf } from '$lib/store.svelte';
 	import { OvertimeConfirmSchema } from '$lib/schemas';
 	import TierBadge from '$lib/components/ui/TierBadge.svelte';
 	import Dialog from '$lib/components/ui/Dialog.svelte';
@@ -27,27 +27,15 @@
 		queueLessons.find((l) => l.lessonId === selectedLessonId) ?? queueLessons[0] ?? null
 	);
 
-	$effect(() => {
-		if (!activeLesson) return;
-		const validStudio = store.studios.find(
-			(s) =>
-				s.equippedInstruments.includes(activeLesson.instrument) &&
-				!store.isStudioUnderMaintenance(
-					s.studioId,
-					activeLesson.weekId,
-					activeLesson.day,
-					activeLesson.slot
-				) &&
-				!store.isStudioOccupied(
-					s.studioId,
-					activeLesson.weekId,
-					activeLesson.day,
-					activeLesson.slot,
-					activeLesson.lessonId
-				)
+	function isStudioValidFor(studioId: string, lesson: NonNullable<typeof activeLesson>): boolean {
+		const st = store.studios.find((s) => s.studioId === studioId);
+		if (!st) return false;
+		return (
+			st.equippedInstruments.includes(lesson.instrument) &&
+			!store.isStudioUnderMaintenance(st.studioId, lesson.weekId, lesson.day, lesson.slot) &&
+			!store.isStudioOccupied(st.studioId, lesson.weekId, lesson.day, lesson.slot, lesson.lessonId)
 		);
-		if (validStudio) selectedStudioId = validStudio.studioId;
-	});
+	}
 
 	let evaluation = $derived(
 		activeLesson
@@ -71,6 +59,12 @@
 		topThreeCandidates.find((c) => c.teacher.staffId === selectedTeacherId) ?? null
 	);
 
+	$effect(() => {
+		if (!activeLesson) return;
+		void activeLesson.lessonId;
+		const fallback = store.studios.find((s) => isStudioValidFor(s.studioId, activeLesson));
+		if (fallback) selectedStudioId = fallback.studioId;
+	});
 	let overtimeModalOpen = $state(false);
 	let overtimeJustification = $state('Covering mid-week demand; teacher confirmed availability');
 	let overtimeError = $state<string | null>(null);
@@ -144,7 +138,13 @@
 				onclick={() => {
 					store.rankingStrategy = 'PreferenceMatch';
 					setTimeout(() => {
-						if (topThreeCandidates[0]) selectedTeacherId = topThreeCandidates[0].teacher.staffId;
+						const top = topThreeCandidates[0];
+						if (top) {
+							selectedTeacherId = top.teacher.staffId;
+							if (activeLesson && isStudioValidFor(top.teacher.preferredStudio, activeLesson)) {
+								selectedStudioId = top.teacher.preferredStudio;
+							}
+						}
 					}, 0);
 				}}
 				class="rounded px-3 py-1 text-sm font-medium transition-colors {store.rankingStrategy ===
@@ -165,15 +165,15 @@
 			<div
 				class="flex items-center justify-between border-b border-[var(--color-border-default)] bg-[var(--color-canvas-subtle)] px-3.5 py-2.5"
 			>
-				<span class="text-sm font-semibold">{store.currentWeek.label} Queue</span>
+				<span class="text-sm font-semibold">1. Lesson Slot</span>
 				<div class="inline-flex gap-1 text-xs">
 					{#each [['all', 'All'], ['unassigned', 'Unassigned'], ['rejected', 'Rejected']] as const as [val, lbl] (val)}
 						<button
 							type="button"
 							onclick={() => (queueFilter = val)}
-							class="rounded px-2 py-1 font-medium {queueFilter === val
-								? 'bg-[#1f2328] text-white'
-								: 'text-[var(--color-fg-muted)] hover:bg-[#eaeef2]'}"
+							class="rounded border px-2 py-0.5 font-medium {queueFilter === val
+								? 'border-[#1f2328] bg-white text-[var(--color-fg-default)] font-semibold'
+								: 'border-transparent text-[var(--color-fg-muted)] hover:bg-[#eaeef2]'}"
 						>
 							{lbl}
 						</button>
@@ -242,7 +242,12 @@
 				class="flex flex-wrap items-center justify-between gap-3 rounded-md border border-[var(--color-border-default)] bg-[var(--color-canvas-subtle)] px-4 py-3"
 			>
 				<div>
-					<div class="flex flex-wrap items-center gap-2 text-base font-semibold">
+					<div class="text-xs font-medium uppercase tracking-wide text-[var(--color-fg-muted)]">
+						{activeLesson.status === 'RejectionPending'
+							? 'Selected Rejected Slot'
+							: 'Selected Unassigned Slot'}
+					</div>
+					<div class="mt-0.5 flex flex-wrap items-center gap-2 text-base font-semibold">
 						<span class="font-mono">{activeLesson.lessonId}</span>
 						<span>·</span>
 						<span>{activeLesson.studentName} ({activeLesson.grade})</span>
@@ -295,9 +300,10 @@
 			<!-- Candidate Comparison -->
 			<section class="rounded-md border border-[var(--color-border-default)] bg-white">
 				<div
-					class="border-b border-[var(--color-border-default)] bg-[var(--color-canvas-subtle)] px-4 py-2.5"
+					class="flex items-center justify-between border-b border-[var(--color-border-default)] bg-[var(--color-canvas-subtle)] px-4 py-2.5"
 				>
-					<h2 class="text-sm font-semibold">Candidate Comparison</h2>
+					<h2 class="text-sm font-semibold">2. Select Candidate (Top 3)</h2>
+					<span class="text-xs text-[var(--color-fg-muted)]">Click Select or toggle Strategy</span>
 				</div>
 
 				{#if topThreeCandidates.length === 0}
@@ -328,7 +334,7 @@
 										</div>
 										{#if idx === 0}
 											<span
-												class="rounded border border-[#1f2328] bg-[#1f2328] px-2 py-0.5 text-xs font-medium text-white"
+												class="rounded border border-[var(--color-border-default)] bg-[var(--color-canvas-subtle)] px-2 py-0.5 text-xs font-medium text-[var(--color-fg-default)]"
 											>
 												Recommended
 											</span>
@@ -369,26 +375,6 @@
 											<dt class="text-[var(--color-fg-muted)]">Studio ({activeLesson.day})</dt>
 											<dd class="font-mono">{cand.locationOnDay}</dd>
 										</div>
-										<div class="pt-1">
-											<dt class="mb-1 text-xs text-[var(--color-fg-muted)]">Week Availability</dt>
-											<dd class="flex gap-1">
-												{#each DAYS as d (d)}
-													{@const unavail = cand.teacher.unavailableSlots.some((u) =>
-														u.startsWith(d)
-													)}
-													<span
-														class="flex-1 rounded border py-0.5 text-center font-mono text-xs {d ===
-														activeLesson.day
-															? 'border-[#1f2328] bg-[#1f2328] text-white font-semibold'
-															: unavail
-																? 'border-[var(--color-border-muted)] text-[var(--color-fg-subtle)]'
-																: 'border-[var(--color-border-default)] bg-[var(--color-canvas-subtle)]'}"
-													>
-														{d.slice(0, 2)}
-													</span>
-												{/each}
-											</dd>
-										</div>
 									</dl>
 								</div>
 
@@ -406,9 +392,14 @@
 									</div>
 									<button
 										type="button"
-										onclick={() => (selectedTeacherId = cand.teacher.staffId)}
+										onclick={() => {
+											selectedTeacherId = cand.teacher.staffId;
+											if (activeLesson && isStudioValidFor(cand.teacher.preferredStudio, activeLesson)) {
+												selectedStudioId = cand.teacher.preferredStudio;
+											}
+										}}
 										class="w-full rounded border px-3 py-1.5 text-sm font-medium transition-colors {isPicked
-											? 'border-[#1f2328] bg-[#1f2328] text-white'
+											? 'border-[#1f2328] bg-[#f6f8fa] text-[var(--color-fg-default)] font-semibold ring-1 ring-[#1f2328]'
 											: 'border-[var(--color-border-default)] bg-white hover:bg-[var(--color-canvas-subtle)]'}"
 									>
 										{isPicked ? 'Selected' : 'Select'}
@@ -451,9 +442,10 @@
 			<!-- Studio Assignment -->
 			<section class="rounded-md border border-[var(--color-border-default)] bg-white">
 				<div
-					class="border-b border-[var(--color-border-default)] bg-[var(--color-canvas-subtle)] px-4 py-2.5"
+					class="flex items-center justify-between border-b border-[var(--color-border-default)] bg-[var(--color-canvas-subtle)] px-4 py-2.5"
 				>
-					<h2 class="text-sm font-semibold">Studio Assignment</h2>
+					<h2 class="text-sm font-semibold">3. Select Studio</h2>
+					<span class="text-xs text-[var(--color-fg-muted)]">Click an equipped free room</span>
 				</div>
 				<div class="grid grid-cols-1 gap-2.5 p-4 sm:grid-cols-5">
 					{#each store.studios as st (st.studioId)}

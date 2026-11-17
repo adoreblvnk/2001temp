@@ -1057,7 +1057,7 @@ function buildDefaultAvailabilityGrid(): Record<string, boolean> {
     if (day === "Sun") continue;
     for (const slot of ALL_SLOTS) {
       if (!isOperatingSlot(day, slot)) continue;
-      if (slot >= "09:00" && slot <= "16:30") {
+      if ((slot >= "09:00" && slot <= "12:00") || (slot >= "13:30" && slot <= "16:30")) {
         grid[`${day}@${slot}`] = true;
       }
     }

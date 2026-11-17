@@ -16,7 +16,7 @@
   --mw-prose: 82ch;
   --pad-x: 2.8rem;
   --pad-y: 2rem;
-  --fs-body: 1.12rem;
+  --fs-body: 0.95rem;
   --fs-h2: 1.95rem;
 }
 
@@ -46,10 +46,41 @@
   width: 100% !important;
 }
 
-/* Top-align topic slides that have a header instead of floating everything vertically centered */
+/* Top-align all topic, split, and showcase slides so title x-height stays identical */
 .slidev-layout.l-topic:has(.l-head) .l-body,
-.slidev-layout.l-topic:has(.l-head) .fit {
+.slidev-layout.l-topic:has(.l-head) .fit,
+.split-body,
+.showcase-body,
+.split-body .fit,
+.showcase-body .fit {
   justify-content: flex-start !important;
+}
+
+/* Uniform black body text and uniform 0.95rem font size across all content slides */
+.slidev-layout.l-topic .l-body,
+.slidev-layout.l-topic .col-body,
+.slidev-layout.l-topic .dim,
+.split-body,
+.split-body .dim,
+.showcase-body,
+.showcase-body .dim {
+  color: var(--fg) !important;
+  font-size: var(--fs-body) !important;
+  line-height: 1.38 !important;
+}
+
+.slidev-layout p,
+.slidev-layout ul,
+.slidev-layout ol {
+  font-size: var(--fs-body) !important;
+  line-height: 1.38 !important;
+}
+
+.slidev-layout mark {
+  background-color: #fef08a;
+  color: #0a0a0a;
+  padding: 0.04em 0.24em;
+  border-radius: 2px;
 }
 
 /* Keep end-slide accent bar centered despite .fit-inner full width */
@@ -62,12 +93,25 @@
   max-width: 100% !important;
 }
 
+.slidev-layout ol {
+  list-style: decimal;
+  padding-left: 1.45rem;
+}
+
+.slidev-layout ol > li {
+  margin: var(--sp-2) 0;
+}
+
 .l-head {
   margin-bottom: 0.85rem !important;
 }
 
 /* Prevent split/showcase grid row from expanding past 552px Slidev canvas height */
-.split,
+.split {
+  grid-template-columns: 0.82fr 1.18fr !important;
+  grid-template-rows: minmax(0, 1fr) !important;
+}
+
 .showcase {
   grid-template-rows: minmax(0, 1fr) !important;
 }
@@ -88,8 +132,8 @@
 .slidev-layout table {
   width: 100% !important;
   border-collapse: collapse;
-  font-size: 0.96rem;
-  line-height: 1.32;
+  font-size: var(--fs-body) !important;
+  line-height: 1.35 !important;
 }
 
 .slidev-layout thead th {
@@ -112,7 +156,8 @@
 }
 
 .slidev-layout tbody td[style*="center"],
-.slidev-layout tbody td[align="center"] {
+.slidev-layout tbody td[align="center"],
+.slidev-layout tbody td code {
   white-space: nowrap;
 }
 
@@ -169,6 +214,20 @@
   width: auto !important;
   height: auto !important;
   max-width: 100% !important;
-  max-height: 390px !important;
+  max-height: 365px !important;
   object-fit: contain !important;
+}
+
+.two-cols:has(ul) .tahta-figure img {
+  max-height: 225px !important;
+}
+
+.two-cols ul {
+  margin-top: 0.55rem !important;
+  font-size: var(--fs-body) !important;
+  line-height: 1.35 !important;
+}
+
+.two-cols ul > li {
+  margin: 0.22rem 0 !important;
 }
