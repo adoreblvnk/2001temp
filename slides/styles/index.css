@@ -1,4 +1,4 @@
-/* Fix Slidev 51 #slidev-goto-dialog .autocomplete-list hanging onto right side of slide when closed */
+/* Fix Slidev 51 #slidev-goto-dialog .autocomplete-list hanging onto right side when closed */
 #slidev-goto-dialog.-top-20,
 #slidev-goto-dialog[class*='-top-'] {
   display: none !important;
@@ -11,14 +11,18 @@
   --surface-border: 0px solid transparent;
   --card-tick: 0;
   --mw-lead: 58ch;
+  --mw-prose: 82ch;
+  --pad-x: 2.6rem;
+  --pad-y: 1.9rem;
+  --fs-body: 1.12rem;
+  --fs-h2: 2rem;
 }
 
 .card,
 .panel,
 .vs-side,
 .tahta-figure img,
-.tags .tag,
-.grid-cell {
+.tags .tag {
   border: none !important;
   box-shadow: none !important;
 }
@@ -28,18 +32,68 @@
   display: none !important;
 }
 
-/* Remove redundant repeated deck title from slide footers */
-.foot-left {
+/* Completely remove footer & slide numbers */
+.foot,
+.tahta-rail {
   display: none !important;
 }
 
-.foot {
-  justify-content: flex-end !important;
+/* Prevent <Fit> from shrinking tables horizontally into narrow centered blocks */
+.fit,
+.fit-inner {
+  width: 100% !important;
 }
 
-/* Maximize full-canvas headerless diagram & prototype screenshot slides without clipping */
+.slidev-layout p {
+  max-width: 100% !important;
+}
+
+.l-head {
+  margin-bottom: 0.65rem !important;
+}
+
+/* Prevent split/showcase grid row from expanding past 552px Slidev canvas height */
+.split,
+.showcase {
+  grid-template-rows: minmax(0, 1fr) !important;
+}
+
+.split-media.contain,
+.showcase-media.contain {
+  background-size: contain !important;
+  background-position: center center !important;
+  margin: 1.2rem 1.4rem 1.2rem 0 !important;
+}
+
+/* Convert Shiki dark-mode syntax tokens into crisp high-contrast dark-on-light tokens */
+.slidev-layout pre.shiki code {
+  filter: invert(1) hue-rotate(180deg) saturate(1.2) contrast(1.25);
+}
+
+/* Full-width, large-font tables for Requirements & Black-Box Decision Table */
+.slidev-layout table {
+  width: 100% !important;
+  border-collapse: collapse;
+  font-size: 1rem;
+  line-height: 1.32;
+}
+
+.slidev-layout thead th {
+  font-size: 0.78rem;
+  color: #1f2328;
+  padding: 0.36rem 0.55rem;
+  border-bottom: 2px solid #1f2328;
+}
+
+.slidev-layout tbody td {
+  padding: 0.36rem 0.55rem;
+  border-bottom: 1px solid #e5e7eb;
+  vertical-align: top;
+}
+
+/* Exact 980x552 canvas fit for headerless full-screen diagram & prototype slides (zero clipping) */
 .slidev-layout.l-topic:not(:has(.l-head)) {
-  padding: 1rem 2rem 2.2rem !important;
+  padding: 16px 22px !important;
 }
 
 .slidev-layout.l-topic:not(:has(.l-head)) .l-body,
@@ -48,10 +102,8 @@
 .slidev-layout.l-topic:not(:has(.l-head)) .diagram-stage,
 .slidev-layout.l-topic:not(:has(.l-head)) .tahta-figure {
   width: 100% !important;
-  height: 100% !important;
-  min-width: 0 !important;
-  min-height: 0 !important;
-  overflow: hidden !important;
+  height: 520px !important;
+  max-height: 520px !important;
   transform: none !important;
   display: flex !important;
   align-items: center !important;
@@ -61,7 +113,7 @@
 .slidev-layout.l-topic:not(:has(.l-head)) .tahta-figure img {
   width: auto !important;
   height: auto !important;
-  max-width: 100% !important;
-  max-height: 100% !important;
+  max-width: 936px !important;
+  max-height: 516px !important;
   object-fit: contain !important;
 }
