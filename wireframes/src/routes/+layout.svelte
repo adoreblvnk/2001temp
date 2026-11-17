@@ -65,10 +65,9 @@
 </script>
 
 <div class="min-h-screen flex flex-col bg-white text-[var(--color-fg-default)]">
-	<!-- GitHub Primer Light Header -->
 	<header class="border-b border-[var(--color-border-default)] bg-[var(--color-canvas-subtle)]">
-		<div class="mx-auto max-w-[1360px] px-4 sm:px-6">
-			<div class="flex flex-wrap items-center justify-between gap-3 py-2.5">
+		<div class="mx-auto max-w-[1180px] px-4 sm:px-6">
+			<div class="flex flex-wrap items-center justify-between gap-3 py-3">
 				<div class="flex items-center gap-2.5">
 					<a
 						href={store.activeRole === 'Manager'
@@ -76,30 +75,29 @@
 							: store.activeRole === 'Teacher'
 								? '/teacher'
 								: '/admin/accounts'}
-						class="flex items-center gap-2 font-semibold text-sm tracking-tight text-[var(--color-fg-default)]"
+						class="flex items-center gap-2 font-semibold text-base tracking-tight text-[var(--color-fg-default)]"
 					>
 						<span
-							class="inline-flex h-6 w-6 items-center justify-center rounded-md border border-[var(--color-border-default)] bg-white text-xs font-bold"
+							class="inline-flex h-7 w-7 items-center justify-center rounded border border-[var(--color-border-default)] bg-white text-sm font-bold"
 						>
 							H
 						</span>
 						<span>Harmony Academy</span>
 					</a>
 					<span class="text-[var(--color-border-strong)]">/</span>
-					<span class="text-xs font-medium text-[var(--color-fg-muted)]">
+					<span class="text-sm font-medium text-[var(--color-fg-muted)]">
 						{store.currentActor.fullName}
-						<span class="font-mono text-[11px]">({store.currentActor.staffId})</span>
+						<span class="font-mono text-xs">({store.currentActor.staffId})</span>
 					</span>
 				</div>
 
-				<!-- Role Switcher (Demo RBAC Persona Selector) -->
 				<div class="flex flex-wrap items-center gap-2">
 					{#if store.activeRole === 'Teacher'}
 						<label class="sr-only" for="teacher-select">Active teacher</label>
 						<select
 							id="teacher-select"
 							bind:value={store.activeTeacherId}
-							class="h-7 rounded-md border border-[var(--color-border-default)] bg-white px-2 text-xs font-medium text-[var(--color-fg-default)]"
+							class="h-8 rounded border border-[var(--color-border-default)] bg-white px-2.5 text-sm font-medium text-[var(--color-fg-default)]"
 						>
 							{#each store.activeTeachers as t (t.staffId)}
 								<option value={t.staffId}>{t.staffId} · {t.fullName}</option>
@@ -108,7 +106,7 @@
 					{/if}
 
 					<div
-						class="inline-flex rounded-md border border-[var(--color-border-default)] bg-white p-0.5"
+						class="inline-flex rounded border border-[var(--color-border-default)] bg-white p-0.5"
 						role="group"
 						aria-label="Active role"
 					>
@@ -116,7 +114,7 @@
 							<button
 								type="button"
 								onclick={() => switchRole(r)}
-								class="rounded px-2.5 py-1 text-xs font-medium transition-colors {store.activeRole ===
+								class="rounded px-3 py-1 text-sm font-medium transition-colors {store.activeRole ===
 								r
 									? 'bg-[#1f2328] text-white'
 									: 'text-[var(--color-fg-muted)] hover:text-[var(--color-fg-default)]'}"
@@ -128,8 +126,7 @@
 				</div>
 			</div>
 
-			<!-- Primer UnderlineNav -->
-			<nav class="-mb-px flex gap-1 overflow-x-auto" aria-label="Primary">
+			<nav class="-mb-px flex gap-1.5 overflow-x-auto" aria-label="Primary">
 				{#each navByRole as item (item.href)}
 					{@const active =
 						item.href === '/manager'
@@ -141,15 +138,15 @@
 					<a
 						href={item.href}
 						aria-current={active ? 'page' : undefined}
-						class="inline-flex items-center gap-1.5 whitespace-nowrap border-b-2 px-3 py-2 text-xs sm:text-sm transition-colors {active
+						class="inline-flex items-center gap-2 whitespace-nowrap border-b-2 px-3.5 py-2.5 text-sm transition-colors {active
 							? 'border-[#1f2328] font-semibold text-[var(--color-fg-default)]'
 							: 'border-transparent font-normal text-[var(--color-fg-muted)] hover:border-[var(--color-border-default)] hover:text-[var(--color-fg-default)]'}"
 					>
-						<Icon class="h-3.5 w-3.5" />
+						<Icon class="h-4 w-4" />
 						<span>{item.label}</span>
 						{#if item.count !== undefined && item.count > 0}
 							<span
-								class="rounded-full bg-[#eaeef2] px-1.5 py-0.5 font-mono text-[11px] font-medium leading-none text-[var(--color-fg-default)] tabular-nums"
+								class="rounded border border-[var(--color-border-default)] bg-white px-1.5 py-0.5 font-mono text-xs font-semibold leading-none text-[var(--color-fg-default)] tabular-nums"
 							>
 								{item.count}
 							</span>
@@ -160,20 +157,19 @@
 		</div>
 	</header>
 
-	<!-- Toast Feedback Banner -->
 	{#if store.toastMessage}
 		<div class="border-b border-[var(--color-border-default)] bg-[var(--color-canvas-subtle)]">
 			<div
-				class="mx-auto flex max-w-[1360px] items-center justify-between gap-3 px-4 py-2 text-xs sm:px-6"
+				class="mx-auto flex max-w-[1180px] items-center justify-between gap-3 px-4 py-2.5 text-sm sm:px-6"
 			>
 				<span class="flex items-center gap-2 font-medium text-[var(--color-fg-default)]">
-					<CheckCircle2 class="h-3.5 w-3.5 shrink-0" />
+					<CheckCircle2 class="h-4 w-4 shrink-0" />
 					<span>{store.toastMessage}</span>
 				</span>
 				<button
 					type="button"
 					onclick={() => (store.toastMessage = null)}
-					class="text-[var(--color-fg-muted)] hover:text-[var(--color-fg-default)]"
+					class="text-sm text-[var(--color-fg-muted)] hover:text-[var(--color-fg-default)]"
 				>
 					Dismiss
 				</button>
@@ -181,24 +177,22 @@
 		</div>
 	{/if}
 
-	<!-- Main Content Container -->
-	<main class="mx-auto w-full max-w-[1360px] flex-1 px-4 py-5 sm:px-6">
+	<main class="mx-auto w-full max-w-[1180px] flex-1 px-4 py-6 sm:px-6">
 		{#if isAuthorizedRoute}
 			{@render children()}
 		{:else}
 			<div
 				class="mx-auto my-12 max-w-md rounded-md border border-[var(--color-border-default)] bg-[var(--color-canvas-subtle)] p-6 text-center"
 			>
-				<ShieldAlert class="mx-auto mb-2.5 h-6 w-6 text-[var(--color-fg-muted)]" />
-				<h2 class="text-sm font-semibold">403 · Role Access Restricted</h2>
-				<p class="mt-1 text-xs text-[var(--color-fg-muted)]">
-					Current session ({store.activeRole}) does not have permission to view
-					<code class="font-mono">{pathname}</code>.
+				<ShieldAlert class="mx-auto mb-3 h-7 w-7 text-[var(--color-fg-muted)]" />
+				<h2 class="text-base font-semibold">403 · Role Access Restricted</h2>
+				<p class="mt-1.5 text-sm text-[var(--color-fg-muted)]">
+					Active role ({store.activeRole}) cannot access <code class="font-mono">{pathname}</code>.
 				</p>
 				<button
 					type="button"
 					onclick={() => switchRole(store.activeRole)}
-					class="mt-4 rounded-md bg-[#1f2328] px-3 py-1.5 text-xs font-medium text-white hover:bg-[#32383f]"
+					class="mt-4 rounded bg-[#1f2328] px-4 py-2 text-sm font-medium text-white hover:bg-[#32383f]"
 				>
 					Return to {store.activeRole} Workspace
 				</button>

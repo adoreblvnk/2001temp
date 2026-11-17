@@ -64,46 +64,38 @@
 </script>
 
 <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
-	<div class="flex items-center gap-2.5">
-		<h1 class="text-lg font-semibold tracking-tight">Audit Log</h1>
-		<span
-			class="rounded-full border border-[var(--color-border-default)] bg-[var(--color-canvas-subtle)] px-2.5 py-0.5 font-mono text-[11px] text-[var(--color-fg-muted)]"
-		>
-			Append-Only · 24-Month Retention
-		</span>
-	</div>
+	<h1 class="text-xl font-semibold tracking-tight">Audit Log</h1>
 
 	<button
 		type="button"
 		onclick={exportAuditCsv}
-		class="inline-flex items-center gap-1.5 rounded-md border border-[var(--color-border-default)] bg-white px-3 py-1.5 text-xs font-medium hover:bg-[var(--color-canvas-subtle)]"
+		class="inline-flex items-center gap-1.5 rounded border border-[var(--color-border-default)] bg-white px-3.5 py-1.5 text-sm font-medium hover:bg-[var(--color-canvas-subtle)]"
 	>
-		<Download class="h-3.5 w-3.5" />
+		<Download class="h-4 w-4" />
 		<span>Export CSV</span>
 	</button>
 </div>
 
-<!-- Filter Bar -->
 <div
-	class="mb-4 grid grid-cols-1 gap-2.5 rounded-md border border-[var(--color-border-default)] bg-[var(--color-canvas-subtle)] p-3 sm:grid-cols-3"
+	class="mb-4 grid grid-cols-1 gap-3 rounded-md border border-[var(--color-border-default)] bg-[var(--color-canvas-subtle)] p-3.5 sm:grid-cols-3"
 >
 	<div class="relative">
 		<Search
-			class="pointer-events-none absolute left-2.5 top-2 h-3.5 w-3.5 text-[var(--color-fg-muted)]"
+			class="pointer-events-none absolute left-3 top-2.5 h-4 w-4 text-[var(--color-fg-muted)]"
 		/>
 		<input
 			type="search"
 			bind:value={searchQuery}
 			placeholder="Search target, ID, or justification…"
 			aria-label="Search audit records"
-			class="w-full rounded-md border border-[var(--color-border-default)] bg-white py-1.5 pl-8 pr-2.5 text-xs"
+			class="w-full rounded border border-[var(--color-border-default)] bg-white py-1.5 pl-9 pr-3 text-sm"
 		/>
 	</div>
 
 	<select
 		bind:value={selectedActor}
 		aria-label="Filter by actor"
-		class="rounded-md border border-[var(--color-border-default)] bg-white px-2.5 py-1.5 text-xs"
+		class="rounded border border-[var(--color-border-default)] bg-white px-3 py-1.5 text-sm"
 	>
 		<option value="ALL">All Actors</option>
 		{#each actors as actor (actor)}
@@ -114,7 +106,7 @@
 	<select
 		bind:value={selectedAction}
 		aria-label="Filter by action type"
-		class="rounded-md border border-[var(--color-border-default)] bg-white px-2.5 py-1.5 text-xs"
+		class="rounded border border-[var(--color-border-default)] bg-white px-3 py-1.5 text-sm"
 	>
 		<option value="ALL">All Action Types</option>
 		{#each actionTypes as act (act)}
@@ -123,44 +115,55 @@
 	</select>
 </div>
 
-<!-- Ledger Table -->
 <section class="rounded-md border border-[var(--color-border-default)] bg-white">
+	<div
+		class="flex items-center justify-between border-b border-[var(--color-border-default)] bg-[var(--color-canvas-subtle)] px-4 py-2 text-xs text-[var(--color-fg-muted)]"
+	>
+		<span>Immutable Ledger</span>
+		<span class="font-mono">24-Month Statutory Retention</span>
+	</div>
 	<div class="overflow-x-auto">
-		<table class="w-full border-collapse text-left text-xs">
+		<table class="w-full border-collapse text-left text-sm">
 			<thead>
-				<tr class="border-b border-[var(--color-border-default)] bg-[var(--color-canvas-subtle)] text-[var(--color-fg-muted)]">
-					<th class="px-3.5 py-2 font-medium">ID</th>
-					<th class="px-3.5 py-2 font-medium">Timestamp</th>
-					<th class="px-3.5 py-2 font-medium">Actor</th>
-					<th class="px-3.5 py-2 font-medium">Action</th>
-					<th class="px-3.5 py-2 font-medium">Target</th>
-					<th class="px-3.5 py-2 font-medium">Details</th>
-					<th class="px-3.5 py-2 font-medium">Digest</th>
+				<tr
+					class="border-b border-[var(--color-border-default)] bg-[var(--color-canvas-subtle)] text-[var(--color-fg-muted)]"
+				>
+					<th class="px-3.5 py-2.5 font-medium">ID</th>
+					<th class="px-3.5 py-2.5 font-medium">Timestamp</th>
+					<th class="px-3.5 py-2.5 font-medium">Actor</th>
+					<th class="px-3.5 py-2.5 font-medium">Action</th>
+					<th class="px-3.5 py-2.5 font-medium">Target</th>
+					<th class="px-3.5 py-2.5 font-medium">Details</th>
+					<th class="px-3.5 py-2.5 font-medium">Digest</th>
 				</tr>
 			</thead>
 			<tbody class="divide-y divide-[var(--color-border-muted)]">
 				{#each filteredLogs as entry (entry.logId)}
 					<tr class="hover:bg-[var(--color-canvas-subtle)]/60">
-						<td class="whitespace-nowrap px-3.5 py-2.5 font-mono font-medium">{entry.logId}</td>
-						<td class="whitespace-nowrap px-3.5 py-2.5 font-mono text-[11px] text-[var(--color-fg-muted)] tabular-nums">
+						<td class="whitespace-nowrap px-3.5 py-3 font-mono font-semibold">{entry.logId}</td>
+						<td
+							class="whitespace-nowrap px-3.5 py-3 font-mono text-xs text-[var(--color-fg-muted)] tabular-nums"
+						>
 							{entry.timestamp}
 						</td>
-						<td class="whitespace-nowrap px-3.5 py-2.5">
+						<td class="whitespace-nowrap px-3.5 py-3">
 							<span class="font-medium">{entry.actorName}</span>
-							<span class="font-mono text-[11px] text-[var(--color-fg-muted)]">
+							<span class="font-mono text-xs text-[var(--color-fg-muted)]">
 								({entry.actorId})
 							</span>
 						</td>
-						<td class="whitespace-nowrap px-3.5 py-2.5">
+						<td class="whitespace-nowrap px-3.5 py-3">
 							<span
-								class="rounded border border-[var(--color-border-default)] bg-[var(--color-canvas-subtle)] px-1.5 py-0.5 font-mono text-[10px] font-medium"
+								class="rounded border border-[var(--color-border-default)] bg-[var(--color-canvas-subtle)] px-2 py-0.5 font-mono text-xs font-medium"
 							>
 								{entry.action}
 							</span>
 						</td>
-						<td class="whitespace-nowrap px-3.5 py-2.5 font-mono text-[11px]">{entry.target}</td>
-						<td class="px-3.5 py-2.5 text-[var(--color-fg-muted)]">{entry.details}</td>
-						<td class="whitespace-nowrap px-3.5 py-2.5 font-mono text-[11px] text-[var(--color-fg-subtle)]">
+						<td class="whitespace-nowrap px-3.5 py-3 font-mono text-xs">{entry.target}</td>
+						<td class="px-3.5 py-3 text-[var(--color-fg-muted)]">{entry.details}</td>
+						<td
+							class="whitespace-nowrap px-3.5 py-3 font-mono text-xs text-[var(--color-fg-subtle)]"
+						>
 							{entry.hash}
 						</td>
 					</tr>

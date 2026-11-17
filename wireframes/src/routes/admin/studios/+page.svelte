@@ -44,24 +44,25 @@
 </script>
 
 <div class="mb-4 flex items-center justify-between">
-	<h1 class="text-lg font-semibold tracking-tight">Studios &amp; Maintenance</h1>
+	<h1 class="text-xl font-semibold tracking-tight">Studios &amp; Maintenance</h1>
 </div>
 
 <div class="grid grid-cols-1 gap-5 lg:grid-cols-12">
-	<!-- FR-13: Studio Instrument Equipment Configuration -->
 	<section class="lg:col-span-7 rounded-md border border-[var(--color-border-default)] bg-white">
 		<div
 			class="border-b border-[var(--color-border-default)] bg-[var(--color-canvas-subtle)] px-4 py-2.5"
 		>
-			<h2 class="text-xs font-semibold">Studio Equipment Configuration (Studios 1–5)</h2>
+			<h2 class="text-sm font-semibold">Studio Equipment</h2>
 		</div>
 
 		<div class="overflow-x-auto">
-			<table class="w-full border-collapse text-left text-xs">
+			<table class="w-full border-collapse text-left text-sm">
 				<thead>
-					<tr class="border-b border-[var(--color-border-default)] bg-[var(--color-canvas-subtle)] text-[var(--color-fg-muted)]">
-						<th class="px-4 py-2 font-medium">Studio</th>
-						<th class="px-4 py-2 font-medium">Equipped Instruments (Toggle)</th>
+					<tr
+						class="border-b border-[var(--color-border-default)] bg-[var(--color-canvas-subtle)] text-[var(--color-fg-muted)]"
+					>
+						<th class="px-4 py-2.5 font-medium">Studio</th>
+						<th class="px-4 py-2.5 font-medium">Equipped Instruments</th>
 					</tr>
 				</thead>
 				<tbody class="divide-y divide-[var(--color-border-muted)]">
@@ -78,7 +79,7 @@
 										<button
 											type="button"
 											onclick={() => store.toggleStudioInstrument(st.studioId, inst)}
-											class="rounded border px-2.5 py-1 text-xs font-medium transition-colors {equipped
+											class="rounded border px-3 py-1 text-sm font-medium transition-colors {equipped
 												? 'border-[#1f2328] bg-[#1f2328] text-white'
 												: 'border-[var(--color-border-default)] bg-white text-[var(--color-fg-muted)] hover:bg-[var(--color-canvas-subtle)]'}"
 										>
@@ -94,22 +95,21 @@
 		</div>
 	</section>
 
-	<!-- FR-10: Schedule Maintenance Window -->
 	<section class="lg:col-span-5 rounded-md border border-[var(--color-border-default)] bg-white">
 		<div
 			class="border-b border-[var(--color-border-default)] bg-[var(--color-canvas-subtle)] px-4 py-2.5"
 		>
-			<h2 class="text-xs font-semibold">Schedule Maintenance Window</h2>
+			<h2 class="text-sm font-semibold">Schedule Maintenance</h2>
 		</div>
 
-		<div class="space-y-3 p-4 text-xs">
-			<div class="grid grid-cols-2 gap-2.5">
+		<div class="space-y-3.5 p-4 text-sm">
+			<div class="grid grid-cols-2 gap-3">
 				<div>
 					<label for="mw-st" class="mb-1 block font-medium">Studio</label>
 					<select
 						id="mw-st"
 						bind:value={mStudioId}
-						class="w-full rounded-md border border-[var(--color-border-default)] bg-white px-2.5 py-1.5 font-mono"
+						class="w-full rounded border border-[var(--color-border-default)] bg-white px-3 py-1.5 font-mono"
 					>
 						{#each store.studios as st (st.studioId)}
 							<option value={st.studioId}>{st.studioId} · {st.name}</option>
@@ -121,7 +121,7 @@
 					<select
 						id="mw-wk"
 						bind:value={mWeekId}
-						class="w-full rounded-md border border-[var(--color-border-default)] bg-white px-2.5 py-1.5 font-mono"
+						class="w-full rounded border border-[var(--color-border-default)] bg-white px-3 py-1.5 font-mono"
 					>
 						{#each store.weeks as wk (wk.id)}
 							<option value={wk.id}>{wk.label}</option>
@@ -130,13 +130,13 @@
 				</div>
 			</div>
 
-			<div class="grid grid-cols-3 gap-2">
+			<div class="grid grid-cols-3 gap-2.5">
 				<div>
 					<label for="mw-day" class="mb-1 block font-medium">Day</label>
 					<select
 						id="mw-day"
 						bind:value={mDay}
-						class="w-full rounded-md border border-[var(--color-border-default)] bg-white px-2 py-1.5"
+						class="w-full rounded border border-[var(--color-border-default)] bg-white px-2.5 py-1.5"
 					>
 						{#each DAYS as d (d)}
 							<option value={d}>{d}</option>
@@ -148,7 +148,7 @@
 					<select
 						id="mw-start"
 						bind:value={mStart}
-						class="w-full rounded-md border border-[var(--color-border-default)] bg-white px-2 py-1.5 font-mono"
+						class="w-full rounded border border-[var(--color-border-default)] bg-white px-2.5 py-1.5 font-mono"
 					>
 						{#each ALL_SLOTS as s (s)}
 							<option value={s}>{s}</option>
@@ -160,7 +160,7 @@
 					<select
 						id="mw-end"
 						bind:value={mEnd}
-						class="w-full rounded-md border border-[var(--color-border-default)] bg-white px-2 py-1.5 font-mono"
+						class="w-full rounded border border-[var(--color-border-default)] bg-white px-2.5 py-1.5 font-mono"
 					>
 						{#each ALL_SLOTS as s (s)}
 							<option value={s}>{s}</option>
@@ -176,15 +176,15 @@
 					id="mw-reason"
 					type="text"
 					bind:value={mReason}
-					class="w-full rounded-md border border-[var(--color-border-default)] px-2.5 py-1.5"
+					class="w-full rounded border border-[var(--color-border-default)] px-3 py-1.5"
 				/>
 			</div>
 
 			{#if conflictingLessons.length > 0}
 				<div
-					class="rounded-md border border-[var(--color-tier-warn-border)] bg-[var(--color-tier-warn-bg)] px-3 py-2 text-[var(--color-tier-warn-fg)]"
+					class="rounded border border-[var(--color-tier-warn-border)] bg-[var(--color-tier-warn-bg)] px-3 py-2 text-[var(--color-tier-warn-fg)]"
 				>
-					{conflictingLessons.length} confirmed lesson(s) fall in this window and will return to the Manager Unassigned queue.
+					{conflictingLessons.length} confirmed lesson(s) fall in this window and will return to Unassigned.
 				</div>
 			{/if}
 
@@ -195,49 +195,50 @@
 			<button
 				type="button"
 				onclick={handleScheduleMaintenance}
-				class="inline-flex w-full items-center justify-center gap-1.5 rounded-md bg-[#1f2328] px-3 py-1.5 font-medium text-white hover:bg-[#32383f]"
+				class="inline-flex w-full items-center justify-center gap-2 rounded bg-[#1f2328] px-3.5 py-2 font-medium text-white hover:bg-[#32383f]"
 			>
-				<Wrench class="h-3.5 w-3.5" />
+				<Wrench class="h-4 w-4" />
 				<span>Schedule Maintenance</span>
 			</button>
 		</div>
 	</section>
 </div>
 
-<!-- Active Maintenance Windows List -->
 <section class="mt-5 rounded-md border border-[var(--color-border-default)] bg-white">
 	<div
 		class="border-b border-[var(--color-border-default)] bg-[var(--color-canvas-subtle)] px-4 py-2.5"
 	>
-		<h2 class="text-xs font-semibold">Scheduled Maintenance Windows</h2>
+		<h2 class="text-sm font-semibold">Scheduled Maintenance Windows</h2>
 	</div>
 	<div class="overflow-x-auto">
-		<table class="w-full border-collapse text-left text-xs">
+		<table class="w-full border-collapse text-left text-sm">
 			<thead>
-				<tr class="border-b border-[var(--color-border-default)] bg-[var(--color-canvas-subtle)] text-[var(--color-fg-muted)]">
-					<th class="px-4 py-2 font-medium">ID</th>
-					<th class="px-4 py-2 font-medium">Studio</th>
-					<th class="px-4 py-2 font-medium">Window</th>
-					<th class="px-4 py-2 font-medium">Reason</th>
-					<th class="px-4 py-2 text-right font-medium">Action</th>
+				<tr
+					class="border-b border-[var(--color-border-default)] bg-[var(--color-canvas-subtle)] text-[var(--color-fg-muted)]"
+				>
+					<th class="px-4 py-2.5 font-medium">ID</th>
+					<th class="px-4 py-2.5 font-medium">Studio</th>
+					<th class="px-4 py-2.5 font-medium">Window</th>
+					<th class="px-4 py-2.5 font-medium">Reason</th>
+					<th class="px-4 py-2.5 text-right font-medium">Action</th>
 				</tr>
 			</thead>
 			<tbody class="divide-y divide-[var(--color-border-muted)]">
 				{#each store.maintenanceWindows as mw (mw.id)}
 					<tr>
-						<td class="px-4 py-2.5 font-mono">{mw.id}</td>
-						<td class="px-4 py-2.5 font-mono font-medium">{mw.studioId}</td>
-						<td class="px-4 py-2.5 font-mono tabular-nums">
+						<td class="px-4 py-3 font-mono font-semibold">{mw.id}</td>
+						<td class="px-4 py-3 font-mono font-medium">{mw.studioId}</td>
+						<td class="px-4 py-3 font-mono tabular-nums">
 							{mw.weekId} · {mw.day} {mw.startSlot}–{mw.endSlot}
 						</td>
-						<td class="px-4 py-2.5 text-[var(--color-fg-muted)]">{mw.reason}</td>
-						<td class="px-4 py-2.5 text-right">
+						<td class="px-4 py-3 text-[var(--color-fg-muted)]">{mw.reason}</td>
+						<td class="px-4 py-3 text-right">
 							<button
 								type="button"
 								onclick={() => store.removeMaintenance(mw.id)}
-								class="inline-flex items-center gap-1 rounded border border-[var(--color-border-default)] bg-white px-2 py-1 text-[11px] font-medium hover:bg-[var(--color-canvas-subtle)]"
+								class="inline-flex items-center gap-1 rounded border border-[var(--color-border-default)] bg-white px-2.5 py-1 text-xs font-medium hover:bg-[var(--color-canvas-subtle)]"
 							>
-								<Trash2 class="h-3 w-3" />
+								<Trash2 class="h-3.5 w-3.5" />
 								<span>Clear</span>
 							</button>
 						</td>

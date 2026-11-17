@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { store, DAYS, ALL_SLOTS, isOperatingSlot } from '$lib/store.svelte';
 	import { AvailabilitySubmissionSchema, type DayCode } from '$lib/schemas';
-	import { Save, Clock } from '@lucide/svelte';
+	import { Save } from '@lucide/svelte';
 
 	let teacher = $derived(store.currentActor);
 
@@ -22,7 +22,6 @@
 		}).length
 	);
 
-	// 4 weeks in target calendar month (30-min slots = 0.5h each)
 	let declaredMonthlyHours = $derived(weeklySelectedSlots * 0.5 * 4);
 	let meetsFloor = $derived(declaredMonthlyHours >= 60.0);
 
@@ -66,21 +65,17 @@
 	}
 </script>
 
-<!-- Header -->
 <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
-	<div class="flex flex-wrap items-center gap-2.5">
-		<h1 class="text-lg font-semibold tracking-tight">December 2026 Availability &amp; Preferences</h1>
-		<span
-			class="inline-flex items-center gap-1 rounded-full border border-[var(--color-border-default)] bg-[var(--color-canvas-subtle)] px-2.5 py-0.5 font-mono text-[11px] text-[var(--color-fg-muted)]"
-		>
-			<Clock class="h-3 w-3" />
-			<span>Cutoff: 19 Nov 23:59</span>
-		</span>
+	<div>
+		<h1 class="text-xl font-semibold tracking-tight">December 2026 Availability</h1>
 	</div>
 
-	<div class="flex items-center gap-2.5">
+	<div class="flex flex-wrap items-center gap-3">
+		<span class="font-mono text-sm text-[var(--color-fg-muted)] tabular-nums">
+			Cutoff: <strong class="text-[var(--color-fg-default)]">19 Nov 23:59</strong>
+		</span>
 		<span
-			class="rounded-full border px-2.5 py-1 font-mono text-xs font-medium tabular-nums {meetsFloor
+			class="rounded border px-3 py-1 font-mono text-sm font-semibold tabular-nums {meetsFloor
 				? 'border-[var(--color-tier-ok-border)] bg-[var(--color-tier-ok-bg)] text-[var(--color-tier-ok-fg)]'
 				: 'border-[var(--color-tier-over-border)] bg-[var(--color-tier-over-bg)] text-[var(--color-tier-over-fg)]'}"
 		>
@@ -90,9 +85,9 @@
 		<button
 			type="button"
 			onclick={handleSave}
-			class="inline-flex items-center gap-1.5 rounded-md bg-[#1f2328] px-3 py-1.5 text-xs font-medium text-white hover:bg-[#32383f]"
+			class="inline-flex items-center gap-2 rounded bg-[#1f2328] px-3.5 py-1.5 text-sm font-medium text-white hover:bg-[#32383f]"
 		>
-			<Save class="h-3.5 w-3.5" />
+			<Save class="h-4 w-4" />
 			<span>Save Declaration</span>
 		</button>
 	</div>
@@ -100,25 +95,24 @@
 
 {#if validationError}
 	<div
-		class="mb-4 rounded-md border border-[var(--color-tier-over-border)] bg-[var(--color-tier-over-bg)] px-3.5 py-2 text-xs text-[var(--color-tier-over-fg)]"
+		class="mb-4 rounded border border-[var(--color-tier-over-border)] bg-[var(--color-tier-over-bg)] px-4 py-2.5 text-sm text-[var(--color-tier-over-fg)]"
 	>
 		{validationError}
 	</div>
 {/if}
 
-<!-- FR-07: Weekly Preferences Bar -->
 <section
-	class="mb-4 flex flex-wrap items-center justify-between gap-4 rounded-md border border-[var(--color-border-default)] bg-[var(--color-canvas-subtle)] px-4 py-3 text-xs"
+	class="mb-4 flex flex-wrap items-center justify-between gap-4 rounded-md border border-[var(--color-border-default)] bg-[var(--color-canvas-subtle)] px-4 py-3 text-sm"
 >
-	<div class="flex flex-wrap items-center gap-2">
+	<div class="flex flex-wrap items-center gap-2.5">
 		<span class="font-semibold">Preferred Days:</span>
-		<div class="inline-flex flex-wrap gap-1">
+		<div class="inline-flex flex-wrap gap-1.5">
 			{#each DAYS as d (d)}
 				{@const on = preferredDays.includes(d)}
 				<button
 					type="button"
 					onclick={() => togglePreferredDay(d)}
-					class="rounded border px-2.5 py-1 text-xs font-medium transition-colors {on
+					class="rounded border px-3 py-1 text-sm font-medium transition-colors {on
 						? 'border-[#1f2328] bg-[#1f2328] text-white'
 						: 'border-[var(--color-border-default)] bg-white text-[var(--color-fg-muted)] hover:text-[var(--color-fg-default)]'}"
 				>
@@ -132,7 +126,7 @@
 		<span>Preferred Studio:</span>
 		<select
 			bind:value={preferredStudio}
-			class="rounded-md border border-[var(--color-border-default)] bg-white px-2.5 py-1 font-mono text-xs font-medium"
+			class="rounded border border-[var(--color-border-default)] bg-white px-3 py-1 font-mono text-sm font-medium"
 		>
 			{#each store.studios as st (st.studioId)}
 				<option value={st.studioId}>{st.studioId} · {st.name}</option>
@@ -141,33 +135,26 @@
 	</label>
 </section>
 
-<!-- FR-06: Recurring 30-Minute Availability Grid (08:00–21:00) -->
 <section class="rounded-md border border-[var(--color-border-default)] bg-white">
-	<div
-		class="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--color-border-default)] bg-[var(--color-canvas-subtle)] px-4 py-2 text-xs"
-	>
-		<span class="font-semibold">Recurring Weekly 30-Minute Availability Grid</span>
-		<span class="text-[var(--color-fg-muted)]">Click any slot or day header to toggle</span>
-	</div>
-
 	<div class="overflow-x-auto">
-		<table class="w-full min-w-[680px] table-fixed border-collapse text-xs select-none">
+		<table class="w-full min-w-[700px] table-fixed border-collapse text-sm select-none">
 			<thead>
 				<tr class="border-b border-[var(--color-border-default)] bg-[var(--color-canvas-subtle)]">
-					<th class="w-20 border-r border-[var(--color-border-default)] px-2.5 py-2 text-left font-medium text-[var(--color-fg-muted)]">
+					<th
+						class="w-20 border-r border-[var(--color-border-default)] px-3 py-2 text-left font-medium text-[var(--color-fg-muted)]"
+					>
 						Slot
 					</th>
 					{#each DAYS as d (d)}
-						<th class="border-r border-[var(--color-border-default)] last:border-r-0 px-2 py-1.5 text-center">
+						<th
+							class="border-r border-[var(--color-border-default)] last:border-r-0 px-2 py-2 text-center"
+						>
 							<button
 								type="button"
 								onclick={() => toggleDayColumn(d)}
 								class="w-full rounded px-1.5 py-0.5 font-semibold hover:bg-[#eaeef2]"
 							>
 								{d}
-								{#if preferredDays.includes(d)}
-									<span class="font-mono text-[10px] text-[var(--color-fg-muted)]">★</span>
-								{/if}
 							</button>
 						</th>
 					{/each}
@@ -176,7 +163,9 @@
 			<tbody>
 				{#each ALL_SLOTS as slot (slot)}
 					<tr class="border-b border-[var(--color-border-muted)] last:border-b-0">
-						<td class="border-r border-[var(--color-border-default)] bg-[var(--color-canvas-subtle)]/50 px-2.5 py-1 font-mono text-[11px] text-[var(--color-fg-muted)] tabular-nums">
+						<td
+							class="border-r border-[var(--color-border-default)] bg-[var(--color-canvas-subtle)]/50 px-3 py-1 font-mono text-xs font-medium text-[var(--color-fg-muted)] tabular-nums"
+						>
 							{slot}
 						</td>
 						{#each DAYS as d (d)}

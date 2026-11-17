@@ -5,37 +5,32 @@
 	interface Props {
 		hours?: number;
 		tier?: WorkloadTier;
-		compact?: boolean;
 	}
 
-	let { hours, tier, compact = false }: Props = $props();
+	let { hours, tier }: Props = $props();
 
 	let resolved = $derived<WorkloadTier>(tier ?? getWorkloadTier(hours ?? 0));
 
-	const config: Record<WorkloadTier, { label: string; cls: string; dot: string }> = {
+	const config: Record<WorkloadTier, { label: string; cls: string }> = {
 		OK: {
 			label: 'OK',
-			cls: 'bg-[var(--color-tier-ok-bg)] text-[var(--color-tier-ok-fg)] border-[var(--color-tier-ok-border)]',
-			dot: 'bg-[var(--color-tier-ok-fg)]'
+			cls: 'bg-[var(--color-tier-ok-bg)] text-[var(--color-tier-ok-fg)] border-[var(--color-tier-ok-border)]'
 		},
 		WARNING: {
 			label: 'Warning',
-			cls: 'bg-[var(--color-tier-warn-bg)] text-[var(--color-tier-warn-fg)] border-[var(--color-tier-warn-border)]',
-			dot: 'bg-[var(--color-tier-warn-fg)]'
+			cls: 'bg-[var(--color-tier-warn-bg)] text-[var(--color-tier-warn-fg)] border-[var(--color-tier-warn-border)]'
 		},
 		OVERWORKED: {
 			label: 'Overworked',
-			cls: 'bg-[var(--color-tier-over-bg)] text-[var(--color-tier-over-fg)] border-[var(--color-tier-over-border)]',
-			dot: 'bg-[var(--color-tier-over-fg)]'
+			cls: 'bg-[var(--color-tier-over-bg)] text-[var(--color-tier-over-fg)] border-[var(--color-tier-over-border)]'
 		}
 	};
 </script>
 
 <span
-	class="inline-flex items-center gap-1.5 rounded-full border font-medium leading-none select-none {compact
-		? 'px-2 py-0.5 text-[11px]'
-		: 'px-2.5 py-1 text-xs'} {config[resolved].cls}"
+	class="inline-flex items-center rounded border px-2.5 py-1 text-xs font-semibold leading-none select-none {config[
+		resolved
+	].cls}"
 >
-	<span class="h-1.5 w-1.5 rounded-full {config[resolved].dot}"></span>
-	<span>{config[resolved].label}</span>
+	{config[resolved].label}
 </span>

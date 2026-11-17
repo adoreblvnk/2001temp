@@ -1,11 +1,12 @@
 # Design System — Harmony Academy Scheduling
 
 ## Visual Direction
-Utilitarian **GitHub Primer Light** (`primer/css`) operational interface with strict monochromatic restraint and school-intranet tabular scheduling clarity.
+Utilitarian **GitHub Primer Light** (`primer/css`) functionalist interface with strict monochromatic restraint, classroom-projector legibility, standardized rectangular corner radii, and school-intranet tabular scheduling clarity.
 
-## Typography
-- **UI & Headings:** `Geist Variable` (`14px` base, `18px` `font-semibold` page titles, `12px` table headers & controls; zero kickers/eyebrows).
+## Typography & Radius Discipline
+- **UI & Headings:** `Geist Variable` (`16px` root scale, `20px` `font-semibold` page titles, `14px–16px` table cells, buttons, and labels; `12px` minimum monospace metadata; zero kickers/eyebrows).
 - **Data, Hours, Timestamps & IDs:** `Geist Mono Variable` with `font-variant-numeric: tabular-nums`.
+- **Corner Radius:** Standardized `4px` (`rounded`) across all buttons, status badges, and inline tags, and `6px` (`rounded-md`) on section containers; zero `rounded-full` pill chrome.
 
 ## Color Tokens
 - **Canvas & Surfaces (Monochrome):**
@@ -31,5 +32,5 @@ Utilitarian **GitHub Primer Light** (`primer/css`) operational interface with st
 - **Closed Operating Hours / Maintenance Exclusion:** `-45deg` diagonal hairline hatch (`hatch-closed` / `hatch-maint`).
 
 ## Layout & Responsiveness
-- Max content container: `1360px` centered with `16px–24px` horizontal padding.
-- Responsive adaptation from `375px` mobile to `1920px` desktop with `0px` horizontal document overflow (`NFR-USE-01`); dense schedule grids scroll cleanly inside bounded `overflow-x-auto` containers.
+- Max content container: `1180px` centered with `16px–24px` horizontal padding for high screenshot legibility.
+- Responsive adaptation from `375px` mobile to `1920px` desktop with `0px` horizontal document overflow (`NFR-USE-01`).

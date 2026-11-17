@@ -11,7 +11,7 @@
 		maxWidth?: string;
 	}
 
-	let { open, title, onClose, children, footer, maxWidth = 'max-w-md' }: Props = $props();
+	let { open, title, onClose, children, footer, maxWidth = 'max-w-lg' }: Props = $props();
 
 	function handleKeydown(e: KeyboardEvent) {
 		if (e.key === 'Escape' && open) onClose();
@@ -22,7 +22,7 @@
 
 {#if open}
 	<div
-		class="fixed inset-0 z-50 flex items-center justify-center bg-black/35 p-4"
+		class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
 		role="dialog"
 		aria-modal="true"
 		aria-label={title}
@@ -31,9 +31,9 @@
 			class="w-full {maxWidth} rounded-md border border-[var(--color-border-default)] bg-white shadow-lg"
 		>
 			<div
-				class="flex items-center justify-between border-b border-[var(--color-border-default)] bg-[var(--color-canvas-subtle)] px-4 py-3 rounded-t-md"
+				class="flex items-center justify-between border-b border-[var(--color-border-default)] bg-[var(--color-canvas-subtle)] px-5 py-3.5 rounded-t-md"
 			>
-				<h3 class="text-sm font-semibold text-[var(--color-fg-default)]">{title}</h3>
+				<h3 class="text-base font-semibold text-[var(--color-fg-default)]">{title}</h3>
 				<button
 					type="button"
 					onclick={onClose}
@@ -43,12 +43,12 @@
 					<X class="h-4 w-4" />
 				</button>
 			</div>
-			<div class="p-4 text-sm">
+			<div class="p-5 text-sm">
 				{@render children()}
 			</div>
 			{#if footer}
 				<div
-					class="flex items-center justify-end gap-2 border-t border-[var(--color-border-default)] bg-[var(--color-canvas-subtle)] px-4 py-2.5 rounded-b-md"
+					class="flex items-center justify-end gap-2.5 border-t border-[var(--color-border-default)] bg-[var(--color-canvas-subtle)] px-5 py-3 rounded-b-md"
 				>
 					{@render footer()}
 				</div>
