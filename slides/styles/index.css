@@ -10,12 +10,14 @@
 :root[data-variant='minimal'] {
   --surface-border: 0px solid transparent;
   --card-tick: 0;
-  --mw-lead: 58ch;
+  --fs-cover: 3.1rem;
+  --mw-cover: 24ch;
+  --mw-lead: 62ch;
   --mw-prose: 82ch;
-  --pad-x: 2.6rem;
-  --pad-y: 1.9rem;
+  --pad-x: 2.8rem;
+  --pad-y: 2rem;
   --fs-body: 1.12rem;
-  --fs-h2: 2rem;
+  --fs-h2: 1.95rem;
 }
 
 .card,
