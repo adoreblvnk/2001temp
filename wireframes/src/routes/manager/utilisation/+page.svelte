@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { store, DAYS } from '$lib/store.svelte';
+	import { store } from '$lib/store.svelte';
 	import { Download } from '@lucide/svelte';
 
 	let periodBasis = $state<'weekly' | 'mtd'>('weekly');
@@ -26,32 +26,9 @@
 		return { booked, maint, avail, pct };
 	});
 
-	const bands = [
-		{ label: '08:00–10:00', density: [0, 0, 0, 0, 0, 72, 65] },
-		{ label: '10:00–12:00', density: [68, 62, 58, 64, 60, 88, 82] },
-		{ label: '12:00–14:00', density: [45, 48, 52, 46, 50, 76, 70] },
-		{ label: '14:00–16:00', density: [74, 78, 86, 80, 76, 92, 85] },
-		{ label: '16:00–18:00', density: [85, 88, 94, 90, 86, 84, 78] },
-		{ label: '18:00–21:00', density: [62, 66, 70, 68, 72, 54, 48] }
-	];
-
-	function exportCsv() {
-		const header =
-			'Studio ID,Studio Name,Equipped Instruments,Confirmed Elapsed Hours,Maintenance Hours,Net Available Hours,Occupancy %\n';
-		const rows = studioRows
-			.map(
-				(r) =>
-					`${r.studio.studioId},${r.studio.name},"${r.studio.equippedInstruments.join(' / ')}",${r.booked.toFixed(1)},${r.maint.toFixed(1)},${r.avail.toFixed(1)},${r.pct.toFixed(1)}%`
-			)
-			.join('\n');
-		const blob = new Blob([header + rows], { type: 'text/csv;charset=utf-8;' });
-		const url = URL.createObjectURL(blob);
-		const a = document.createElement('a');
-		a.href = url;
-		a.download = `studio-utilisation-W46-${periodBasis}.csv`;
-		a.click();
-		URL.revokeObjectURL(url);
-		store.notifyToast(`Exported elapsed studio utilisation CSV`);
+	function exportPdf() {
+		store.notifyToast(`Exported elapsed studio utilisation PDF report`);
+		window.print();
 	}
 </script>
 
@@ -84,16 +61,16 @@
 
 		<button
 			type="button"
-			onclick={exportCsv}
+			onclick={exportPdf}
 			class="inline-flex items-center gap-1.5 rounded border border-[var(--color-border-default)] bg-white px-3.5 py-1.5 text-sm font-medium hover:bg-[var(--color-canvas-subtle)]"
 		>
 			<Download class="h-4 w-4" />
-			<span>Export CSV</span>
+			<span>Export PDF</span>
 		</button>
 	</div>
 </div>
 
-<section class="mb-5 rounded-md border border-[var(--color-border-default)] bg-white">
+<section class="rounded-md border border-[var(--color-border-default)] bg-white">
 	<div
 		class="flex items-center justify-between border-b border-[var(--color-border-default)] bg-[var(--color-canvas-subtle)] px-4 py-2.5"
 	>
@@ -139,52 +116,6 @@
 								<span class="font-mono font-medium tabular-nums">{row.pct.toFixed(1)}%</span>
 							</div>
 						</td>
-					</tr>
-				{/each}
-			</tbody>
-		</table>
-	</div>
-</section>
-
-<section class="rounded-md border border-[var(--color-border-default)] bg-white">
-	<div
-		class="border-b border-[var(--color-border-default)] bg-[var(--color-canvas-subtle)] px-4 py-2.5"
-	>
-		<h2 class="text-sm font-semibold">Elapsed Occupancy by Time Band</h2>
-	</div>
-	<div class="overflow-x-auto">
-		<table class="w-full border-collapse text-center text-sm">
-			<thead>
-				<tr
-					class="border-b border-[var(--color-border-default)] bg-[var(--color-canvas-subtle)] text-[var(--color-fg-muted)]"
-				>
-					<th class="px-3.5 py-2.5 text-left font-medium">Window</th>
-					{#each DAYS as d (d)}
-						<th class="px-3.5 py-2.5 font-medium">{d}</th>
-					{/each}
-				</tr>
-			</thead>
-			<tbody class="divide-y divide-[var(--color-border-muted)]">
-				{#each bands as b (b.label)}
-					<tr>
-						<td class="px-3.5 py-2.5 text-left font-mono text-xs font-medium">{b.label}</td>
-						{#each b.density as val, idx (idx)}
-							{#if val === 0}
-								<td class="hatch-closed px-3 py-2.5 font-mono text-xs text-[var(--color-fg-subtle)]">
-									Closed
-								</td>
-							{:else}
-								<td
-									class="px-3 py-2.5 font-mono text-xs tabular-nums {val >= 85
-										? 'bg-[#1f2328] text-white font-semibold'
-										: val >= 70
-											? 'bg-[#dde2e7] text-[var(--color-fg-default)] font-medium'
-											: 'bg-[var(--color-canvas-subtle)] text-[var(--color-fg-muted)]'}"
-								>
-									{val}%
-								</td>
-							{/if}
-						{/each}
 					</tr>
 				{/each}
 			</tbody>

@@ -4,8 +4,8 @@ skinparam classAttributeIconSize 0
 skinparam shadowing false
 skinparam defaultFontName "Helvetica", "Arial", sans-serif
 skinparam defaultFontSize 10
-skinparam nodesep 22
-skinparam ranksep 28
+skinparam nodesep 20
+skinparam ranksep 26
 skinparam class {
     BackgroundColor #FFFFFF
     BorderColor #1E3A8A
@@ -51,6 +51,7 @@ package "Domain Entities (Data Tier)" as PkgEnt {
         +getWeeklyHours() : float
         +getMonthlyHours() : float
         +getAssignedLocation() : String
+        +getAvailability(month : YearMonth) : Availability
         +setWorkloadTier(tier : WorkloadTier) : void
     }
     class Manager <<Entity>> {
@@ -109,7 +110,6 @@ package "Domain Entities (Data Tier)" as PkgEnt {
         -action : AuditAction
         -targetId : String
         -details : String
-        -integrityHash : String
     }
 }
 
@@ -128,6 +128,16 @@ package "Value Objects & Read Projections (DTOs)" as PkgDTO {
             +maintenanceHours : float
             +netAvailableHours : float
             +occupancyPct : float
+        }
+        class CandidateEvaluation <<DTO>> {
+            +teacher : Teacher
+            +currentWeekly : float
+            +projectedWeekly : float
+            +projectedTier : WorkloadTier
+            +continuousAfter : float
+            +eligible : Boolean
+            +ruleCode : String
+            +locationOnDay : String
         }
     }
     together {
@@ -149,6 +159,7 @@ package "Value Objects & Read Projections (DTOs)" as PkgDTO {
         }
     }
     TimeSlot -[hidden]right-> StudioUtilisationReport
+    StudioUtilisationReport -[hidden]right-> CandidateEvaluation
     TimeSlot -[hidden]down-> ValidationResult
     ValidationResult -[hidden]right-> AllocationResult
     AllocationResult -[hidden]right-> ScheduleEvent
@@ -171,15 +182,27 @@ package "Domain Enumerations" as PkgEnum {
             UNASSIGNED
             CONFIRMED
             PENDING_REALLOCATION
-            CANCELLED
         }
         enum WorkloadTier <<enumeration>> {
             OK
             WARNING
             OVERWORKED
         }
+        enum DayOfWeek <<enumeration>> {
+            MON
+            TUE
+            WED
+            THU
+            FRI
+            SAT
+            SUN
+        }
     }
     together {
+        enum PeriodBasis <<enumeration>> {
+            WEEKLY
+            MONTH_TO_DATE
+        }
         enum RankingStrategy <<enumeration>> {
             WORKLOAD_DEFICIT
             PREFERENCE_MATCH
@@ -201,13 +224,14 @@ package "Domain Enumerations" as PkgEnum {
         enum AuditAction <<enumeration>> {
             ALLOCATION_CONFIRMED
             OVERTIME_CONFIRMED
+            SLOT_RELEASED
             ROSTER_NOTIFIED
             REJECTION_REQUESTED
             REJECTION_RESOLVED
             AVAILABILITY_SAVED
-            PREFERENCES_SAVED
             STUDIO_CONFIGURED
             MAINTENANCE_SCHEDULED
+            MAINTENANCE_CLEARED
             ACCOUNT_PROVISIONED
             ACCOUNT_STATUS_CHANGED
         }
@@ -215,7 +239,9 @@ package "Domain Enumerations" as PkgEnum {
     Role -[hidden]right-> InstrumentType
     InstrumentType -[hidden]right-> LessonStatus
     LessonStatus -[hidden]right-> WorkloadTier
-    Role -[hidden]down-> RankingStrategy
+    WorkloadTier -[hidden]right-> DayOfWeek
+    Role -[hidden]down-> PeriodBasis
+    PeriodBasis -[hidden]right-> RankingStrategy
     RankingStrategy -[hidden]right-> RejectionReason
     RejectionReason -[hidden]right-> AllocationOutcome
     AllocationOutcome -[hidden]right-> AuditAction

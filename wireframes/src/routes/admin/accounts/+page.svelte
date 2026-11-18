@@ -272,21 +272,35 @@
 		</div>
 
 		{#if formRole === 'Teacher'}
-			<div>
-				<span class="mb-1.5 block font-medium">Certified Instruments</span>
-				<div class="flex flex-wrap gap-1.5">
-					{#each ALL_INSTRUMENTS as inst (inst)}
-						{@const active = formInstruments.includes(inst)}
-						<button
-							type="button"
-							onclick={() => toggleFormInstrument(inst)}
-							class="rounded border px-3 py-1 text-sm font-medium {active
-								? 'border-[#1f2328] bg-[#1f2328] text-white'
-								: 'border-[var(--color-border-default)] bg-white text-[var(--color-fg-muted)]'}"
-						>
-							{inst}
-						</button>
-					{/each}
+			<div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
+				<div class="sm:col-span-2">
+					<span class="mb-1.5 block font-medium">Certified Instruments</span>
+					<div class="flex flex-wrap gap-1.5">
+						{#each ALL_INSTRUMENTS as inst (inst)}
+							{@const active = formInstruments.includes(inst)}
+							<button
+								type="button"
+								onclick={() => toggleFormInstrument(inst)}
+								class="rounded border px-3 py-1 text-sm font-medium {active
+									? 'border-[#1f2328] bg-[#1f2328] text-white'
+									: 'border-[var(--color-border-default)] bg-white text-[var(--color-fg-muted)]'}"
+							>
+								{inst}
+							</button>
+						{/each}
+					</div>
+				</div>
+				<div>
+					<label for="p-studio" class="mb-1.5 block font-medium">Home Studio</label>
+					<select
+						id="p-studio"
+						bind:value={formHomeStudio}
+						class="w-full rounded border border-[var(--color-border-default)] bg-white px-2.5 py-1.5 font-mono"
+					>
+						{#each store.studios as st (st.studioId)}
+							<option value={st.studioId}>{st.studioId}</option>
+						{/each}
+					</select>
 				</div>
 			</div>
 		{/if}

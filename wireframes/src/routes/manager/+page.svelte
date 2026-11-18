@@ -83,7 +83,7 @@
 				class="min-w-0 max-w-[230px] sm:max-w-none border-x border-[var(--color-border-default)] bg-white px-3 py-1.5 text-sm font-medium tabular-nums focus:outline-none"
 			>
 				{#each store.weeks as wk (wk.id)}
-					<option value={wk.id}>{wk.label} · {wk.rangeText} ({wk.status})</option>
+					<option value={wk.id}>{wk.label} · {wk.rangeText}</option>
 				{/each}
 			</select>
 			<button

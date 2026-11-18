@@ -107,13 +107,14 @@ export interface LessonSlot {
 export type AuditAction =
   | "ALLOCATION_CONFIRMED"
   | "OVERTIME_CONFIRMED"
+  | "SLOT_RELEASED"
   | "ROSTER_NOTIFIED"
   | "REJECTION_REQUESTED"
   | "REJECTION_RESOLVED"
   | "AVAILABILITY_SAVED"
-  | "PREFERENCES_SAVED"
   | "STUDIO_CONFIGURED"
   | "MAINTENANCE_SCHEDULED"
+  | "MAINTENANCE_CLEARED"
   | "ACCOUNT_PROVISIONED"
   | "ACCOUNT_STATUS_CHANGED";
 
@@ -1438,7 +1439,7 @@ class AcademyStore {
       rejectionNote: undefined,
     };
     this.appendAudit(
-      "REJECTION_RESOLVED",
+      "SLOT_RELEASED",
       `${l.lessonId}`,
       `Released ${prevTeacher ?? "teacher"} from ${l.day} ${l.slot}; returned slot to Unassigned queue`,
     );
@@ -1630,7 +1631,7 @@ class AcademyStore {
     if (!target) return;
     this.maintenanceWindows = this.maintenanceWindows.filter((m) => m.id !== id);
     this.appendAudit(
-      "MAINTENANCE_SCHEDULED",
+      "MAINTENANCE_CLEARED",
       `${target.studioId}`,
       `Cleared maintenance window ${target.day} ${target.startSlot}–${target.endSlot}`,
     );

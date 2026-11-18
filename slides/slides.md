@@ -284,11 +284,11 @@ List<Teacher> findEligibleCandidates(
       if (c.getContinuousHours(slot) + 0.5f <= 4.0f) {     // N4
         float proj = c.getWeeklyHours() + 0.5f;
         switch (workloadTier(proj)) {                      // N5
-          case LT_40H:      c.setWorkloadTier(OK);
+          case OK:         c.setWorkloadTier(OK);
             eligible.add(c); break;                        // N6
-          case BTWN_40_44H: c.setWorkloadTier(WARNING);
+          case WARNING:    c.setWorkloadTier(WARNING);
             eligible.add(c); break;                        // N7
-          case GT_44H:
+          case OVERWORKED:
             c.setWorkloadTier(OVERWORKED); break;          // N8
         }
       }

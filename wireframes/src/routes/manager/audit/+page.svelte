@@ -13,12 +13,14 @@
 	const actionTypes: AuditAction[] = [
 		'ALLOCATION_CONFIRMED',
 		'OVERTIME_CONFIRMED',
+		'SLOT_RELEASED',
 		'ROSTER_NOTIFIED',
 		'REJECTION_REQUESTED',
 		'REJECTION_RESOLVED',
 		'AVAILABILITY_SAVED',
 		'STUDIO_CONFIGURED',
 		'MAINTENANCE_SCHEDULED',
+		'MAINTENANCE_CLEARED',
 		'ACCOUNT_PROVISIONED',
 		'ACCOUNT_STATUS_CHANGED'
 	];
@@ -44,22 +46,9 @@
 		})
 	);
 
-	function exportAuditCsv() {
-		const header = 'Log ID,Timestamp,Actor ID,Actor Name,Role,Action,Target,Details,SHA256\n';
-		const rows = filteredLogs
-			.map(
-				(e) =>
-					`${e.logId},${e.timestamp},${e.actorId},"${e.actorName}",${e.actorRole},${e.action},"${e.target}","${e.details.replaceAll('"', '""')}",${e.hash}`
-			)
-			.join('\n');
-		const blob = new Blob([header + rows], { type: 'text/csv;charset=utf-8;' });
-		const url = URL.createObjectURL(blob);
-		const a = document.createElement('a');
-		a.href = url;
-		a.download = 'harmony-audit-ledger.csv';
-		a.click();
-		URL.revokeObjectURL(url);
-		store.notifyToast(`Exported ${filteredLogs.length} immutable audit records`);
+	function exportAuditPdf() {
+		store.notifyToast(`Exported ${filteredLogs.length} immutable audit records to PDF`);
+		window.print();
 	}
 </script>
 
@@ -68,7 +57,7 @@
 
 	<button
 		type="button"
-		onclick={exportAuditCsv}
+		onclick={exportAuditPdf}
 		class="inline-flex items-center gap-1.5 rounded border border-[var(--color-border-default)] bg-white px-3.5 py-1.5 text-sm font-medium hover:bg-[var(--color-canvas-subtle)]"
 	>
 		<Download class="h-4 w-4" />
@@ -134,7 +123,6 @@
 					<th class="px-3.5 py-2.5 font-medium">Action</th>
 					<th class="px-3.5 py-2.5 font-medium">Target</th>
 					<th class="px-3.5 py-2.5 font-medium">Details</th>
-					<th class="px-3.5 py-2.5 font-medium">Digest</th>
 				</tr>
 			</thead>
 			<tbody class="divide-y divide-[var(--color-border-muted)]">
@@ -161,11 +149,6 @@
 						</td>
 						<td class="whitespace-nowrap px-3.5 py-3 font-mono text-xs">{entry.target}</td>
 						<td class="px-3.5 py-3 text-[var(--color-fg-muted)]">{entry.details}</td>
-						<td
-							class="whitespace-nowrap px-3.5 py-3 font-mono text-xs text-[var(--color-fg-subtle)]"
-						>
-							{entry.hash}
-						</td>
 					</tr>
 				{/each}
 			</tbody>

@@ -4,7 +4,7 @@ skinparam componentStyle uml2
 skinparam shadowing false
 skinparam defaultFontName "Helvetica", "Arial", sans-serif
 skinparam defaultFontSize 10
-skinparam nodesep 105
+skinparam nodesep 82
 skinparam ranksep 46
 
 skinparam component {
@@ -52,25 +52,30 @@ frame "System Boundary: Music School Scheduling System" as SysBoundary {
     }
 
     ' Provided Service Interfaces exposed to Presentation Layer
-    () "IAuditLogService" as IAudit
-    () "IScheduleService" as ISchedule
-    () "IFacultyService" as IFaculty
-    () "IFacilityService" as IFacility
+    together {
+        () "IAuditLogService" as IAudit
+        () "IFacilityService" as IFacility
+        () "IFacultyService" as IFaculty
+        () "IScheduleService" as ISchedule
+    }
 
     package "Business & Application Layer" as PkgBiz {
-        ' Row 1: Domain & Application Services
-        component [AuditLoggingService] as AuditComp <<component>>
-        component [SchedulingService] as SchedComp <<component>>
-        component [FacultyService] as FacComp <<component>>
-        component [FacilityService] as FacilComp <<component>>
+        together {
+            component [AuditLoggingService] as AuditComp <<component>>
+            component [FacilityService] as FacilComp <<component>>
+            component [FacultyService] as FacComp <<component>>
+            component [SchedulingService] as SchedComp <<component>>
+        }
 
-        ' Internal Business Interfaces
-        () "ITieBreakerStrategy" as IRank
-        () "IConflictValidator" as IVal
+        together {
+            () "ITieBreakerStrategy" as IRank
+            () "IConflictValidator" as IVal
+        }
 
-        ' Row 2: Ranking & Multi-Constraint Validation Components
-        component [TieBreakerStrategy] as RankComp <<component>>
-        component [ConflictValidationService] as ValComp <<component>>
+        together {
+            component [TieBreakerStrategy] as RankComp <<component>>
+            component [ConflictValidationService] as ValComp <<component>>
+        }
     }
 
     () "IPersistenceGateway" as IData
@@ -86,20 +91,22 @@ frame "System Boundary: Music School Scheduling System" as SysBoundary {
 () "INotificationGateway" as INotify
 component [ExternalNotificationGateway] as ExtNotify <<external system>>
 
-' Presentation to Provided Business Interfaces (Solid Required Sockets)
+' Presentation to Provided Business Interfaces
 UI -down-( IAudit
 UI -down-( ISchedule
 UI -down-( IFaculty
 UI -down-( IFacility
 
-' Service Interface Realizations (Provided Lollipops)
+' Service Interface Realizations (Provided Lollipops directly above each provider)
 AuditComp -up- IAudit
 SchedComp -up- ISchedule
 FacComp -up- IFaculty
 FacilComp -up- IFacility
 
-' Intra-Layer Business Collaborations (Solid UML 2.5 Assembly Sockets)
+' Intra-Layer Business Collaborations
 SchedComp -up-( IAudit
+FacComp -up-( IAudit
+FacilComp -up-( IAudit
 SchedComp -up-( IFaculty
 SchedComp -down-( IRank
 SchedComp -down-( IVal
@@ -115,20 +122,19 @@ SchedComp -down-( IData
 FacComp -down-( IData
 FacilComp -down-( IData
 
-' UML 2.5.1 Boundary Delegation (solid line, no arrowhead) & External Socket/Lollipop
+' UML 2.5.1 Boundary Delegation & External Socket/Lollipop
 SchedComp -- pExtNotify : <<delegate>>
 pExtNotify -down-( INotify
 ExtNotify -up- INotify
 
 ' Strict Horizontal & Vertical Layout Ordering
-IAudit -[hidden]right-> ISchedule
-ISchedule -[hidden]right-> IFaculty
-IFaculty -[hidden]right-> IFacility
+IAudit -[hidden]right-> IFacility
+IFacility -[hidden]right-> IFaculty
+IFaculty -[hidden]right-> ISchedule
 
-AuditComp -[hidden]right-> SchedComp
-SchedComp -[hidden]right-> FacComp
-FacComp -[hidden]right-> FacilComp
-
+AuditComp -[hidden]right-> FacilComp
+FacilComp -[hidden]right-> FacComp
+FacComp -[hidden]right-> SchedComp
 SchedComp -[hidden]down-> IRank
 FacComp -[hidden]down-> IVal
 IRank -[hidden]right-> IVal

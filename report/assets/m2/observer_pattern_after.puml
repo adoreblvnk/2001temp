@@ -18,12 +18,14 @@ skinparam arrow {
     FontSize 10
 }
 
+skinparam nodesep 56
+
 class AllocationController <<Control>> {
     - observers : List<IScheduleObserver>
     + attach(observer : IScheduleObserver) : void
     + detach(observer : IScheduleObserver) : void
     + notifyObservers(event : ScheduleEvent) : void
-    + notifyAssignedTeachers(weekId : String) : Boolean
+    + notifyAssignedTeachers(wk : String) : Boolean
 }
 
 interface IScheduleObserver <<interface>> {
@@ -42,7 +44,7 @@ class AuditNotificationObserver {
     + onScheduleEvent(event : ScheduleEvent) : void
 }
 
-AllocationController o-> "0..*" IScheduleObserver : notifies >
+AllocationController o-right-> "0..*" IScheduleObserver : "notifies >      "
 EmailNotificationObserver .up.|> IScheduleObserver : <<implements>>
 DashboardAlertObserver .up.|> IScheduleObserver : <<implements>>
 AuditNotificationObserver .up.|> IScheduleObserver : <<implements>>

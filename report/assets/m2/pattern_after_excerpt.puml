@@ -22,8 +22,8 @@ class AllocationController <<Control>> {
     - validator : IConflictValidator
     - tieBreaker : ITieBreakerStrategy
     + setTieBreakerStrategy(strategy : ITieBreakerStrategy) : void
-    + getRankedCandidates(lessonId : String, mode : RankingStrategy) : List<Teacher>
-    + allocateLessonSlot(lessonId : String, teacherId : String, studioId : String, slot : TimeSlot, override : Boolean) : AllocationResult
+    + evaluateCandidates(lessonId : String, mode : RankingStrategy) : List<CandidateEvaluation>
+    + allocateLessonSlot(lessonId : String, tId : String, sId : String, slot : TimeSlot, override : Boolean, justif : String) : AllocationResult
 }
 interface ITieBreakerStrategy <<interface>> {
     + rankCandidates(candidates : List<Teacher>, slot : TimeSlot) : List<Teacher>
@@ -43,8 +43,9 @@ class Teacher <<Entity>> {
     - assignedLocation : String
     + getWeeklyHours() : float
     + getAssignedLocation() : String
+    + getAvailability(month : YearMonth) : Availability
 }
-AllocationController o-down-> ITieBreakerStrategy : injects strategy >
+AllocationController o-down-> ITieBreakerStrategy : ranks via >
 WorkloadDeficitStrategy .up.|> ITieBreakerStrategy : <<implements>>
 PreferenceMatchStrategy .up.|> ITieBreakerStrategy : <<implements>>
 ITieBreakerStrategy .right.> Teacher : orders

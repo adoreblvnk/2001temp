@@ -18,7 +18,7 @@ skinparam arrow {
     FontSize 10
 }
 
-title Gang of Four (GoF) Observer Pattern - Structural Template
+skinparam nodesep 56
 
 abstract class Subject {
     - observers : List<Observer>
@@ -46,7 +46,7 @@ class ConcreteObserverB {
 }
 
 Subject <|-- ConcreteSubject
-Subject o-> "0..*" Observer : observers
+Subject o-right-> "0..*" Observer : "observers      "
 ConcreteObserverA .up.|> Observer : <<implements>>
 ConcreteObserverB .up.|> Observer : <<implements>>
 

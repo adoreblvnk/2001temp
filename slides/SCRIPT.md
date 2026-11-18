@@ -33,7 +33,7 @@
 > Entering the prototype walkthrough, the Staff Workload Dashboard anchors our manager landing screen. Under `FR-01`, the ledger displays each teacher's monthly work allocation and assigned studio. Under `FR-02`, the top 3 cards highlight the teachers with the lowest allocated weekly hours: Elena Lim at 16.5h, Marcus Lim at 21.0h, and Hannah Koh at 24.5h. Under `FR-16` and `NFR-USE-02`, weekly hours display across 3 tiers with green `OK`, amber `Warning`, and red `Overworked` badges. Clicking `Confirm & Notify Teachers` triggers `FR-14` via our Observer pattern.
 
 ### Slide 9: Manager View — Studio Utilisation Report (`4:15 – 4:40`, 25s)
-> Under the Studios tab for `FR-15`—elicited from Academy Director David Koh (`MIN-05-MGT-EXT`) and Manager Marcus Tan (`MIN-01-MGR`)—`IFacilityService.getStudioUtilisation()` computes elapsed `CONFIRMED` lesson hours against net available operating hours on demand at query time. Over completed `Week 46`, Studio 4 deducts 2.0 scheduled `MaintenanceWindow` hours for 84.0 net available hours, paired with CSV export and elapsed time-band occupancy below.
+> Under the Studios tab for `FR-15`—elicited from Academy Director David Koh (`MIN-05-MGT-EXT`) and Manager Marcus Tan (`MIN-01-MGR`)—`IFacilityService.getStudioUtilisation()` computes elapsed `CONFIRMED` lesson hours against net available operating hours on demand at query time. Over completed `Week 46`, Studio 4 deducts 2.0 scheduled `MaintenanceWindow` hours for 84.0 net available hours with one-click PDF export.
 
 ### Slide 10: Manager Workflow — Lesson Allocation & Strategy Toggle (`4:40 – 5:25`, 45s)
 > Next is the Lesson Allocation workflow following steps 1, 2, and 3.
@@ -54,7 +54,7 @@
 > For IT Administrators, the Accounts view handles account provisioning (`FR-12`) and logical deactivation (`NFR-REL-02`) without physical deletion, preserving historical audit integrity. The Studios view configures equipped instruments across Studios 1 to 5, keeping Drums restricted to Studio 5 (`FR-13`), and schedules studio maintenance exclusion windows (`FR-10`).
 
 ### Slide 15: Compliance & Governance — Immutable Audit Log (`7:35 – 7:55`, 20s)
-> Every lesson allocation, overtime confirmation such as `AL-2216`, rejection update, availability declaration, and studio update is appended to this immutable audit trail (`FR-17`), retained for at least 24 calendar months (`NFR-COM-01`) with actor/action filtering and CSV export.
+> Every lesson allocation, overtime confirmation such as `AL-2216`, rejection update, availability declaration, and studio update is appended to this immutable audit trail (`FR-17`), retained for at least 24 calendar months (`NFR-COM-01`) with actor/action filtering and PDF export.
 
 ### Slide 16: Non-Functional Requirements (`7:55 – 8:15`, 20s)
 > Finally, these two views verify our security and usability non-functional requirements: on the left, `NFR-SEC-01` enforces role-based access control restricting teachers to their own schedules and configuration panels to IT administrators via `403` guards, and on the right, `NFR-USE-01` renders interfaces across 375px mobile and 1920px desktop viewports without horizontal scrolling.
@@ -82,7 +82,7 @@ When asked to trace any requirement during Q&A, cover all 4 hops:
 - **`FR-10` / `FR-13` (Studio Maintenance & Equipment):** `IFacilityService.flagMaintenanceWindow()` + `MaintenanceWindow` entity → `IT Admin Studios` (`Slide 14`) disables `Studio 4` (`Slide 10`) → `TC-BB-05A` (maintenance), `TC-BB-05B` (missing drum kit), `TC-BB-05C` (occupied room).
 - **`FR-11` (4.0h Block + 1.0h Rest):** `IConflictValidator.checkContinuousTeachingLimit()` → Hatched 1.0h rest (`Slide 12`) & Block meter (`Slide 10`) → `TC-BB-03`, `TC-WB-04`.
 - **`FR-14` (Confirmation Notification):** `AllocationController` Subject → `IScheduleObserver` (`Slide 6`) → `Confirm & Notify Teachers` (`Slide 8`).
-- **`FR-15` (Studio Utilisation Report):** Elicited from `MIN-05-MGT-EXT` & `MIN-01-MGR` → `IFacilityService.getStudioUtilisation(weekId, asOf)` returning `StudioUtilisationReport` over elapsed `CONFIRMED` lessons (`endDateTime <= asOf`) → `Studio Utilisation` (`Slide 9`).
+- **`FR-15` (Studio Utilisation Report):** Elicited from `MIN-05-MGT-EXT` & `MIN-01-MGR` → `IFacilityService.getStudioUtilisation(wk, basis, asOf)` returning `StudioUtilisationReport` over elapsed `CONFIRMED` lessons (`endDateTime <= asOf`) → `Studio Utilisation` (`Slide 9`).
 - **`FR-16` (3-Tier Overtime):** `IConflictValidator` + `WorkloadTier` enum → `Staff Workload` badges (`Slide 8`) + `Overtime Confirmation Gate` (`Slide 11`) → `TC-BB-04`, `TC-BB-06A/B`, `TC-WB-01`–`03`.
 - **`FR-17` (Audit Log):** `IAuditLogService.recordAuditEntry()` + `AuditLog` entity → `Immutable Compliance Audit Log` (`Slide 15`, `AL-2211`–`2216`).
 
