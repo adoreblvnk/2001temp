@@ -1,0 +1,226 @@
+@startuml final_class_diagram_services
+top to bottom direction
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam defaultFontName "Helvetica", "Arial", sans-serif
+skinparam defaultFontSize 10
+skinparam nodesep 22
+skinparam ranksep 28
+skinparam class {
+    BackgroundColor #FFFFFF
+    BorderColor #1E3A8A
+    BorderThickness 1.5
+}
+skinparam arrow {
+    Color #1E3A8A
+    FontSize 9
+}
+skinparam interface {
+    BackgroundColor #EFF6FF
+    BorderColor #2563EB
+    BorderThickness 1.5
+}
+skinparam package {
+    BorderColor #94A3B8
+    FontStyle bold
+    FontSize 11
+}
+
+package "Presentation Layer (Boundaries)" {
+    together {
+        class AuditLogUI <<Boundary>> {
+            +renderAuditTrail(weekId) : void
+            +filterLogs(role : Role, action : AuditAction) : void
+        }
+        class AllocationUI <<Boundary>> {
+            +renderCandidateComparison(lessonId, mode : RankingStrategy) : void
+            +renderRejectedLessonQueue(weekId) : void
+            +promptOvertimeConfirmation(res : AllocationResult) : Boolean
+        }
+        class ManagerDashboardUI <<Boundary>> {
+            +displayWorkloadMetrics(weekId) : void
+            +displayStudioUtilisation(weekId, asOf : DateTime) : void
+            +confirmWeeklySchedule(weekId) : void
+        }
+    }
+    together {
+        class TeacherUI <<Boundary>> {
+            +renderWeeklySchedule(teacherId, weekId) : void
+            +renderAvailabilityGrid(teacherId, month : YearMonth) : void
+            +submitRejectionDialog(lessonId, reason : RejectionReason, note) : void
+        }
+        class AdminUI <<Boundary>> {
+            +renderUserManagementConsole() : void
+            +renderStudioMaintenancePanel(weekId) : void
+        }
+    }
+    AuditLogUI -[hidden]right-> AllocationUI
+    AllocationUI -[hidden]right-> ManagerDashboardUI
+    AllocationUI -[hidden]down-> TeacherUI
+    ManagerDashboardUI -[hidden]down-> AdminUI
+}
+
+package "Scheduling, Validation & Audit Subsystem" {
+    together {
+        interface IAuditLogService <<interface>> {
+            +recordAuditEntry(actorId, role : Role, action : AuditAction, targetId, details) : AuditLog
+            +queryAuditLogs(weekId, role : Role, action : AuditAction) : List<AuditLog>
+        }
+        interface IScheduleService <<interface>> {
+            +allocateLessonSlot(lessonId, teacherId, studioId, slot : TimeSlot, override : Boolean) : AllocationResult
+            +getRankedCandidates(lessonId, mode : RankingStrategy) : List<Teacher>
+            +requestJobRejection(lessonId, reason : RejectionReason, note) : Boolean
+            +resolveJobRejection(lessonId, retainOriginal : Boolean) : Boolean
+            +notifyAssignedTeachers(weekId) : Boolean
+            +getWeeklyLessons(weekId) : List<Lesson>
+            +getTeacherSchedule(teacherId, weekId) : List<Lesson>
+            +getPendingRejections(weekId) : List<Lesson>
+        }
+        interface IConflictValidator <<interface>> {
+            +validateAllocationRules(lesson : Lesson, teacher : Teacher, studio : Studio, slot : TimeSlot) : ValidationResult
+            +findEligibleCandidates(inst : InstrumentType, slot : TimeSlot, weekId) : List<Teacher>
+            +checkContinuousTeachingLimit(teacher : Teacher, slot : TimeSlot) : Boolean
+        }
+    }
+    together {
+        class AuditLogController <<Control>> {
+            +recordAuditEntry(actorId, role : Role, action : AuditAction, targetId, details) : AuditLog
+            +queryAuditLogs(weekId, role : Role, action : AuditAction) : List<AuditLog>
+        }
+        class AllocationController <<Control>> {
+            -validator : IConflictValidator
+            -tieBreaker : ITieBreakerStrategy
+            -auditService : IAuditLogService
+            -observers : List<IScheduleObserver>
+            +setTieBreakerStrategy(strategy : ITieBreakerStrategy) : void
+            +getRankedCandidates(lessonId, mode : RankingStrategy) : List<Teacher>
+            +allocateLessonSlot(lessonId, teacherId, studioId, slot : TimeSlot, override : Boolean) : AllocationResult
+            +requestJobRejection(lessonId, reason : RejectionReason, note) : Boolean
+            +resolveJobRejection(lessonId, retainOriginal : Boolean) : Boolean
+            +notifyAssignedTeachers(weekId) : Boolean
+            +getWeeklyLessons(weekId) : List<Lesson>
+            +getTeacherSchedule(teacherId, weekId) : List<Lesson>
+            +getPendingRejections(weekId) : List<Lesson>
+            +attach(observer : IScheduleObserver) : void
+            +detach(observer : IScheduleObserver) : void
+            +notifyObservers(event : ScheduleEvent) : void
+        }
+        class ConflictValidator <<Control>> {
+            -facultyService : IFacultyService
+            -facilityService : IFacilityService
+            +validateAllocationRules(lesson : Lesson, teacher : Teacher, studio : Studio, slot : TimeSlot) : ValidationResult
+            +findEligibleCandidates(inst : InstrumentType, slot : TimeSlot, weekId) : List<Teacher>
+            +checkContinuousTeachingLimit(teacher : Teacher, slot : TimeSlot) : Boolean
+        }
+    }
+}
+
+package "Faculty & Facility Subsystem" {
+    together {
+        interface IFacultyService <<interface>> {
+            +submitAvailability(teacherId, month : YearMonth, slots : Set<TimeSlot>, prefDays, prefStudioId) : Boolean
+            +getAvailability(teacherId, month : YearMonth) : Availability
+            +getLowestWorkloadStaff(weekId) : List<Teacher>
+            +getActiveTeachers() : List<Teacher>
+            +getTeacher(teacherId) : Teacher
+            +getAllUsers() : List<User>
+            +provisionAccount(staffId, fullName, email, contact, role : Role, certs : Set<InstrumentType>, studioId) : User
+            +setAccountActiveStatus(staffId, isActive : Boolean) : Boolean
+        }
+        interface IFacilityService <<interface>> {
+            +configureStudio(studioId, name, equippedInstruments : Set<InstrumentType>) : Boolean
+            +flagMaintenanceWindow(studioId, start : DateTime, end : DateTime, reason) : MaintenanceWindow
+            +removeMaintenanceWindow(windowId) : Boolean
+            +getStudio(studioId) : Studio
+            +getAllStudios() : List<Studio>
+            +getMaintenanceWindows(weekId) : List<MaintenanceWindow>
+            +getStudioUtilisation(weekId, asOf : DateTime) : List<StudioUtilisationReport>
+        }
+    }
+    together {
+        class FacultyController <<Control>> {
+            +submitAvailability(teacherId, month : YearMonth, slots : Set<TimeSlot>, prefDays, prefStudioId) : Boolean
+            +getAvailability(teacherId, month : YearMonth) : Availability
+            +getLowestWorkloadStaff(weekId) : List<Teacher>
+            +getActiveTeachers() : List<Teacher>
+            +getTeacher(teacherId) : Teacher
+            +getAllUsers() : List<User>
+            +provisionAccount(staffId, fullName, email, contact, role : Role, certs : Set<InstrumentType>, studioId) : User
+            +setAccountActiveStatus(staffId, isActive : Boolean) : Boolean
+        }
+        class FacilityController <<Control>> {
+            +configureStudio(studioId, name, equippedInstruments : Set<InstrumentType>) : Boolean
+            +flagMaintenanceWindow(studioId, start : DateTime, end : DateTime, reason) : MaintenanceWindow
+            +removeMaintenanceWindow(windowId) : Boolean
+            +getStudio(studioId) : Studio
+            +getAllStudios() : List<Studio>
+            +getMaintenanceWindows(weekId) : List<MaintenanceWindow>
+            +getStudioUtilisation(weekId, asOf : DateTime) : List<StudioUtilisationReport>
+        }
+    }
+}
+
+package "Design Pattern Realizations (GoF Strategy & Observer)" {
+    interface IScheduleObserver <<interface>> {
+        +onScheduleEvent(event : ScheduleEvent) : void
+    }
+    class EmailNotificationObserver {
+        +onScheduleEvent(event : ScheduleEvent) : void
+    }
+    class DashboardAlertObserver {
+        +onScheduleEvent(event : ScheduleEvent) : void
+    }
+    class AuditNotificationObserver {
+        +onScheduleEvent(event : ScheduleEvent) : void
+    }
+    interface ITieBreakerStrategy <<interface>> {
+        +rankCandidates(candidates : List<Teacher>, slot : TimeSlot) : List<Teacher>
+    }
+    class WorkloadDeficitStrategy {
+        +rankCandidates(candidates : List<Teacher>, slot : TimeSlot) : List<Teacher>
+    }
+    class PreferenceMatchStrategy {
+        +rankCandidates(candidates : List<Teacher>, slot : TimeSlot) : List<Teacher>
+    }
+}
+
+' Realizations
+AuditLogController .up.|> IAuditLogService
+AllocationController .up.|> IScheduleService
+ConflictValidator .up.|> IConflictValidator
+FacultyController .up.|> IFacultyService
+FacilityController .up.|> IFacilityService
+WorkloadDeficitStrategy .up.|> ITieBreakerStrategy
+PreferenceMatchStrategy .up.|> ITieBreakerStrategy
+EmailNotificationObserver .up.|> IScheduleObserver
+DashboardAlertObserver .up.|> IScheduleObserver
+AuditNotificationObserver .up.|> IScheduleObserver
+
+' Boundary Invocations
+AuditLogUI ..> IAuditLogService : invokes
+ManagerDashboardUI ..> IScheduleService : invokes
+ManagerDashboardUI ..> IFacultyService : invokes
+ManagerDashboardUI ..> IFacilityService : invokes
+AllocationUI ..> IScheduleService : invokes
+AllocationUI ..> IFacilityService : invokes
+TeacherUI ..> IScheduleService : invokes
+TeacherUI ..> IFacultyService : invokes
+AdminUI ..> IFacultyService : invokes
+AdminUI ..> IFacilityService : invokes
+
+' Intra-Layer Delegations
+AllocationController --> IConflictValidator : validates via
+AllocationController --> IAuditLogService : audits via
+AllocationController o--> ITieBreakerStrategy : ranks via >
+AllocationController o--> "0..*" IScheduleObserver : notifies >
+ConflictValidator --> IFacultyService : queries
+ConflictValidator --> IFacilityService : queries
+
+' Vertical stacking between subsystem tiers
+TeacherUI -[hidden]down-> IScheduleService
+AuditLogController -[hidden]down-> IFacultyService
+ConflictValidator -[hidden]down-> IFacilityService
+FacultyController -[hidden]down-> IScheduleObserver
+FacilityController -[hidden]down-> ITieBreakerStrategy
+
+@enduml

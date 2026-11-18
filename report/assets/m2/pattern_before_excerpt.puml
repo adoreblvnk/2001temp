@@ -13,23 +13,20 @@ skinparam arrow {
     FontSize 10
 }
 
-title Detailed Design - Before Strategy Pattern Implementation
-
 class AllocationController <<Control>> {
     - validator : ConflictValidator
-    - rankingMode : String
-    + allocateLessonSlot(lessonId : String, teacherId : String, studioId : String, slot : TimeSlot) : Boolean
-    + rankCandidates(candidates : List<Teacher>, slot : TimeSlot, mode : String) : List<Teacher>
+    - rankingMode : RankingStrategy
+    + allocateLessonSlot(lessonId : String, teacherId : String, studioId : String, slot : TimeSlot, override : Boolean) : AllocationResult
+    + rankCandidates(candidates : List<Teacher>, slot : TimeSlot, mode : RankingStrategy) : List<Teacher>
 }
 
 class Teacher <<Entity>> {
-    - weeklyHoursTarget : float
     - weeklyHours : float
+    - monthlyHours : float
     - assignedLocation : String
     + getWeeklyHours() : float
     + getAssignedLocation() : String
 }
-
 AllocationController --> "0..*" Teacher : directly sorts >
 
 @enduml

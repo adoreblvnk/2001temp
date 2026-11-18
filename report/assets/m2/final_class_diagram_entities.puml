@@ -1,0 +1,243 @@
+@startuml final_class_diagram_entities
+top to bottom direction
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam defaultFontName "Helvetica", "Arial", sans-serif
+skinparam defaultFontSize 10
+skinparam nodesep 22
+skinparam ranksep 28
+skinparam class {
+    BackgroundColor #FFFFFF
+    BorderColor #1E3A8A
+    BorderThickness 1.5
+}
+skinparam enum {
+    BackgroundColor #F8FAFC
+    BorderColor #475569
+    BorderThickness 1.3
+}
+skinparam arrow {
+    Color #1E3A8A
+    FontSize 9
+}
+skinparam package {
+    BorderColor #94A3B8
+    FontStyle bold
+    FontSize 11
+}
+
+package "Domain Entities (Data Tier)" as PkgEnt {
+    abstract class User <<Entity>> {
+        -staffId : String
+        -fullName : String
+        -email : String
+        -contact : String
+        -role : Role
+        -isActive : Boolean
+        +getStaffId() : String
+        +getRole() : Role
+        +isActive() : Boolean
+    }
+    class Teacher <<Entity>> {
+        -instrumentQualifications : Set<InstrumentType>
+        -homeStudioId : String
+        -assignedLocation : String
+        -weeklyHours : float
+        -monthlyHours : float
+        -workloadTier : WorkloadTier
+        +hasQualification(inst : InstrumentType) : Boolean
+        +isAvailable(weekId : String, slot : TimeSlot) : Boolean
+        +getContinuousHours(slot : TimeSlot) : float
+        +getWeeklyHours() : float
+        +getMonthlyHours() : float
+        +getAssignedLocation() : String
+        +setWorkloadTier(tier : WorkloadTier) : void
+    }
+    class Manager <<Entity>> {
+        -shiftHoursPerWeek : float
+        +getShiftHoursPerWeek() : float
+    }
+    class ITAdministrator <<Entity>> {
+        -adminScope : String
+    }
+    class Availability <<Entity>> {
+        -availabilityId : String
+        -month : YearMonth
+        -declaredHours : float
+        -availableSlots : Set<TimeSlot>
+        -preferredDays : Set<DayOfWeek>
+        -preferredStudioId : String
+        -submittedAt : DateTime
+        +containsSlot(slot : TimeSlot) : Boolean
+        +matchesPreference(slot : TimeSlot, studioId : String) : Boolean
+    }
+    class Lesson <<Entity>> {
+        -lessonId : String
+        -weekId : String
+        -studentName : String
+        -studentGrade : String
+        -instrument : InstrumentType
+        -slot : TimeSlot
+        -status : LessonStatus
+        -rejectionReason : RejectionReason
+        -rejectionNote : String
+        +getStatus() : LessonStatus
+        +isElapsedConfirmed(asOf : DateTime) : Boolean
+    }
+    class Studio <<Entity>> {
+        -studioId : String
+        -name : String
+        -equippedInstruments : Set<InstrumentType>
+        +supportsInstrument(inst : InstrumentType) : Boolean
+        +isUnderMaintenance(slot : TimeSlot) : Boolean
+    }
+    class MaintenanceWindow <<Entity>> {
+        -windowId : String
+        -studioId : String
+        -weekId : String
+        -startDateTime : DateTime
+        -endDateTime : DateTime
+        -reason : String
+        +overlaps(slot : TimeSlot) : Boolean
+        +getElapsedHours(asOf : DateTime) : float
+    }
+    class AuditLog <<Entity>> {
+        -logId : String
+        -timestamp : DateTime
+        -actorId : String
+        -actorRole : Role
+        -action : AuditAction
+        -targetId : String
+        -details : String
+        -integrityHash : String
+    }
+}
+
+package "Value Objects & Read Projections (DTOs)" as PkgDTO {
+    together {
+        class TimeSlot <<ValueObject>> {
+            +day : DayOfWeek
+            +startDateTime : DateTime
+            +endDateTime : DateTime
+        }
+        class StudioUtilisationReport <<DTO>> {
+            +studioId : String
+            +studioName : String
+            +equippedInstruments : Set<InstrumentType>
+            +confirmedElapsedHours : float
+            +maintenanceHours : float
+            +netAvailableHours : float
+            +occupancyPct : float
+        }
+    }
+    together {
+        class ValidationResult <<DTO>> {
+            +valid : Boolean
+            +outcome : AllocationOutcome
+            +ruleCode : String
+            +reason : String
+        }
+        class AllocationResult <<DTO>> {
+            +outcome : AllocationOutcome
+            +projectedWeeklyHours : float
+            +message : String
+        }
+        class ScheduleEvent <<DTO>> {
+            +weekId : String
+            +confirmedAt : DateTime
+            +assignedTeacherIds : Set<String>
+        }
+    }
+    TimeSlot -[hidden]right-> StudioUtilisationReport
+    TimeSlot -[hidden]down-> ValidationResult
+    ValidationResult -[hidden]right-> AllocationResult
+    AllocationResult -[hidden]right-> ScheduleEvent
+}
+
+package "Domain Enumerations" as PkgEnum {
+    together {
+        enum Role <<enumeration>> {
+            MANAGER
+            TEACHER
+            IT_ADMIN
+        }
+        enum InstrumentType <<enumeration>> {
+            PIANO
+            DRUMS
+            VIOLIN
+            TRUMPET
+        }
+        enum LessonStatus <<enumeration>> {
+            UNASSIGNED
+            CONFIRMED
+            PENDING_REALLOCATION
+            CANCELLED
+        }
+        enum WorkloadTier <<enumeration>> {
+            OK
+            WARNING
+            OVERWORKED
+        }
+    }
+    together {
+        enum RankingStrategy <<enumeration>> {
+            WORKLOAD_DEFICIT
+            PREFERENCE_MATCH
+        }
+        enum RejectionReason <<enumeration>> {
+            MEDICAL_PERSONAL
+            SCHEDULE_CONFLICT
+            GRADE_MISMATCH
+        }
+        enum AllocationOutcome <<enumeration>> {
+            CONFIRMED_OK
+            OVERTIME_WARNING
+            REJECT_UNQUALIFIED
+            REJECT_UNAVAILABLE
+            REJECT_CONTINUOUS_LIMIT
+            REJECT_OVERWORKED
+            REJECT_STUDIO_CONFLICT
+        }
+        enum AuditAction <<enumeration>> {
+            ALLOCATION_CONFIRMED
+            OVERTIME_CONFIRMED
+            ROSTER_NOTIFIED
+            REJECTION_REQUESTED
+            REJECTION_RESOLVED
+            AVAILABILITY_SAVED
+            PREFERENCES_SAVED
+            STUDIO_CONFIGURED
+            MAINTENANCE_SCHEDULED
+            ACCOUNT_PROVISIONED
+            ACCOUNT_STATUS_CHANGED
+        }
+    }
+    Role -[hidden]right-> InstrumentType
+    InstrumentType -[hidden]right-> LessonStatus
+    LessonStatus -[hidden]right-> WorkloadTier
+    Role -[hidden]down-> RankingStrategy
+    RankingStrategy -[hidden]right-> RejectionReason
+    RejectionReason -[hidden]right-> AllocationOutcome
+    AllocationOutcome -[hidden]right-> AuditAction
+}
+
+' Inheritance
+User <|-- Teacher
+User <|-- Manager
+User <|-- ITAdministrator
+
+' Compositions & Associations
+Teacher "1" *-- "0..*" Availability : declares >
+Studio "1" *-- "0..*" MaintenanceWindow : scheduledWith >
+Lesson "0..*" --> "0..1" Teacher : assignedTo >
+Lesson "0..*" --> "0..1" Studio : conductedIn >
+Lesson *-- "1" TimeSlot : scheduledAt >
+User "1" --> "0..*" AuditLog : initiates >
+AuditLog "0..*" --> "0..1" Lesson : records >
+Studio "1" ..> "0..*" StudioUtilisationReport : summarisedBy >
+
+' Stack DTOs above Enumerations on the right column
+ValidationResult -[hidden]down-> Role
+AllocationResult -[hidden]down-> LessonStatus
+
+@enduml

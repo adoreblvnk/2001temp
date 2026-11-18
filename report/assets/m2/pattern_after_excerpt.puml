@@ -18,16 +18,13 @@ skinparam arrow {
     FontSize 10
 }
 
-title Detailed Design - After Strategy Pattern Implementation
-
 class AllocationController <<Control>> {
     - validator : IConflictValidator
-    - tieBreakerStrategy : ITieBreakerStrategy
+    - tieBreaker : ITieBreakerStrategy
     + setTieBreakerStrategy(strategy : ITieBreakerStrategy) : void
-    + allocateLessonSlot(lessonId : String, teacherId : String, studioId : String, slot : TimeSlot) : Boolean
-    + getRankedCandidates(candidates : List<Teacher>, slot : TimeSlot) : List<Teacher>
+    + getRankedCandidates(lessonId : String, mode : RankingStrategy) : List<Teacher>
+    + allocateLessonSlot(lessonId : String, teacherId : String, studioId : String, slot : TimeSlot, override : Boolean) : AllocationResult
 }
-
 interface ITieBreakerStrategy <<interface>> {
     + rankCandidates(candidates : List<Teacher>, slot : TimeSlot) : List<Teacher>
 }
@@ -41,16 +38,15 @@ class PreferenceMatchStrategy {
 }
 
 class Teacher <<Entity>> {
-    - weeklyHoursTarget : float
     - weeklyHours : float
+    - monthlyHours : float
     - assignedLocation : String
     + getWeeklyHours() : float
     + getAssignedLocation() : String
 }
-
-AllocationController o-> ITieBreakerStrategy : injects strategy >
+AllocationController o-down-> ITieBreakerStrategy : injects strategy >
 WorkloadDeficitStrategy .up.|> ITieBreakerStrategy : <<implements>>
 PreferenceMatchStrategy .up.|> ITieBreakerStrategy : <<implements>>
-ITieBreakerStrategy ..> Teacher : orders
+ITieBreakerStrategy .right.> Teacher : orders
 
 @enduml

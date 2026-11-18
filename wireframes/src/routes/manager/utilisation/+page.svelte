@@ -2,12 +2,12 @@
 	import { store, DAYS } from '$lib/store.svelte';
 	import { Download } from '@lucide/svelte';
 
-	let periodBasis = $state<'weekly' | 'monthly'>('weekly');
-	let multiplier = $derived(periodBasis === 'weekly' ? 1 : 4);
+	let periodBasis = $state<'weekly' | 'mtd'>('weekly');
+	let multiplier = $derived(periodBasis === 'weekly' ? 1 : 2.5);
 
 	let studioRows = $derived(
 		store.studios.map((s) => {
-			const w = store.getStudioWeeklyStats(s.studioId);
+			const w = store.getStudioWeeklyStats(s.studioId, 'W46');
 			return {
 				studio: s,
 				booked: w.bookedHours * multiplier,
@@ -37,7 +37,7 @@
 
 	function exportCsv() {
 		const header =
-			'Studio ID,Studio Name,Equipped Instruments,Booked Hours,Maintenance Hours,Available Hours,Utilisation %\n';
+			'Studio ID,Studio Name,Equipped Instruments,Confirmed Elapsed Hours,Maintenance Hours,Net Available Hours,Occupancy %\n';
 		const rows = studioRows
 			.map(
 				(r) =>
@@ -48,10 +48,10 @@
 		const url = URL.createObjectURL(blob);
 		const a = document.createElement('a');
 		a.href = url;
-		a.download = `studio-utilisation-${store.selectedWeekId}-${periodBasis}.csv`;
+		a.download = `studio-utilisation-W46-${periodBasis}.csv`;
 		a.click();
 		URL.revokeObjectURL(url);
-		store.notifyToast(`Exported ${periodBasis} studio utilisation CSV`);
+		store.notifyToast(`Exported elapsed studio utilisation CSV`);
 	}
 </script>
 
@@ -69,16 +69,16 @@
 					? 'bg-white border border-[var(--color-border-default)]'
 					: 'text-[var(--color-fg-muted)]'}"
 			>
-				Weekly ({store.currentWeek.label})
+				Week 46 · 09–15 Nov
 			</button>
 			<button
 				type="button"
-				onclick={() => (periodBasis = 'monthly')}
-				class="rounded px-3 py-1 text-sm font-medium {periodBasis === 'monthly'
+				onclick={() => (periodBasis = 'mtd')}
+				class="rounded px-3 py-1 text-sm font-medium {periodBasis === 'mtd'
 					? 'bg-white border border-[var(--color-border-default)]'
 					: 'text-[var(--color-fg-muted)]'}"
 			>
-				Monthly (4 Weeks)
+				Month-to-Date · Elapsed
 			</button>
 		</div>
 
@@ -97,9 +97,9 @@
 	<div
 		class="flex items-center justify-between border-b border-[var(--color-border-default)] bg-[var(--color-canvas-subtle)] px-4 py-2.5"
 	>
-		<h2 class="text-sm font-semibold">Booked vs Available Operating Hours</h2>
+		<h2 class="text-sm font-semibold">Elapsed Confirmed vs Net Available Operating Hours</h2>
 		<span class="font-mono text-sm font-semibold tabular-nums">
-			Total: {totals.booked.toFixed(1)} / {totals.avail.toFixed(1)} h ({totals.pct.toFixed(1)}%)
+			Total: {totals.booked.toFixed(1)} / {totals.avail.toFixed(1)} h · {totals.pct.toFixed(1)}%
 		</span>
 	</div>
 	<div class="overflow-x-auto">
@@ -110,7 +110,7 @@
 				>
 					<th class="px-4 py-2.5 font-medium">Studio</th>
 					<th class="px-4 py-2.5 font-medium">Equipped Instruments</th>
-					<th class="px-4 py-2.5 font-medium">Booked</th>
+					<th class="px-4 py-2.5 font-medium">Confirmed Elapsed</th>
 					<th class="px-4 py-2.5 font-medium">Maintenance</th>
 					<th class="px-4 py-2.5 font-medium">Net Available</th>
 					<th class="px-4 py-2.5 font-medium">Occupancy</th>
@@ -150,7 +150,7 @@
 	<div
 		class="border-b border-[var(--color-border-default)] bg-[var(--color-canvas-subtle)] px-4 py-2.5"
 	>
-		<h2 class="text-sm font-semibold">Occupancy by Time Band (%)</h2>
+		<h2 class="text-sm font-semibold">Elapsed Occupancy by Time Band</h2>
 	</div>
 	<div class="overflow-x-auto">
 		<table class="w-full border-collapse text-center text-sm">

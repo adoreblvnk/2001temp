@@ -72,7 +72,7 @@
 		class="inline-flex items-center gap-1.5 rounded border border-[var(--color-border-default)] bg-white px-3.5 py-1.5 text-sm font-medium hover:bg-[var(--color-canvas-subtle)]"
 	>
 		<Download class="h-4 w-4" />
-		<span>Export CSV</span>
+		<span>Export PDF</span>
 	</button>
 </div>
 

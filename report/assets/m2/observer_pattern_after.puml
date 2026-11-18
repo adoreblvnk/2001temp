@@ -18,8 +18,6 @@ skinparam arrow {
     FontSize 10
 }
 
-title Detailed Design - After Observer Pattern Implementation (Decoupled Notification Dispatch)
-
 class AllocationController <<Control>> {
     - observers : List<IScheduleObserver>
     + attach(observer : IScheduleObserver) : void

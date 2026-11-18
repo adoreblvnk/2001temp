@@ -33,7 +33,7 @@
 > Entering the prototype walkthrough, the Staff Workload Dashboard anchors our manager landing screen. Under `FR-01`, the ledger displays each teacher's monthly work allocation and assigned studio. Under `FR-02`, the top 3 cards highlight the teachers with the lowest allocated weekly hours: Elena Lim at 16.5h, Marcus Lim at 21.0h, and Hannah Koh at 24.5h. Under `FR-16` and `NFR-USE-02`, weekly hours display across 3 tiers with green `OK`, amber `Warning`, and red `Overworked` badges. Clicking `Confirm & Notify Teachers` triggers `FR-14` via our Observer pattern.
 
 ### Slide 9: Manager View — Studio Utilisation Report (`4:15 – 4:40`, 25s)
-> Under the Studios tab for `FR-15`, the system calculates booked, maintenance, and net available studio hours across the 86 weekly operating hours per studio. Here Studio 4 deducts 2.0 scheduled maintenance hours for 84.0 net available hours, while the time-band occupancy matrix below highlights peak weekend and afternoon demand with CSV export.
+> Under the Studios tab for `FR-15`—elicited from Academy Director David Koh (`MIN-05-MGT-EXT`) and Manager Marcus Tan (`MIN-01-MGR`)—`IFacilityService.getStudioUtilisation()` computes elapsed `CONFIRMED` lesson hours against net available operating hours on demand at query time. Over completed `Week 46`, Studio 4 deducts 2.0 scheduled `MaintenanceWindow` hours for 84.0 net available hours, paired with CSV export and elapsed time-band occupancy below.
 
 ### Slide 10: Manager Workflow — Lesson Allocation & Strategy Toggle (`4:40 – 5:25`, 45s)
 > Next is the Lesson Allocation workflow following steps 1, 2, and 3.
@@ -60,7 +60,7 @@
 > Finally, these two views verify our security and usability non-functional requirements: on the left, `NFR-SEC-01` enforces role-based access control restricting teachers to their own schedules and configuration panels to IT administrators via `403` guards, and on the right, `NFR-USE-01` renders interfaces across 375px mobile and 1920px desktop viewports without horizontal scrolling.
 
 ### Slide 17: Black-Box Testing — `allocateLessonSlot()` (`8:15 – 8:50`, 35s)
-> Moving to verification, we applied Decision Table Testing and Boundary Value Analysis to `allocateLessonSlot()`. Across 5 conditions (teacher qualification, availability, 4.0-hour continuous block, weekly workload tier, and studio validity), 48 combinations reduce into 7 rules from `R1` to `R7`. From these, 9 test cases, `TC-BB-01` to `TC-BB-07` including `05A/B` and `06A/B`, cover all 7 rules across the `39.5h` to `44.5h` boundaries.
+> Moving to verification, we applied Decision Table Testing and Boundary Value Analysis to `allocateLessonSlot()`, which returns a structured `AllocationResult`. Across 5 conditions (teacher qualification, availability, 4.0-hour continuous block, weekly workload tier, and studio validity), 48 combinations reduce into 7 rules from `R1` to `R7`. From these, 10 test cases, `TC-BB-01` to `TC-BB-07` including `05A/B/C` and `06A/B`, cover all 7 rules across the `39.5h` to `44.5h` boundaries.
 
 ### Slide 18: White-Box Testing (`8:50 – 9:10`, 20s)
 > For white-box testing, we selected `ConflictValidator.findEligibleCandidates()`, which iterates over the active faculty pool and evaluates qualification, availability, continuous teaching hours, and a 3-way switch across the `OK`, `WARNING`, and `OVERWORKED` tiers, mapped directly to nodes `N1` through `N10` in the Control Flow Graph.
@@ -76,18 +76,19 @@
 ## Q&A Traceability Cheat Sheet (`FR` → `Design` → `Wireframe` → `Test`)
 
 When asked to trace any requirement during Q&A, cover all 4 hops:
-- **`FR-03` / `FR-04` / `FR-05` (Allocate & Rank):** `IScheduleService.allocateLessonSlot()` + `ITieBreakerStrategy` (`WorkloadDeficitStrategy` / `PreferenceMatchStrategy`) → `Lesson Allocation` (`Slide 10`, `Appendix Slide 26`) → `TC-BB-01`–`07`.
-- **`FR-06` / `FR-07` (Monthly Availability & Preferences):** `IFacultyService.submitAvailability()` (60.0h floor = hard capacity filter; preferences = soft tie-breaker) → `December 2026 Monthly Availability` (`Slide 13`) → `AL-2214` (`Slide 15`).
-- **`FR-09` (Job Rejection Consultation):** `IScheduleService.requestJobRejection()` → `Teacher Rejection Warning` (`Slide 12`) + `Manager Review` (`Appendix Slide 27`) → `AL-2215` (`Slide 15`).
-- **`FR-10` / `FR-13` (Studio Maintenance & Equipment):** `IFacilityService` → `IT Admin Studios` (`Slide 14`) disables `Studio 4` (`Slide 10`) → `TC-BB-05A` (maintenance) & `TC-BB-05B` (missing drum kit).
+- **`FR-03` / `FR-04` / `FR-05` (Allocate & Rank):** `IScheduleService.allocateLessonSlot()` (`AllocationResult`) + `ITieBreakerStrategy` (`WorkloadDeficitStrategy` / `PreferenceMatchStrategy`) → `Lesson Allocation` (`Slide 10`, `Appendix Slide 27`) → `TC-BB-01`–`07`.
+- **`FR-06` / `FR-07` (Monthly Availability & Preferences):** `IFacultyService.submitAvailability()` + `Availability` entity (60.0h floor = hard capacity filter; preferences = soft tie-breaker) → `December 2026 Monthly Availability` (`Slide 13`) → `AL-2214` (`Slide 15`).
+- **`FR-09` (Job Rejection Consultation):** `IScheduleService.requestJobRejection()` / `resolveJobRejection()` → `Teacher Rejection Warning` (`Slide 12`) + `Manager Review` (`Appendix Slide 28`) → `AL-2215` (`Slide 15`).
+- **`FR-10` / `FR-13` (Studio Maintenance & Equipment):** `IFacilityService.flagMaintenanceWindow()` + `MaintenanceWindow` entity → `IT Admin Studios` (`Slide 14`) disables `Studio 4` (`Slide 10`) → `TC-BB-05A` (maintenance), `TC-BB-05B` (missing drum kit), `TC-BB-05C` (occupied room).
 - **`FR-11` (4.0h Block + 1.0h Rest):** `IConflictValidator.checkContinuousTeachingLimit()` → Hatched 1.0h rest (`Slide 12`) & Block meter (`Slide 10`) → `TC-BB-03`, `TC-WB-04`.
 - **`FR-14` (Confirmation Notification):** `AllocationController` Subject → `IScheduleObserver` (`Slide 6`) → `Confirm & Notify Teachers` (`Slide 8`).
-- **`FR-16` (3-Tier Overtime):** `IConflictValidator` → `Staff Workload` badges (`Slide 8`) + `Overtime Confirmation Gate` (`Slide 11`) → `TC-BB-04`, `TC-BB-06A/B`, `TC-WB-01`–`03`.
-- **`FR-17` (Audit Log):** `IAuditLogService.recordAuditEntry()` → `Immutable Compliance Audit Log` (`Slide 15`, `AL-2211`–`2216`).
+- **`FR-15` (Studio Utilisation Report):** Elicited from `MIN-05-MGT-EXT` & `MIN-01-MGR` → `IFacilityService.getStudioUtilisation(weekId, asOf)` returning `StudioUtilisationReport` over elapsed `CONFIRMED` lessons (`endDateTime <= asOf`) → `Studio Utilisation` (`Slide 9`).
+- **`FR-16` (3-Tier Overtime):** `IConflictValidator` + `WorkloadTier` enum → `Staff Workload` badges (`Slide 8`) + `Overtime Confirmation Gate` (`Slide 11`) → `TC-BB-04`, `TC-BB-06A/B`, `TC-WB-01`–`03`.
+- **`FR-17` (Audit Log):** `IAuditLogService.recordAuditEntry()` + `AuditLog` entity → `Immutable Compliance Audit Log` (`Slide 15`, `AL-2211`–`2216`).
 
 ### Likely Q&A Questions & 15-Second Answers
 - **Why do teachers submit both availability (`FR-06`) and preferences (`FR-07`)?**
   > Availability (`FR-06`) is the hard constraint enforced by the 60.0-hour monthly minimum so managers always have enough open slots to schedule around clashes. Preferences (`FR-07`) are a soft tie-breaker inside that wider pool that feeds `PreferenceMatchStrategy` without blocking non-preferred slots when demand requires them.
 - **Why do we need the Strategy pattern (what new strategies could be added)?**
   > Beyond `WorkloadDeficitStrategy` (equity) and `PreferenceMatchStrategy` (teacher retention), we can swap in a Studio-Continuity strategy (minimising room changes per day) or an Overtime-Avoidance strategy without modifying `AllocationController`.
-- **Backup Appendix (`Slides 21–27`):** Full `FR-01`–`FR-17` tables (`21–23`), `Final Class Diagram` (`24`), `Strategy Before` (`25`), `Workload Deficit Baseline` (`26`), `Rejected Lesson Review` (`27`).
+- **Backup Appendix (`Slides 21–28`):** Full `FR-01`–`FR-17` tables (`21–23`), `Final Class Diagram: Services & Patterns` (`24`), `Final Class Diagram: Entities, DTOs & Enums` (`25`), `Strategy Before` (`26`), `Workload Deficit Baseline` (`27`), `Rejected Lesson Review` (`28`).
