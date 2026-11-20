@@ -29,7 +29,7 @@ skinparam package {
 package "Presentation Layer (Boundaries)" {
     together {
         class AllocationUI <<Boundary>> {
-            +renderCandidateComparison(lessonId : String, mode : RankingStrategy) : void
+            +renderCandidateComparison(lessonId : String, sId : String, mode : RankingStrategy) : void
             +renderRejectedLessonQueue(wk : String) : void
             +promptOvertimeConfirmation(res : AllocationResult) : Boolean
         }
@@ -66,7 +66,7 @@ package "Business & Application Layer" {
     together {
         interface IScheduleService <<interface>> {
             +allocateLessonSlot(lessonId : String, tId : String, sId : String, slot : TimeSlot, override : Boolean, justif : String) : AllocationResult
-            +evaluateCandidates(lessonId : String, mode : RankingStrategy) : List<CandidateEvaluation>
+            +evaluateCandidates(lessonId : String, sId : String, mode : RankingStrategy) : List<CandidateEvaluation>
             +releaseLessonSlot(lessonId : String) : Boolean
             +requestJobRejection(lessonId : String, rsn : RejectionReason, note : String) : Boolean
             +resolveJobRejection(lessonId : String, retain : Boolean) : Boolean
@@ -85,12 +85,13 @@ package "Business & Application Layer" {
         class AllocationController <<Control>> {
             -validator : IConflictValidator
             -facultyService : IFacultyService
+            -facilityService : IFacilityService
             -tieBreaker : ITieBreakerStrategy
             -auditService : IAuditLogService
             -persistence : IPersistenceGateway
-            -observers : List<IScheduleObserver>
+            -notificationGateway : INotificationGateway
             +setTieBreakerStrategy(strategy : ITieBreakerStrategy) : void
-            +evaluateCandidates(lessonId : String, mode : RankingStrategy) : List<CandidateEvaluation>
+            +evaluateCandidates(lessonId : String, sId : String, mode : RankingStrategy) : List<CandidateEvaluation>
             +allocateLessonSlot(lessonId : String, tId : String, sId : String, slot : TimeSlot, override : Boolean, justif : String) : AllocationResult
             +releaseLessonSlot(lessonId : String) : Boolean
             +requestJobRejection(lessonId : String, rsn : RejectionReason, note : String) : Boolean
@@ -99,9 +100,6 @@ package "Business & Application Layer" {
             +getWeeklyLessons(wk : String) : List<Lesson>
             +getTeacherSchedule(tId : String, wk : String) : List<Lesson>
             +getPendingRejections(wk : String) : List<Lesson>
-            +attach(observer : IScheduleObserver) : void
-            +detach(observer : IScheduleObserver) : void
-            +notifyObservers(event : ScheduleEvent) : void
         }
         class ConflictValidator <<Control>> {
             -facultyService : IFacultyService
@@ -125,7 +123,7 @@ package "Business & Application Layer" {
         }
         interface IFacilityService <<interface>> {
             +configureStudio(sId : String, name : String, equipped : Set<InstrumentType>) : Boolean
-            +flagMaintenanceWindow(sId : String, start : DateTime, end : DateTime, rsn : String) : MaintenanceWindow
+            +flagMaintenanceWindow(sId : String, wk : String, start : DateTime, end : DateTime, rsn : String) : MaintenanceWindow
             +removeMaintenanceWindow(windowId : String) : Boolean
             +getStudio(sId : String) : Studio
             +getAllStudios() : List<Studio>
@@ -154,7 +152,7 @@ package "Business & Application Layer" {
             -auditService : IAuditLogService
             -persistence : IPersistenceGateway
             +configureStudio(sId : String, name : String, equipped : Set<InstrumentType>) : Boolean
-            +flagMaintenanceWindow(sId : String, start : DateTime, end : DateTime, rsn : String) : MaintenanceWindow
+            +flagMaintenanceWindow(sId : String, wk : String, start : DateTime, end : DateTime, rsn : String) : MaintenanceWindow
             +removeMaintenanceWindow(windowId : String) : Boolean
             +getStudio(sId : String) : Studio
             +getAllStudios() : List<Studio>
@@ -169,36 +167,22 @@ package "Business & Application Layer" {
     }
 }
 
-package "Design Pattern Realizations (GoF Strategy & Observer)" {
+package "Design Pattern Realization (GoF Strategy)" {
     interface ITieBreakerStrategy <<interface>> {
-        +rankCandidates(candidates : List<Teacher>, slot : TimeSlot) : List<Teacher>
+        +rankCandidates(candidates : List<Teacher>, slot : TimeSlot, sId : String) : List<Teacher>
     }
     class WorkloadDeficitStrategy {
-        +rankCandidates(candidates : List<Teacher>, slot : TimeSlot) : List<Teacher>
+        +rankCandidates(candidates : List<Teacher>, slot : TimeSlot, sId : String) : List<Teacher>
     }
     class PreferenceMatchStrategy {
-        +rankCandidates(candidates : List<Teacher>, slot : TimeSlot) : List<Teacher>
-    }
-    interface IScheduleObserver <<interface>> {
-        +onScheduleEvent(event : ScheduleEvent) : void
-    }
-    class EmailNotificationObserver {
-        -gateway : INotificationGateway
-        +onScheduleEvent(event : ScheduleEvent) : void
-    }
-    class DashboardAlertObserver {
-        +onScheduleEvent(event : ScheduleEvent) : void
-    }
-    class AuditNotificationObserver {
-        -auditService : IAuditLogService
-        +onScheduleEvent(event : ScheduleEvent) : void
+        +rankCandidates(candidates : List<Teacher>, slot : TimeSlot, sId : String) : List<Teacher>
     }
 }
 
 package "Data & Infrastructure Layer Contracts" {
     interface IPersistenceGateway <<interface>> {
         +findConfirmedLessonsBefore(wk : String, basis : PeriodBasis, asOf : DateTime) : List<Lesson>
-        +saveEntity(entity : Object) : void
+        +saveEntity<T>(entity : T) : void
     }
     interface INotificationGateway <<interface>> {
         +dispatchScheduleAlert(tId : String, email : String, event : ScheduleEvent) : Boolean
@@ -213,9 +197,6 @@ FacilityController .up.|> IFacilityService
 AuditLogController .up.|> IAuditLogService
 WorkloadDeficitStrategy .up.|> ITieBreakerStrategy
 PreferenceMatchStrategy .up.|> ITieBreakerStrategy
-EmailNotificationObserver .up.|> IScheduleObserver
-DashboardAlertObserver .up.|> IScheduleObserver
-AuditNotificationObserver .up.|> IScheduleObserver
 
 ' Boundary Invocations
 AuditLogUI ..> IAuditLogService : invokes
@@ -230,20 +211,22 @@ AdminUI ..> IFacultyService : invokes
 AdminUI ..> IFacilityService : invokes
 
 ' Intra-Layer Delegations
-AllocationController -[norank]-> IConflictValidator : validates via
-AllocationController -down-> IFacultyService : queries
-AllocationController -[norank]-> IAuditLogService : audits via
-AllocationController o-down-> ITieBreakerStrategy : ranks via >
-AllocationController o-down-> "0..*" IScheduleObserver : notifies >
-ConflictValidator -down-> IFacultyService : queries
-ConflictValidator -down-> IFacilityService : queries
-FacultyController -[norank]-> IAuditLogService : audits via
-FacilityController -[norank]-> IAuditLogService : audits via
+AllocationController "1" -[norank]-> "1" IConflictValidator : validates via
+AllocationController "1" -down-> "1" IFacultyService : queries
+AllocationController "1" -down-> "1" IFacilityService : queries
+AllocationController "1" -[norank]-> "1" IAuditLogService : audits via
+AllocationController "1" o-down-> "1" ITieBreakerStrategy : ranks via >
+ConflictValidator "1" -down-> "1" IFacultyService : queries
+ConflictValidator "1" -down-> "1" IFacilityService : queries
+FacultyController "1" -[norank]-> "1" IAuditLogService : audits via
+FacilityController "1" -[norank]-> "1" IAuditLogService : audits via
 
 ' Infrastructure Gateway Delegations
+AllocationController .down.> IPersistenceGateway : persists
+AllocationController "1" -down-> "1" INotificationGateway : dispatches >
+FacultyController .down.> IPersistenceGateway : persists
 FacilityController .down.> IPersistenceGateway : queries lessons & windows
 AuditLogController .down.> IPersistenceGateway : persists
-EmailNotificationObserver -down-> INotificationGateway : dispatches >
 
 ' Vertical stacking between subsystem tiers
 TeacherUI -[hidden]down-> IScheduleService
@@ -254,9 +237,6 @@ ConflictValidator -[hidden]down-> IFacilityService
 IFacultyService -[hidden]right-> IFacilityService
 IFacilityService -[hidden]right-> IAuditLogService
 FacultyController -[hidden]down-> ITieBreakerStrategy
-FacilityController -[hidden]down-> IScheduleObserver
-AuditLogController -[hidden]down-> AuditNotificationObserver
 WorkloadDeficitStrategy -[hidden]down-> IPersistenceGateway
-EmailNotificationObserver -[hidden]down-> INotificationGateway
-
+PreferenceMatchStrategy -[hidden]down-> INotificationGateway
 @enduml

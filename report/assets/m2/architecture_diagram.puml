@@ -35,7 +35,7 @@ skinparam arrow {
     FontSize 10
 }
 
-package "1. Presentation Layer (Closed — Web Boundary)" as Layer1 {
+package "1. Presentation Layer (Closed: Web Boundary)" as Layer1 {
     together {
         component "ManagerDashboardUI" as UI1
         component "AllocationUI" as UI2
@@ -52,7 +52,7 @@ package "1. Presentation Layer (Closed — Web Boundary)" as Layer1 {
     UI2 -[hidden]down-> UI5
 }
 
-package "2. Business & Application Layer (Closed — Domain Services & Strategies)" as Layer2 {
+package "2. Business & Application Layer (Closed: Domain Services & Strategies)" as Layer2 {
     together {
         component "SchedulingService" as S1
         component "ConflictValidationService" as S2
@@ -72,7 +72,7 @@ package "2. Business & Application Layer (Closed — Domain Services & Strategie
     S3 -[hidden]down-> S6
 }
 
-package "3. Data & Infrastructure Layer (Closed — Persistence & Gateways)" as Layer3 {
+package "3. Data & Infrastructure Layer (Closed: Persistence & Gateways)" as Layer3 {
     database "PostgreSQL Database\n(PersistenceService)" as DB
     component "ExternalNotificationGateway\n(SMTP / SMS Adapter)" as GW
     DB -[hidden]right-> GW

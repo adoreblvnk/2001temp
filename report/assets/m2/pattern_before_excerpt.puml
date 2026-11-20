@@ -17,7 +17,7 @@ class AllocationController <<Control>> {
     - validator : ConflictValidator
     - rankingMode : RankingStrategy
     + allocateLessonSlot(lessonId : String, tId : String, sId : String, slot : TimeSlot, override : Boolean, justif : String) : AllocationResult
-    + rankCandidates(candidates : List<Teacher>, slot : TimeSlot, mode : RankingStrategy) : List<Teacher>
+    + rankCandidates(candidates : List<Teacher>, slot : TimeSlot, sId : String, mode : RankingStrategy) : List<Teacher>
 }
 
 class Teacher <<Entity>> {
@@ -28,6 +28,6 @@ class Teacher <<Entity>> {
     + getAssignedLocation() : String
     + getAvailability(month : YearMonth) : Availability
 }
-AllocationController --> "0..*" Teacher : directly sorts >
+AllocationController "1" --> "0..*" Teacher : directly sorts >
 
 @enduml

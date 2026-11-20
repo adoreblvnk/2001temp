@@ -22,19 +22,19 @@ class AllocationController <<Control>> {
     - validator : IConflictValidator
     - tieBreaker : ITieBreakerStrategy
     + setTieBreakerStrategy(strategy : ITieBreakerStrategy) : void
-    + evaluateCandidates(lessonId : String, mode : RankingStrategy) : List<CandidateEvaluation>
+    + evaluateCandidates(lessonId : String, sId : String, mode : RankingStrategy) : List<CandidateEvaluation>
     + allocateLessonSlot(lessonId : String, tId : String, sId : String, slot : TimeSlot, override : Boolean, justif : String) : AllocationResult
 }
 interface ITieBreakerStrategy <<interface>> {
-    + rankCandidates(candidates : List<Teacher>, slot : TimeSlot) : List<Teacher>
+    + rankCandidates(candidates : List<Teacher>, slot : TimeSlot, sId : String) : List<Teacher>
 }
 
 class WorkloadDeficitStrategy {
-    + rankCandidates(candidates : List<Teacher>, slot : TimeSlot) : List<Teacher>
+    + rankCandidates(candidates : List<Teacher>, slot : TimeSlot, sId : String) : List<Teacher>
 }
 
 class PreferenceMatchStrategy {
-    + rankCandidates(candidates : List<Teacher>, slot : TimeSlot) : List<Teacher>
+    + rankCandidates(candidates : List<Teacher>, slot : TimeSlot, sId : String) : List<Teacher>
 }
 
 class Teacher <<Entity>> {
@@ -45,7 +45,7 @@ class Teacher <<Entity>> {
     + getAssignedLocation() : String
     + getAvailability(month : YearMonth) : Availability
 }
-AllocationController o-down-> ITieBreakerStrategy : ranks via >
+AllocationController "1" o-down-> "1" ITieBreakerStrategy : ranks via >
 WorkloadDeficitStrategy .up.|> ITieBreakerStrategy : <<implements>>
 PreferenceMatchStrategy .up.|> ITieBreakerStrategy : <<implements>>
 ITieBreakerStrategy .right.> Teacher : orders

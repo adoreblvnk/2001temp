@@ -108,6 +108,7 @@ SchedComp -up-( IAudit
 FacComp -up-( IAudit
 FacilComp -up-( IAudit
 SchedComp -up-( IFaculty
+SchedComp -up-( IFacility
 SchedComp -down-( IRank
 SchedComp -down-( IVal
 RankComp -up- IRank

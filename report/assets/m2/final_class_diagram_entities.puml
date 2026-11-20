@@ -44,12 +44,14 @@ package "Domain Entities (Data Tier)" as PkgEnt {
         -assignedLocation : String
         -weeklyHours : float
         -monthlyHours : float
+        -enrolledStudents : int
         -workloadTier : WorkloadTier
         +hasQualification(inst : InstrumentType) : Boolean
         +isAvailable(weekId : String, slot : TimeSlot) : Boolean
         +getContinuousHours(slot : TimeSlot) : float
         +getWeeklyHours() : float
         +getMonthlyHours() : float
+        +getEnrolledStudents() : int
         +getAssignedLocation() : String
         +getAvailability(month : YearMonth) : Availability
         +setWorkloadTier(tier : WorkloadTier) : void
@@ -71,6 +73,14 @@ package "Domain Entities (Data Tier)" as PkgEnt {
         -submittedAt : DateTime
         +containsSlot(slot : TimeSlot) : Boolean
         +matchesPreference(slot : TimeSlot, studioId : String) : Boolean
+    }
+    class WeeklySchedule <<Entity>> {
+        -weekId : String
+        -label : String
+        -rangeText : String
+        -status : ScheduleStatus
+        +getStatus() : ScheduleStatus
+        +confirmSchedule() : void
     }
     class Lesson <<Entity>> {
         -lessonId : String
@@ -106,10 +116,12 @@ package "Domain Entities (Data Tier)" as PkgEnt {
         -logId : String
         -timestamp : DateTime
         -actorId : String
+        -actorName : String
         -actorRole : Role
         -action : AuditAction
-        -targetId : String
+        -target : String
         -details : String
+        -hash : String
     }
 }
 
@@ -137,6 +149,9 @@ package "Value Objects & Read Projections (DTOs)" as PkgDTO {
             +continuousAfter : float
             +eligible : Boolean
             +ruleCode : String
+            +ruleReason : String
+            +dayMatch : Boolean
+            +studioMatch : Boolean
             +locationOnDay : String
         }
     }
@@ -158,9 +173,9 @@ package "Value Objects & Read Projections (DTOs)" as PkgDTO {
             +assignedTeacherIds : Set<String>
         }
     }
-    TimeSlot -[hidden]right-> StudioUtilisationReport
     StudioUtilisationReport -[hidden]right-> CandidateEvaluation
-    TimeSlot -[hidden]down-> ValidationResult
+    CandidateEvaluation -[hidden]right-> TimeSlot
+    StudioUtilisationReport -[hidden]down-> ValidationResult
     ValidationResult -[hidden]right-> AllocationResult
     AllocationResult -[hidden]right-> ScheduleEvent
 }
@@ -182,6 +197,10 @@ package "Domain Enumerations" as PkgEnum {
             UNASSIGNED
             CONFIRMED
             PENDING_REALLOCATION
+        }
+        enum ScheduleStatus <<enumeration>> {
+            DRAFT
+            CONFIRMED
         }
         enum WorkloadTier <<enumeration>> {
             OK
@@ -238,7 +257,8 @@ package "Domain Enumerations" as PkgEnum {
     }
     Role -[hidden]right-> InstrumentType
     InstrumentType -[hidden]right-> LessonStatus
-    LessonStatus -[hidden]right-> WorkloadTier
+    LessonStatus -[hidden]right-> ScheduleStatus
+    ScheduleStatus -[hidden]right-> WorkloadTier
     WorkloadTier -[hidden]right-> DayOfWeek
     Role -[hidden]down-> PeriodBasis
     PeriodBasis -[hidden]right-> RankingStrategy
@@ -255,9 +275,10 @@ User <|-- ITAdministrator
 ' Compositions & Associations
 Teacher "1" *-- "0..*" Availability : declares >
 Studio "1" *-- "0..*" MaintenanceWindow : scheduledWith >
+WeeklySchedule "1" *-- "0..*" Lesson : schedules >
 Lesson "0..*" --> "0..1" Teacher : assignedTo >
 Lesson "0..*" --> "0..1" Studio : conductedIn >
-Lesson *-- "1" TimeSlot : scheduledAt >
+Lesson "1" *-- "1" TimeSlot : scheduledAt >
 User "1" --> "0..*" AuditLog : initiates >
 AuditLog "0..*" --> "0..1" Lesson : records >
 Studio "1" ..> "0..*" StudioUtilisationReport : summarisedBy >

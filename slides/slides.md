@@ -65,29 +65,27 @@ Walk through WebClientUI consuming IScheduleService, IConflictValidator, ITieBre
 
 ---
 layout: diagram
-kicker: "Design Pattern 1: Observer"
-title: Decoupled Schedule Confirmation Alerts
+kicker: "Design Pattern: Before Refactoring"
+title: "Monolithic Candidate Sorting in AllocationController"
 ---
 
-<Figure src="/observer_pattern_after.png" alt="Class Excerpt After Observer Pattern Implementation" />
+<Figure src="/pattern_before_excerpt.png" alt="Class Excerpt Before Strategy Pattern Implementation" />
 
 <!--
-FR-14: AllocationController acts as Subject, broadcasting ScheduleEvent via IScheduleObserver to EmailNotificationObserver, DashboardAlertObserver, and AuditNotificationObserver.
+Before Strategy: Conditional rankingMode branching inside AllocationController coupled sorting directly to Teacher, violating the Open/Closed Principle.
 -->
 
 ---
-layout: default
-kicker: "Design Pattern 2: Strategy"
+layout: diagram
+kicker: "Design Pattern: Strategy"
 title: "Refactored Candidate Ranking: ITieBreakerStrategy"
 ---
 
-**Before:** Conditional sorting inside `AllocationController` coupled directly
-to `Teacher`.
-
-**After:** `AllocationController` delegates sorting to `ITieBreakerStrategy` at
-runtime.
-
 <Figure src="/pattern_after_excerpt.png" alt="Class Excerpt After Strategy Pattern Implementation" />
+
+<!--
+After Strategy: AllocationController delegates candidate ordering to ITieBreakerStrategy, swapping WorkloadDeficitStrategy and PreferenceMatchStrategy at runtime.
+-->
 
 ---
 layout: image
@@ -383,20 +381,6 @@ title: "Final Class Diagram: Entities, DTOs & Enums"
 ---
 
 <Figure src="/final_class_diagram_entities.png" alt="Final Class Diagram: Domain Entities, Read Projections, and Enumerations" />
-
----
-layout: image
-side: right
-fit: contain
-image: /pattern_before_excerpt.png
-kicker: Q&A Appendix
-title: "Strategy Pattern: Before Refactoring"
----
-
-- Hardcoding `rankingMode` conditionals inside `AllocationController` coupled
-  sorting directly to `Teacher`.
-- Every new ranking rule forced edits and recompilation of core orchestration
-  logic.
 
 ---
 layout: default
